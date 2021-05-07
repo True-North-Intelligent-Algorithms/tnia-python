@@ -1,11 +1,46 @@
 import SimpleITK as sitk
 
-def bspline(fixed, mov):
+def rigid(fixed, mov):
     """Registers moving image to fixed using bspline approach
 
     Args:
         fixed (2d numpy array): fixed image
         mov (2d numpy array): moving image
+
+    Returns:
+        (2d numpy array, transformparametervector): returns the registered image and the parameter map 
+    """
+     # convert arrays to simple ITK images
+    fixed = sitk.GetImageFromArray(fixed)
+    mov= sitk.GetImageFromArray(mov)
+
+    # set up the filter
+    elastixImageFilter = sitk.ElastixImageFilter()
+    elastixImageFilter.SetFixedImage(fixed)
+    elastixImageFilter.SetMovingImage(mov)
+    
+    # TODO consider masks
+    #elastixImageFilter.SetFixedMask(mask)
+    #elastixImageFilter.SetMovingMask(mask)
+
+    # set up parameter map for affine followed by bspline registration
+    elastixImageFilter.SetParameterMap(sitk.GetDefaultParameterMap("affine"))
+ 
+    elastixImageFilter.Execute()
+
+    # convert simple itk to numpy array, and return array and parameter map 
+    return sitk.GetArrayFromImage(elastixImageFilter.GetResultImage()), elastixImageFilter.GetTransformParameterMap()
+
+
+
+def bspline(fixed, mov, grid_spacing, order):
+    """Registers moving image to fixed using bspline approach
+
+    Args:
+        fixed (2d numpy array): fixed image
+        mov (2d numpy array): moving image
+        grid_spacing: Final grid spacing in physical units.
+        order: order of bspline
 
     Returns:
         (2d numpy array, transformparametervector): returns the registered image and the parameter map 
@@ -30,7 +65,8 @@ def bspline(fixed, mov):
 
     # defaults below work OK in general, but in the future maybe make these parameters
     bspline['NumberOfResolutions']=['2']
-    bspline['FinalGridSpacingInPhysicalUnits']=['32']
+    bspline['FinalGridSpacingInPhysicalUnits']=[grid_spacing]
+    bspline['BSplineTransformSplineOrder']=[order]
 
     # set parameter map and execute
     parameterMapVector.append(bspline)
