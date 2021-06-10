@@ -1,4 +1,5 @@
 import SimpleITK as sitk
+import numpy as np
 
 def rigid(fixed, mov):
     """Registers moving image to fixed using bspline approach
@@ -88,3 +89,18 @@ def applymap(img, transform):
     """
     img = sitk.GetImageFromArray(img)
     return sitk.GetArrayFromImage(sitk.Transformix(img, transform))
+
+def applymap_zcyx(img, transform, transform_channel):
+
+    for i in range(0,img.shape[0]):
+
+        aligned = np.zeros(img.shape, 'float32')
+        for c in range(0,img.shape[1]):
+        
+            if transform_channel[c]==0:
+                aligned[i,c,:,:]=img[i,c,:,:]
+            else:
+                aligned[i,c,:,:]=applymap(img[i,c,:,:],transform)
+
+            aligned[aligned<0]=0;
+    return aligned        
