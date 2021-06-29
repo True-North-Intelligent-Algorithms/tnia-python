@@ -13,7 +13,7 @@ def draw_label_outline(img, segmented):
         2d rgp np array: img with outlines of segmented
     """
     label_ = label(segmented)
-    overlay = find_boundaries(label_)
+    overlay = find_boundaries(label_,mode='inner')
 
     # TODO: handle rgp input
     rgb = gray2rgb(img)
