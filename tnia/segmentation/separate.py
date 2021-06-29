@@ -20,9 +20,9 @@ def separate_touching(segmented, min_distance, num_erosions):
         2d np array:  separated binary image
     """
 
-    closed = closing(segmented, disk(2))
-    eroded = erosion(closed, disk(2))
-    distance = ndi.distance_transform_edt(eroded)
+    #closed = closing(segmented, disk(1))
+    #eroded = erosion(closed, disk(2))
+    distance = ndi.distance_transform_edt(segmented)
     coords = peak_local_max(distance, min_distance=min_distance, exclude_border=False)
     mask = np.zeros(distance.shape, dtype=bool)
     mask[tuple(coords.T)] = True
