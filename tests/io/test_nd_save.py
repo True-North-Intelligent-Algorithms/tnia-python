@@ -10,7 +10,7 @@ ny = 512
 nx = 512
 
 test=((2**16-1)*np.random.rand(nc, nz, ny, nx)).astype('uint16')
-
+'''
 import tifffile
 test = np.moveaxis(test,0,1)
 tfh.save_zcyx('fromthetiffhelper.tif', test)
@@ -25,4 +25,3 @@ data = xr.DataArray(test, dims=('C','z','y','x'))
 dataset = dataset = ij.py.to_dataset(data)
 dataset = ij.py.to_dataset(data)
 ij.io().save(dataset, 'frompyfiji.tif')
-'''
