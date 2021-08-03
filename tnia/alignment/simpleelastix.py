@@ -32,8 +32,6 @@ def rigid(fixed, mov):
     # convert simple itk to numpy array, and return array and parameter map 
     return sitk.GetArrayFromImage(elastixImageFilter.GetResultImage()), elastixImageFilter.GetTransformParameterMap()
 
-
-
 def bspline(fixed, mov, grid_spacing, order):
     """Registers moving image to fixed using bspline approach
 
@@ -92,9 +90,9 @@ def applymap(img, transform):
 
 def applymap_zcyx(img, transform, transform_channel):
 
+    aligned = np.zeros(img.shape, 'float32')
+    
     for i in range(0,img.shape[0]):
-
-        aligned = np.zeros(img.shape, 'float32')
         for c in range(0,img.shape[1]):
         
             if transform_channel[c]==0:
@@ -103,4 +101,5 @@ def applymap_zcyx(img, transform, transform_channel):
                 aligned[i,c,:,:]=applymap(img[i,c,:,:],transform)
 
             aligned[aligned<0]=0;
+        
     return aligned        
