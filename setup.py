@@ -8,5 +8,5 @@ setup(name='tnia-python',
       author_email='bnorthan@gmail.com',
       license='MIT',
       packages=find_packages(),
-      install_requires=['SimpleITK-SimpleElastix', 'pyopencl', 'pyclesperanto-prototype', 'napari[all]'],
+      install_requires=['SimpleITK-SimpleElastix', 'pyclesperanto-prototype', 'napari[all]'],
       zip_safe=False)
