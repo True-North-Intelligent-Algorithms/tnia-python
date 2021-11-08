@@ -45,5 +45,10 @@ def show_xyz_max(image_to_show, labels=False):
     projection_z = np.max(image_to_show,0)
 
     ax0.imshow(projection_z)
+    ax0.set_title('xy')
     ax1.imshow(projection_y)
+    ax1.set_title('xz')
     ax2.imshow(projection_x)
+    ax2.set_title('zy')
+
+    return fig
