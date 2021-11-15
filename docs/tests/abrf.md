@@ -1,32 +1,40 @@
 ## nuclei1_out_c00_dr90_image 
 
-max projection 
+5 objects found 
 
-no processing yet 
+![](nuclei1_out_c00_dr90_image_0.png)  
 
-![test image](nuclei1_out_c00_dr90_image.png)  
+![](nuclei1_out_c00_dr90_image_1.png)  
+
+![](nuclei1_out_c00_dr90_image_2.png)  
 
 ## nuclei2_out_c90_dr90_image 
 
-max projection 
+5 objects found 
 
-no processing yet 
+![](nuclei2_out_c90_dr90_image_0.png)  
 
-![test image](nuclei2_out_c90_dr90_image.png)  
+![](nuclei2_out_c90_dr90_image_1.png)  
+
+![](nuclei2_out_c90_dr90_image_2.png)  
 
 ## nuclei3_out_c00_dr10_image 
 
-max projection 
+5 objects found 
 
-no processing yet 
+![](nuclei3_out_c00_dr10_image_0.png)  
 
-![test image](nuclei3_out_c00_dr10_image.png)  
+![](nuclei3_out_c00_dr10_image_1.png)  
+
+![](nuclei3_out_c00_dr10_image_2.png)  
 
 ## nuclei4_out_c90_dr10_image 
 
-max projection 
+5 objects found 
 
-no processing yet 
+![](nuclei4_out_c90_dr10_image_0.png)  
 
-![test image](nuclei4_out_c90_dr10_image.png)  
+![](nuclei4_out_c90_dr10_image_1.png)  
+
+![](nuclei4_out_c90_dr10_image_2.png)  
 
