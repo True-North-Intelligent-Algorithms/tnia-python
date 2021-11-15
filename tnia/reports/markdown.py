@@ -1,6 +1,6 @@
 
 
-def image_test(title, report_dir, info_list, fig):
+def image_test(title, report_dir, info_list, figs):
     """ generates a snippet of markdown with a title, a list of information, and a plot
 
     Args:
@@ -14,10 +14,14 @@ def image_test(title, report_dir, info_list, fig):
     for info in info_list:
         markdown+=info+' \n\n'
 
-    fig_name = title+'.png' 
-    fig.savefig(report_dir+fig_name)
+    i=0
 
-    markdown+='![test image]('+fig_name+')  \n\n'
+    for fig in figs:
+        fig_name = title+'_'+str(i)+'.png' 
+        fig.savefig(report_dir+fig_name)
+
+        markdown+='![]('+fig_name+')  \n\n'
+        i=i+1
 
     return markdown
 
