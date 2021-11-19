@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import pyclesperanto_prototype as cle
 import numpy as np
+from skimage.transform import resize
 
 def show_xyz_max_clij(image_to_show, labels=False):
     """
@@ -23,32 +24,76 @@ def show_xyz_max_clij(image_to_show, labels=False):
     ax1.imshow(projection_x)
     ax2.imshow(projection_y)
 
+def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1):
+    """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
 
-def show_xyz_max(image_to_show, labels=False):
+    Args:
+        image_to_show (3d numpy array): image to plot
+        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
+        sz (float, optional): z pixel size of 3D. Defaults to 1.
     """
-    This function generates three projections in X-, Y- and Z-direction and shows them.
+ 
+    slice_zy = np.rot90(image_to_show[:,:,x],3)
+    slice_xz = image_to_show[:,y,:]
+    slice_xy = image_to_show[z,:,:]
+
+    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz)
+
+def show_xyz_max(image_to_show, sxy=1, sz=1):
+    """ generates xy, xz, and zy max projections of a 3D image and plots them
+
+    Args:
+        image_to_show (3d numpy array): image to plot
+        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
+        sz (float, optional): z pixel size of 3D. Defaults to 1.
     """
+    projection_y = np.max(image_to_show,1)
+    projection_x = np.rot90(np.max(image_to_show,2),3)
+    projection_z = np.max(image_to_show,0)
+
+    return show_xyz(projection_z, projection_y, projection_x, sxy, sz)
+
+def show_xyz(xy, xz, zy, sxy=1, sz=1):
+    """ shows pre-computed xy, xz and zy of a 3D image in a plot
+
+    Args:
+        xy (2d numpy array): xy projection
+        xz (2d numpy array): xz projection
+        zy (2d numpy array): zy projection
+        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
+        sz (float, optional): z pixel size of 3D. Defaults to 1.
+
+    Returns:
+        [type]: [description]
+    """
+    
     fig=plt.figure(figsize=(10,10))
     
-    xdim = image_to_show.shape[2]
-    ydim = image_to_show.shape[1]
-    zdim = image_to_show.shape[0]
+    xdim = xy.shape[1]
+    ydim = xy.shape[0]
+    zdim = xz.shape[0]
 
-    spec=gridspec.GridSpec(ncols=2, nrows=2, height_ratios=[xdim,zdim], width_ratios=[ydim,zdim])
+    z_xy_ratio=1
+
+    if sxy!=sz:
+        z_xy_ratio=sz/sxy
+
+    spec=gridspec.GridSpec(ncols=2, nrows=2, height_ratios=[xdim,zdim*z_xy_ratio], width_ratios=[ydim,zdim*z_xy_ratio])
 
     ax0=fig.add_subplot(spec[0])
     ax1=fig.add_subplot(spec[1])
     ax2=fig.add_subplot(spec[2])
+   
+    if z_xy_ratio!=1:
+        xz=resize(xz, (int(xz.shape[0]*z_xy_ratio), xz.shape[1]))
+        zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
-    projection_x = np.max(image_to_show,2)
-    projection_y = np.rot90(np.max(image_to_show,1))
-    projection_z = np.max(image_to_show,0)
 
-    ax0.imshow(projection_z)
+    ax0.imshow(xy)
     ax0.set_title('xy')
-    ax1.imshow(projection_y)
-    ax1.set_title('xz')
-    ax2.imshow(projection_x)
-    ax2.set_title('zy')
+    ax1.imshow(zy)
+    ax1.set_title('zy')
+    ax2.imshow(xz)
+    ax2.set_title('xz')
 
     return fig
