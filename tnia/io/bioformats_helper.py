@@ -13,7 +13,38 @@ def start_jvm():
 
 def kill_jvm():
     javabridge.kill_vm()
+ 
+def load_volume(filename, c=0, series=0):
+    """ load a volume (all x,y,z) from a bioformats 5D (x,y,z,c,s) series.  s is series number
+
+    Args:
+        filename (string): name of bioformats supported file
+        c (int, optional): channel number. Defaults to 0.
+        series (int, optional): series number. Defaults to 0.
+
+    Returns:
+        [3D numpy Array]: xyz volume at channel c and series number s 
+    """
     
+    meta=bf.get_omexml_metadata(filename)
+    o=bf.OMEXML(meta)
+
+    size_x=o.image(2).Pixels.get_PhysicalSizeX()
+    size_y=o.image(2).Pixels.get_PhysicalSizeY()
+    size_z=o.image(2).Pixels.get_PhysicalSizeZ()
+    
+    nz=o.image(series).Pixels.SizeZ   
+    
+    img=bf.load_image(filename, z=0,c=c,series=series,rescale=False)
+    img=img[np.newaxis,...]
+    
+    for cz in range(1,nz):
+        temp=bf.load_image(filename, z=cz, c=c, series=series, rescale=False)
+        img=np.vstack((img, temp[np.newaxis,...]))
+        
+    return img, size_x, size_y, size_z
+
+   
 def load_channel(filename, nz,c):    
     
     img=bf.load_image(filename, z=0,c=c,rescale=False)
