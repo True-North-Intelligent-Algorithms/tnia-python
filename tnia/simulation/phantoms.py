@@ -51,25 +51,26 @@ def random_circles(im, num, min_r, max_r, min_intensity, max_intensity, seed_val
         temp2[cy-r:cy+r,cx-r:cx+r]=temp1
         im[temp2>0]=im[temp2>0]+intensity
 
-def grid_of_circles(im, r, s,b,intensity):
+def grid_of_circles(im, radius, space,border,intensity):
     """ draws a grid of circles on a background image
 
     Args:
-        im ([type]): backgournd image
-        r ([type]): radius of circles 
-        s ([type]): space between circles 
+        im ([type]): background image
+        radius ([type]): radius of circles 
+        space ([type]): space between circles 
+        border (): border around circles
         intensity ([type]): intensity of circles
     """
-    num_circles_x = math.floor(im.shape[1]/(s))
-    num_circles_y = math.floor(im.shape[0]/(s))
+    num_circles_x = math.floor(im.shape[1]/(space))
+    num_circles_y = math.floor(im.shape[0]/(space))
 
     for x in range(num_circles_x):
         for y in range(num_circles_y):
-            cx=(x)*s+b
-            cy=(y)*s+b
-            if cx < (im.shape[1]-r/2-1-b) and cy < (im.shape[0]-r/2-1-b):
-                temp1=rg.circle([r*2,r*2],r)
+            cx=(x)*space+border
+            cy=(y)*space+border
+            if cx < (im.shape[1]-radius/2-1) and cy < (im.shape[0]-radius/2-1):
+                temp1=rg.circle([radius*2,radius*2],radius)
                 temp2=np.zeros_like(im)
                 #print(cx,cy)
-                temp2[cy-r:cy+r,cx-r:cx+r]=temp1
+                temp2[cy-radius:cy+radius,cx-radius:cx+radius]=temp1
                 im[temp2>0]=intensity

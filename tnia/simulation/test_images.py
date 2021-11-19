@@ -16,9 +16,17 @@ def random_circles_on_ramp_background():
 
     return ramp, img
 
-def grid_of_circles_on_ramp_background(r,s,b):
+def grid_of_circles_on_ramp_background(radius,space,border):  
+    """ draws a grid of circles on a background image
+
+    Args:
+        radius ([type]): radius of circles 
+        space ([type]): space between circles 
+        border (): border around circles
+    """
+   
     ramp=ramp2d([1000,1000],100,1000).astype('float32')
-    grid_of_circles(ramp,r,s,b,1000)
+    grid_of_circles(ramp,radius,space,border,1000)
     
     n=1000
     wavelength = 500
