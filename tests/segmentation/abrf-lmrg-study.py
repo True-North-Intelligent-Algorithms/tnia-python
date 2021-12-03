@@ -1,12 +1,13 @@
 import os
 from tnia.io.io_helper import get_file_names_from_dir
-from skimage.io import imread
+from skimage.io import imread, imsave
 from tnia.io.tifffile_helper import open_ij3D
 from tnia.plotting.projections import show_xyz_max
 from tnia.reports.markdown import image_test
 from skimage.morphology import white_tophat, cube, ball
 from skimage.filters import median, threshold_otsu
 from skimage.morphology import binary_opening
+from tnia.segmentation.pandas_helper import get_df_centroid_intensity_volume_3D
 from tnia.segmentation.separate import separate_touching2, separate_touching
 from skimage.transform import resize
 from tnia.viewing.napari_helper import show_image, show_image_and_label
@@ -14,6 +15,9 @@ from tnia.deconvolution.psfs import gibson_lanni_3D
 from clij2fft.richardson_lucy import richardson_lucy, richardson_lucy_nc
 from skimage.morphology import remove_small_holes
 from skimage.measure import regionprops
+from tnia.morphology.fill_holes import fill_holes_3d_slicer
+import pandas as pdm
+
 
 # get the PSF for deconvolution 
 x_voxel_size = 0.100
@@ -32,9 +36,13 @@ psf.astype('float32')
 report_dir = '../../docs/tests/'
 
 image_dir = 'D:\\images\\ABRF LMRG Image Analysis Study\\nuclei\\'
+out_dir = 'D:\\images\\ABRF LMRG Image Analysis Study\\nuclei_out\\'
 
 if os.path.exists(report_dir)==False:
     os.makedirs(report_dir)
+
+if os.path.exists(out_dir)==False:
+    os.makedirs(out_dir)
 
 # get list files
 files = get_file_names_from_dir(image_dir, 'tif')
@@ -43,6 +51,7 @@ markdown = ''
 
 #files=[files[3]]
 #files=["D:\\images\\ABRF LMRG Image Analysis Study\\nuclei\\nuclei2_out_c90_dr90_image_decon.tif"]
+
 
 for f in files:
     print(f)
@@ -59,25 +68,16 @@ for f in files:
     print(im_orig.shape)
 
     im_bgs = white_tophat(im, cube(60))
-    '''  
-    binary = im_bgs>threshold_otsu(im_bgs)
-
-    for i in range(binary.shape[0]):
-        binary[i,:,:] = remove_small_holes(binary[i,:,:],1000)
-
-    for i in range(binary.shape[1]):
-        binary[:,i,:] = remove_small_holes(binary[:,i,:],1000)
-
-    for i in range(binary.shape[2]):
-        binary[:,:,i] = remove_small_holes(binary[:,:,i],1000)
-    '''
 
     #binary = im_bgs>threshold_otsu(im_bgs)
     #binary_,labels,distance = separate_touching(binary, 5,0)
     
-    labels,distance,binary = separate_touching2(im_bgs, 5, [15,15,15],[5,5,5])
+    segmented = im>threshold_otsu(im)
+    fill_holes_3d_slicer(segmented)
     
-    labels = resize(labels, [im_orig.shape[0],im_orig.shape[1], im_orig.shape[2]], preserve_range=True)
+    labels,distance= separate_touching2(im_bgs, segmented, 5, [15,15,15],[5,5,5])
+    
+    labels = resize(labels, [im_orig.shape[0],im_orig.shape[1], im_orig.shape[2]], preserve_range=True, order=0, anti_aliasing=False)
     labels = labels.astype('int32')
     #im_median = median(im_bgs, cube(3))
     #im_segmented = im_median>threshold_otsu(im_median)
@@ -87,14 +87,20 @@ for f in files:
     im_xyz_max.suptitle('Original')
     decon_xyz_max=show_xyz_max(im_decon)
     decon_xyz_max.suptitle('Deconvolved')
-    labels_xyz_max=show_xyz_max(labels)
+    labels_xyz_max=show_xyz_max(labels)   
     labels_xyz_max.suptitle('Labels')
     
     figs=[im_xyz_max, decon_xyz_max, labels_xyz_max]
+    
+    stats=get_df_centroid_intensity_volume_3D(labels, im_decon, sx, sy, sz)
 
-    object_list=regionprops(labels,im_orig);
+    csv_name = out_dir+'northan_brian_'+os.path.basename(f).split('_')[0]+'.csv'
+    segmented_name = out_dir+'northan_brian_'+os.path.basename(f).split('_')[0]+'_segmented.tif'
 
-    info=[str(len(object_list))+' objects found']
+    imsave(segmented_name, labels)
+    stats.to_csv(csv_name, index=False)
+
+    info=[str(len(stats))+' objects found']
     markdown+=image_test(im_name,report_dir, info, figs)
 
     show=False
