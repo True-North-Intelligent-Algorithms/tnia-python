@@ -5,7 +5,7 @@ from skimage.measure import label, regionprops
 import os
 
 image_name = 'D:\\images\\ABRF LMRG Image Analysis Study\\calibration\\calibration.tiff'
-out_dir = 'D:\\images\\ABRF LMRG Image Analysis Study\\nuclei\\out\\'
+out_dir = 'D:\\images\\ABRF LMRG Image Analysis Study\\nuclei_out\\'
 
 im = imread(image_name)
 thresh = im>threshold_otsu(im)
@@ -22,4 +22,4 @@ for o in object_list:
     stats.loc[len(stats)]=[c[2],c[1],c[0],i,v]
 
 csv_name = out_dir+'northan_brian_calibration.csv'
-stats.to_csv(csv_name)
+stats.to_csv(csv_name, index=False)
