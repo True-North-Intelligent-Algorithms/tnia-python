@@ -20,4 +20,15 @@ entry_points={
       }
 '''
 
-(Note in some examples only the packagename is used, and the hook function is imported in the __init__.py file of the package.)  
+(Note in some examples only the packagename is used, and the hook function is imported in the __init__.py file of the package.)
+
+[Some good tricks to debug deactivated Plugin](https://forum.image.sc/t/napari-plugin-deactivated/54655)
+
+To see if the plugin and hook are recognized run
+
+```
+napari --plugin-info -v
+```
+
+(Sometimes the plugin will be recognized but not the hook, in which case you get a plugin listed with '0' hooks)
+
