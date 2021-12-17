@@ -20,8 +20,9 @@ def image_test(title, report_dir, info_list, figs):
         fig_name = title+'_'+str(i)+'.png' 
         fig.savefig(report_dir+fig_name)
 
-        markdown+='![]('+fig_name+')  \n\n'
+        markdown+='![]('+fig_name+')  '
         i=i+1
-
+    markdown+='\n\n'
+    
     return markdown
 
