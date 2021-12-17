@@ -1,3 +1,7 @@
+---
+layout: basic
+---
+
 ## nuclei1_out_c00_dr90_image 
 
 5 objects found 
