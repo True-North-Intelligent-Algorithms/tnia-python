@@ -24,7 +24,7 @@ def show_xyz_max_clij(image_to_show, labels=False):
     ax1.imshow(projection_x)
     ax2.imshow(projection_y)
 
-def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1):
+def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
     """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
 
     Args:
@@ -37,9 +37,9 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1):
     slice_xz = image_to_show[:,y,:]
     slice_xy = image_to_show[z,:,:]
 
-    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz)
+    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize)
 
-def show_xyz_max(image_to_show, sxy=1, sz=1):
+def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10)):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
 
     Args:
@@ -51,9 +51,9 @@ def show_xyz_max(image_to_show, sxy=1, sz=1):
     projection_x = np.rot90(np.max(image_to_show,2),3)
     projection_z = np.max(image_to_show,0)
 
-    return show_xyz(projection_z, projection_y, projection_x, sxy, sz)
+    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize)
 
-def show_xyz(xy, xz, zy, sxy=1, sz=1):
+def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10)):
     """ shows pre-computed xy, xz and zy of a 3D image in a plot
 
     Args:
@@ -67,7 +67,7 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1):
         [type]: [description]
     """
     
-    fig=plt.figure(figsize=(10,10))
+    fig=plt.figure(figsize=figsize)
     
     xdim = xy.shape[1]
     ydim = xy.shape[0]
@@ -78,7 +78,7 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1):
     if sxy!=sz:
         z_xy_ratio=sz/sxy
 
-    spec=gridspec.GridSpec(ncols=2, nrows=2, height_ratios=[xdim,zdim*z_xy_ratio], width_ratios=[ydim,zdim*z_xy_ratio])
+    spec=gridspec.GridSpec(ncols=2, nrows=2, height_ratios=[ydim,zdim*z_xy_ratio], width_ratios=[xdim,zdim*z_xy_ratio],hspace=.01)
 
     ax0=fig.add_subplot(spec[0])
     ax1=fig.add_subplot(spec[1])
