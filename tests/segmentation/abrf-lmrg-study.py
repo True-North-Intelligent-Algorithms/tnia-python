@@ -83,11 +83,12 @@ for f in files:
     #im_segmented = im_median>threshold_otsu(im_median)
     #im_segmented = binary_opening(im_segmented, ball(3))
 
-    im_xyz_max=show_xyz_max(im_orig)
+    figsize=(5,5)
+    im_xyz_max=show_xyz_max(im_orig, figsize=figsize)
     im_xyz_max.suptitle('Original')
-    decon_xyz_max=show_xyz_max(im_decon)
+    decon_xyz_max=show_xyz_max(im_decon, figsize=figsize)
     decon_xyz_max.suptitle('Deconvolved')
-    labels_xyz_max=show_xyz_max(labels)   
+    labels_xyz_max=show_xyz_max(labels, figsize=figsize)   
     labels_xyz_max.suptitle('Labels')
     
     figs=[im_xyz_max, decon_xyz_max, labels_xyz_max]
