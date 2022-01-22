@@ -2,7 +2,7 @@
 layout: basic
 ---
 
-# Install on Windows
+### Install on Windows
 
 Note: due to issue with 'pip install pyopencl' pyopencl needs to be installed with conda 
 
@@ -17,7 +17,7 @@ git clone https://github.com/clij/clij2-fft.git
 cd clij2-fft/python  
 pip install .  
 
-# Install on Linux
+### Install on Linux
 
 Note: due to issue with 'pip install pyopencl' on windows it wasn't included in setup.py requirements. pyopencl needs to be installed separate
 
