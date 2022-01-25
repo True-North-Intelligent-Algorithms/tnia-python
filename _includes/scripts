@@ -1,0 +1,31 @@
+<!-- Libraries -->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/jquery.scrolly.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/jquery.toc.js"></script>
+<script src="/assets/js/lightbox.min.js"></script>
+<!-- Extensions -->
+{% for extension in page.extensions %}
+{% include extensions/{{ extension }} %}
+{% endfor %}
+<!-- Site code -->
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/dock.js"></script>
+<script src="/assets/js/code.js"></script>
+<!-- Anchors -->
+<script src="https://cdn.jsdelivr.net/npm/anchor-js/anchor.min.js"></script>
+<script>anchors.add('#page h1, #page h2, #page h3, #page h4, #page h5, #page h6');</script>
+<!-- Citations -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/citation-js@0.4.0-9"></script>
+<script src="/assets/js/cite.js"></script>
+<!-- Search -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/algoliasearch/3.32.0/algoliasearchLite.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.21.0"></script>
+<script src="/assets/js/search.js"></script>
+<script src="/assets/js/search-tweaks.js"></script>
+
+{%- comment -%}
+# vi:syntax=liquid
+{%- endcomment -%}

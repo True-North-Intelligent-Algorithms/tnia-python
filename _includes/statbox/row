@@ -1,0 +1,22 @@
+{%- comment -%}
+This is a helper include used by the statbox include.
+{%- endcomment -%}
+{%- capture value -%}
+{%- if include.url -%}
+<a href="{{include.url}}">{{include.value}}
+{%- else -%}
+{{include.value}}
+{%- endif -%}
+{%- endcapture -%}
+  <tr>
+{%- if include.label -%}
+    <th>{{include.label}}</th>
+    <td id="{{include.id}}">{{value}}</td>
+{%- else -%}
+    <td id="{{include.id}}" colspan=2>{{value}}</td>
+{%- endif -%}
+  </tr>
+
+{%- comment -%}
+# vi:syntax=liquid
+{%- endcomment -%}

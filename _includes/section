@@ -1,0 +1,23 @@
+<li>
+{%- assign tokens = {{page.section}} | split: ":" -%}
+{%- assign open = false -%}
+{%- for token in tokens -%}
+  {%- if token == include.title -%}
+    {%- assign open = true -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if open -%}
+<details open>
+{%- else -%}
+<details>
+{%- endif -%}
+{%- if include.link -%}
+<summary><a href="{{include.link}}">{{include.title}}</a></summary>
+{%- else -%}
+<summary>{{include.title}}</summary>
+{%- endif -%}
+<ul>
+
+{%- comment -%}
+# vi:syntax=liquid
+{%- endcomment -%}

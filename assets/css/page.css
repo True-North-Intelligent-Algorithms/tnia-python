@@ -1,0 +1,24 @@
+@media screen and (min-width: 880px) {
+  /* Main menu is in the left sidebar when page is wide enough. */
+  #ham-toggle {
+    display: none;
+  }
+
+  .container {
+    margin: 1em 220px;
+  }
+}
+
+@media screen and (max-width: 879px) {
+  #site-logo {
+    visibility: hidden;
+  }
+
+  #left-column {
+    display: none;
+  }
+
+  #right-column {
+    display: none;
+  }
+}

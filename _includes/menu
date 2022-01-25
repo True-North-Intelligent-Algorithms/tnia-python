@@ -1,0 +1,51 @@
+{%- capture main-menu -%}
+      {%- if include.dockable -%}
+      <div class="menu dockable">
+        <div class="drag-handle"></div>
+      {%- else -%}
+      <div class="menu">
+      {%- endif -%}
+        <h3>Hints</h3>
+        <ul>
+
+        <li><a href="https://github.com/True-North-Intelligent-Algorithms/tnia-python">Github</a></li>
+
+            {% include section title="Napari" link="/napari" %}
+              <li><a href="{{ site.baseurl }}/docs/napari/plugins">Plugins</a></li>
+            {% include section-end %} 
+            
+            {% include section title="Packaging" link="/packaging" %}
+                <li><a href="{{ site.baseurl }}/docs/packaging/packaging">Packaging Notes</a></li>
+                <li><a href="/platforms/android">Android</a></li>
+            {% include section-end %} 
+ 
+            {% include section title="Example Tests" link="/" %}
+                <li><a href="{{ site.baseurl }}/docs/tests/abrf">ABRF Test</a></li>
+            {% include section-end %} 
+
+            {% include section title="Web" link="/" %}
+                <li><a href="{{ site.baseurl }}/docs/web/convert_notebook">Convert Notebook to markdown</a></li>
+                <li><a href="/platforms/android">Android</a></li>
+            {% include section-end %} 
+            
+            {% include section title="Notebooks" link="/" %}
+                <li><a href="{{ site.baseurl }}/notebooks_/extract_psf">Extract PSF</a></li>
+                <li><a href="/platforms/android">Android</a></li>
+            {% include section-end %} 
+
+
+
+        </ul>
+      </div>
+{%- endcapture -%}
+
+{%- capture page-link -%} <a href="{{page.url}}"> {%- endcapture -%}
+{%- assign page-link = page-link | replace: "/index", "" -%}
+{%- capture current-page -%} <a class="current-page"> {%- endcapture -%}
+{{ main-menu | replace: page-link, current-page }}
+
+{%- comment -%}
+# vi:syntax=liquid
+{%- endcomment -%}
+
+ 

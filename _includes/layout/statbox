@@ -1,0 +1,308 @@
+{%- comment -%}
+A sidebar with statistics about a software component or person.
+
+There are two main modes:
+1. Manually specified metadata fields; or
+2. Metadata fields inferred from a remote source.
+
+Field values are declared as part of a page's YAML front matter.
+
+The former mode gives full control over what gets populated, but the sidebar
+must be updated manually as stats change (e.g. when new releases are made).
+
+Conversely, the latter mode is more succinct, deriving information by scraping
+a canonical source using JavaScript:
+
+- For components, specifying `artifact` as a groupId:artifactId coordinate
+  enables scraping of a maven-metadata.xml to determine the most
+  recent release version of the component, and subsequently the corresponding
+  Maven POM file containing the information. If needed, a `repository` URL can
+  be given to control which Maven repository to query -- the default is
+  https://maven.scijava.org/content/groups/public, which includes Maven Central
+  and many other sources. Alternately, giving a `pom-url` (e.g. a link to a raw
+  `pom.xml` in a GitHub repository) will fill the sidebar with that POM's info.
+
+- For people, there is no smart metadata scraping yet. But it could be added.
+  
+The two modes can be combined, in case some fields require manual override;
+the javascript only populates fields when they are empty.
+{%- endcomment -%}
+
+{%- comment -%} ============== GENERAL FIELDS ============== {%- endcomment -%}
+{%- assign icon              = page.icon              -%} {%- comment -%} URL of the image icon to show in the statbox header         {%- endcomment -%}
+{%- assign name              = page.name              -%} {%- comment -%} Name of the component/person/etc.                           {%- endcomment -%}
+{%- assign affiliation       = page.affiliation       -%} {%- comment -%} Organizational affiliation of the person/component/etc.     {%- endcomment -%}
+{%- assign website           = page.website           -%} {%- comment -%} Primary website link for the component/person/etc.          {%- endcomment -%}
+
+{%- comment -%} ============= COMPONENT FIELDS ============= {%- endcomment -%}
+{%- assign artifact          = page.artifact          -%} {%- comment -%} The component's groupId:artifactId                          {%- endcomment -%}
+{%- assign repository        = page.repository        -%} {%- comment -%} Maven repository where release artifact is deployed         {%- endcomment -%}
+{%- assign pom-url           = page.pom-url           -%} {%- comment -%} URL where the component's latest POM can be found.          {%- endcomment -%}
+{%- assign source-url        = page.source-url        -%} {%- comment -%} URL where the component's source code can be found          {%- endcomment -%}
+{%- assign source-label      = page.source-label      -%} {%- comment -%} Label to use for the source code link                       {%- endcomment -%}
+{%- assign license-url       = page.license-url       -%} {%- comment -%} URL where the component's licensing details can be found    {%- endcomment -%}
+{%- assign license-label     = page.license-label     -%} {%- comment -%} Label to use for the license link                           {%- endcomment -%}
+{%- assign release-url       = page.release-url       -%} {%- comment -%} URL where most recent component release can be found        {%- endcomment -%}
+{%- assign release-version   = page.release-version   -%} {%- comment -%} Most recent component release version                       {%- endcomment -%}
+{%- assign release-date      = page.release-date      -%} {%- comment -%} Most recent component release date                          {%- endcomment -%}
+{%- assign dev-status        = page.dev-status        -%} {%- comment -%} Unstable, Active, Stable, or Obsolete                       {%- endcomment -%}
+{%- assign support-status    = page.support-status    -%} {%- comment -%} Active, Partial, Minimal, or None                           {%- endcomment -%}
+{%- assign forum-tag         = page.forum-tag         -%} {%- comment -%} Project tag on image.sc forum                               {%- endcomment -%}
+{%- assign team-founders     = page.team-founders     -%} {%- comment -%} People who created the component                            {%- endcomment -%}
+{%- assign team-leads        = page.team-leads        -%} {%- comment -%} People responsible for making decisions about the component {%- endcomment -%}
+{%- assign team-developers   = page.team-developers   -%} {%- comment -%} People responsible for adding new features/enhancements     {%- endcomment -%}
+{%- assign team-debuggers    = page.team-debuggers    -%} {%- comment -%} People responsible for fixing bugs                          {%- endcomment -%}
+{%- assign team-maintainers  = page.team-maintainers  -%} {%- comment -%} People responsible for maintaining the component            {%- endcomment -%}
+{%- assign team-reviewers    = page.team-reviewers    -%} {%- comment -%} People responsible for reviewing patch submissions          {%- endcomment -%}
+{%- assign team-support      = page.team-support      -%} {%- comment -%} People responsible for responding to the community          {%- endcomment -%}
+{%- assign team-contributors = page.team-contributors -%} {%- comment -%} People who contributed code to the component                {%- endcomment -%}
+
+{%- comment -%} ============== PERSON FIELDS =============== {%- endcomment -%}
+{%- assign gravatar          = page.gravatar          -%} {%- comment -%} Personal gravatar image registered to the person            {%- endcomment -%}
+{%- assign forum             = page.forum             -%} {%- comment -%} The person's username on the Image.sc Forum                 {%- endcomment -%}
+{%- assign github            = page.github            -%} {%- comment -%} The person's username on GitHub                             {%- endcomment -%}
+{%- assign stackoverflow     = page.stackoverflow     -%} {%- comment -%} The person's username on StackOverflow                      {%- endcomment -%}
+{%- assign openhub           = page.openhub           -%} {%- comment -%} The person's username on Black Duck Open Hub                {%- endcomment -%}
+{%- assign twitter           = page.twitter           -%} {%- comment -%} The person's username on Twitter                            {%- endcomment -%}
+{%- assign linkedin          = page.linkedin          -%} {%- comment -%} The person's username on LinkedIn                           {%- endcomment -%}
+{%- assign researchgate      = page.researchgate      -%} {%- comment -%} The person's username on ResearchGate                       {%- endcomment -%}
+{%- assign loop              = page.loop              -%} {%- comment -%} The person's username on the Loop Research Network          {%- endcomment -%}
+{%- assign orcid             = page.orcid             -%} {%- comment -%} The person's ORCID                                          {%- endcomment -%}
+{%- assign researcherid      = page.researcherid      -%} {%- comment -%} The person's ResearcherID                                   {%- endcomment -%}
+{%- assign scopus            = page.scopus            -%} {%- comment -%} The person's Scopus Author Identifier                       {%- endcomment -%}
+{%- assign arxiv             = page.arxiv             -%} {%- comment -%} The person's username on arXiv                              {%- endcomment -%}
+{%- assign scholar           = page.scholar           -%} {%- comment -%} The person's Google Scholar ID                              {%- endcomment -%}
+{%- assign honorific         = page.honorific         -%} {%- comment -%} A granted title to certain community members                {%- endcomment -%}
+
+{%- comment -%} ============= FIELD ALIASES ============= {%- endcomment -%}
+
+{%- unless team-founders     -%} {%- assign team-founders     = page.team-founder     -%} {%- endunless -%}
+{%- unless team-leads        -%} {%- assign team-leads        = page.team-lead        -%} {%- endunless -%}
+{%- unless team-developers   -%} {%- assign team-developers   = page.team-developer   -%} {%- endunless -%}
+{%- unless team-debuggers    -%} {%- assign team-debuggers    = page.team-debugger    -%} {%- endunless -%}
+{%- unless team-maintainers  -%} {%- assign team-maintainers  = page.team-maintainer  -%} {%- endunless -%}
+{%- unless team-reviewers    -%} {%- assign team-reviewers    = page.team-reviewer    -%} {%- endunless -%}
+{%- unless team-contributors -%} {%- assign team-contributors = page.team-contributor -%} {%- endunless -%}
+
+{%- comment -%} ============= SECONDARY VALUES ============= {%- endcomment -%}
+
+{%- if artifact or pom-url -%}
+  {%- assign autopop = true -%}
+{%- else -%}
+  {%- assign autopop = false -%}
+{%- endif -%}
+
+{%- if icon or gravatar -%}
+  {%- capture image -%}
+    {%- if gravatar -%}
+      <img src="https://gravatar.com/avatar/{{gravatar}}">
+    {%- elsif icon -%}
+      <img src="{{icon}}">
+    {%- endif -%}
+  {%- endcapture -%}
+{%- endif -%}
+
+{%- assign name-or-loading = name -%}
+{%- unless name-or-loading -%}
+  {%- capture name-or-loading -%}
+    {%- if autopop -%}
+      Loading...
+    {%- endif -%}
+  {%- endcapture -%}
+{%- endunless -%}
+
+{%- capture header -%}
+<p id="statbox-image">{{image}}</p>
+<p id="statbox-name">
+  {%- if website -%}
+    <a href="{{website}}">{{name-or-loading}}</a>
+  {%- else -%}
+    {{name-or-loading}}
+  {%- endif -%}
+</p>
+{%- if honorific -%}
+<p id="statbox-honorific">
+<img src="/media/sparkles.png" width="16"> {{honorific}} <img src="/media/sparkles.png" width="16">
+</p>
+{%- endif -%}
+{%- if affiliation -%}
+<p id="statbox-affiliation">
+{%- for a in affiliation -%}
+{{- affiliation-divider -}}{%- assign affiliation-divider = '<br>' -%}
+{%- assign tokens = a | split: '|' -%}
+{%- if tokens.size == 2 -%}
+<a href="{{tokens[1] | strip}}">{{tokens[0] | strip}}</a>
+{%- else -%}
+{{a | strip}}
+{%- endif -%}
+{%- endfor -%}
+</p>
+{%- endif -%}
+{%- endcapture -%}
+
+{%- if autopop or source-url -%}
+  {%- unless source-label -%}
+    {%- capture source-label -%}
+      {%- if    {{source-url | truncate: 19}} == 'https://github.com/'      -%} on GitHub
+      {%- elsif {{source-url | truncate: 19}} == 'https://gitlab.com/'      -%} on GitLab
+      {%- elsif {{source-url | truncate: 22}} == 'https://bitbucket.org/'   -%} on BitBucket
+      {%- elsif {{source-url | truncate: 24}} == 'https://sourceforge.net/' -%} on SourceForge
+      {%- elsif {{source-url | truncate: 19}} == 'https://repo.or.cz/'      -%} on repo.or.cz
+      {%- elsif {{source-url}}                                              -%} online
+      {%- else                                                              -%} none
+      {%- endif -%}
+    {%- endcapture -%}
+  {%- endunless -%}
+{%- endif -%}
+
+{%- if autopop or team-founders or team-leads or team-developers or team-debuggers or team-reviewers or team-support or team-maintainers or team-contributors -%}
+{%- capture team %}
+      <details>
+        <summary style="text-align: center">{%- include tooltip text="Team" tooltip="The group of people who take responsibility for the project." left="-75px" width="180px" -%}</summary>
+        <table>
+{%- if autopop or team-founders -%}
+{%- include statbox/team-members title="Founders"
+                                 description="People who created the project. Does not imply any current participation or responsibility."
+                                 members=team-founders -%}
+{%- endif -%}
+{%- if autopop or team-leads -%}
+{%- include statbox/team-members title="Leads"
+                                 description="People responsible for making decisions about the project: timing of releases, inclusion of features, etc."
+                                 members=team-leads -%}
+{%- endif -%}
+{%- if autopop or team-developers -%}
+{%- include statbox/team-members title="Developers"
+                                 description="People responsible for adding new features or enhancements."
+                                 members=team-developers -%}
+{%- endif -%}
+{%- if autopop or team-debuggers -%}
+{%- include statbox/team-members title="Debuggers"
+                                 description="People responsible for fixing bugs."
+                                 members=team-debuggers -%}
+{%- endif -%} {%- if autopop or team-reviewers -%}
+{%- include statbox/team-members title="Reviewers"
+                                 description="People responsible for reviewing patch submissions."
+                                 members=team-reviewers -%}
+{%- endif -%}
+{%- if autopop or team-support -%}
+{%- include statbox/team-members title="Support"
+                                 description="People responsible for responding to community questions and issue reports."
+                                 members=team-support -%}
+{%- endif -%}
+{%- if autopop or team-maintainers -%}
+{%- include statbox/team-members title="Maintainers"
+                                 description="People responsible for maintaining the project: e.g., merging patch submissions and cutting releases."
+                                 members=team-maintainers -%}
+{%- endif -%}
+{%- if autopop or team-contributors -%}
+{%- include statbox/team-members title="Contributors"
+                                 description="People who contributed code to the project. Does not imply any current participation or responsibility."
+                                 members=team-contributors -%}
+{%- endif -%}
+        </table>
+      </details>
+{% endcapture -%}
+{%- endif -%}
+
+{%- if forum -%}
+{%- capture forum-url -%}
+https://forum.image.sc/u/{{forum}}
+{%- endcapture -%}
+{%- endif -%}
+
+{%- if github or stackoverflow or openhub -%}
+{%- capture person-developer -%}
+<ul>
+{%- if github -%}<li><a href="https://github.com/{{github}}">GitHub</a></li>{%- endif -%}
+{%- if stackoverflow -%}<li><a href="https://stackoverflow.com/users/{{stackoverflow}}">StackOverflow</a></li>{%- endif -%}
+{%- if openhub -%}<li><a href="https://openhub.net/accounts/{{openhub}}">Open Hub</a></li>{%- endif -%}
+</ul>
+{%- endcapture -%}
+{%- endif -%}
+
+{%- if twitter or linkedin or researchgate or loop -%}
+{%- capture person-social -%}
+<ul>
+{%- if twitter -%}<li><a href="https://twitter.com/{{twitter}}">Twitter</a></li>{%- endif -%}
+{%- if linkedin -%}<li><a href="https://www.linkedin.com/{{linkedin}}">LinkedIn</a></li>{%- endif -%}
+{%- if researchgate -%}<li><a href="https://www.researchgate.net/profile/{{researchgate}}">ResearchGate</a></li>{%- endif -%}
+{%- if loop -%}<li><a href="https://loop.frontiersin.org/people/{{loop}}">Loop</a></li>{%- endif -%}
+</ul>
+{%- endcapture -%}
+{%- endif -%}
+
+{%- if orcid or researcherid or scopus or arxiv or scholar -%}
+{%- capture person-publication -%}
+<ul>
+{%- if orcid -%}<li><a href="https://orcid.org/{{orcid}}">ORCID</a></li>{%- endif -%}
+{%- if researcherid -%}<li><a href="https://researcherid.com/rid/{{researcherid}}">ResearcherID</a></li>{%- endif -%}
+{%- if scopus -%}<li><a href="https://www.scopus.com/authid/detail.uri?authorId={{scopus}}">Scopus</a></li>{%- endif -%}
+{%- if arxiv -%}<li><a href="https://arxiv.org/a/{{arxiv}}">arXiv</a></li>{%- endif -%}
+{%- if scholar -%}<li><a href="https://scholar.google.com/citations?user={{scholar}}">Google Scholar</a></li>{%- endif -%}
+</ul>
+{%- endcapture -%}
+{%- endif -%}
+
+{%- if affiliation or website or
+       project or source-label or license-url or
+       release-url or release-date or dev-status or support-status or team or
+       forum or forum-tag or person-developer or person-social or person-publication -%}
+{%- assign show-statbox =  true-%}
+{%- endif -%}
+
+{%- if forum-tag -%}
+{% assign forum-tag = '<a rel="nofollow" href="https://forum.image.sc/tag/FORUM_TAG_VAL"><img alt="Image.sc forum" src="https://img.shields.io/badge/dynamic/json.svg?label=&url=https%3A%2F%2Fforum.image.sc%2Ftags%2FFORUM_TAG_VAL.json&query=%24.topic_list.tags.0.topic_count&colorB=brightgreen&suffix=%20topics&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAABPklEQVR42m3SyyqFURTA8Y2BER0TDyExZ+aSPIKUlPIITFzKeQWXwhBlQrmFgUzMMFLKZeguBu5y+//17dP3nc5vuPdee6299gohUYYaDGOyyACq4JmQVoFujOMR77hNfOAGM+hBOQqB9TjHD36xhAa04RCuuXeKOvwHVWIKL9jCK2bRiV284QgL8MwEjAneeo9VNOEaBhzALGtoRy02cIcWhE34jj5YxgW+E5Z4iTPkMYpPLCNY3hdOYEfNbKYdmNngZ1jyEzw7h7AIb3fRTQ95OAZ6yQpGYHMMtOTgouktYwxuXsHgWLLl+4x++Kx1FJrjLTagA77bTPvYgw1rRqY56e+w7GNYsqX6JfPwi7aR+Y5SA+BXtKIRfkfJAYgj14tpOF6+I46c4/cAM3UhM3JxyKsxiOIhH0IO6SH/A1Kb1WBeUjbkAAAAAElFTkSuQmCC"></a>' | replace: 'FORUM_TAG_VAL', forum-tag %}
+{%- endif -%}
+
+{%- comment -%} ================ JAVASCRIPT ================ {%- endcomment -%}
+{%- if autopop -%}
+<script src="/assets/js/maven.js"></script>
+<script>
+function refreshComponent() {
+  var statboxName = document.getElementById('statbox-name');
+  if (statboxName) statboxName.innerHTML = 'Reloading...';
+  {% if artifact -%}
+  fillStatsFromArtifact('{{artifact}}', '{{repository}}');
+  {%- elsif pom-url -%}
+  fillStatsFromURL('{{pom-url}}');
+  {%- endif %}
+}
+refreshComponent();
+</script>
+{%- endif -%}
+
+{%- comment -%} ========== HEADER + GENERAL INFO ==========  {%- endcomment -%}
+{%- if show-statbox -%}
+<div id="statbox" class="dockable" style="position: relative;">
+<h3>Vital statistics</h3>
+<div class="drag-handle"></div>
+<button class="btn-refresh" onclick="refreshComponent()"><i class="fa fa-sync" style="pointer-events: none;"></i></button>
+<table>
+{%- include statbox/row id="statbox-header" value=header -%}
+
+{%- comment -%} ============== COMPONENT INFO ============== {%- endcomment -%}
+{%- comment -%} TODO: Infer project from groupId. {%- endcomment -%}
+{%- comment -%} TODO: Add support for licenseName, projectName, copyrightOwners. {%- endcomment -%}
+{%- if autopop or source-label   -%} {%- include statbox/row id="component-source"         label="Source"  url=source-url  value=source-label    -%} {%- endif -%}
+{%- if autopop or license-url    -%} {%- include statbox/row id="component-license"        label="License" url=license-url value=license-label   -%} {%- endif -%}
+{%- if autopop or release-url    -%} {%- include statbox/row id="component-release"        label="Release" url=release-url value=release-version -%} {%- endif -%}
+{%- if autopop or release-date   -%} {%- include statbox/row id="component-date"           label="Date"                    value=release-date    -%} {%- endif -%}
+{%- if autopop or dev-status     -%} {%- include statbox/row id="component-dev-status"     label="Development status"      value=dev-status      -%} {%- endif -%}
+{%- if autopop or support-status -%} {%- include statbox/row id="component-support-status" label="Support status"          value=support-status  -%} {%- endif -%}
+{%- if forum-tag                 -%} {%- include statbox/row id="component-forum-tag"      label="Discussion"              value=forum-tag       -%} {%- endif -%}
+{%- if team                      -%} {%- include statbox/row id="component-team"                                           value=team            -%} {%- endif -%}
+
+{%- comment -%} =============== PERSON INFO ================ {%- endcomment -%}
+{%- if forum              -%} {%- include statbox/row id="person-forum"       label="Image.sc Forum" value=forum url=forum-url -%} {%- endif -%}
+{%- if person-developer   -%} {%- include statbox/row id="person-developer"   label="Developer"      value=person-developer    -%} {%- endif -%}
+{%- if person-social      -%} {%- include statbox/row id="person-social"      label="Social"         value=person-social       -%} {%- endif -%}
+{%- if person-publication -%} {%- include statbox/row id="person-publication" label="Publication"    value=person-publication  -%} {%- endif -%}
+
+{%- comment -%} ================== FOOTER ================== {%- endcomment -%}
+</table>
+</div>
+{%- endif -%}
+
+{%- comment -%}
+# vi:syntax=liquid
+{%- endcomment -%}

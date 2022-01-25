@@ -1,0 +1,208 @@
+---
+# This is a Sass file. Jekyll will compile it to plain CSS.
+---
+
+/*
+ * Responsive timeline v4: pure CSS
+ * Copyright (c) 2021 by Clay Larson (https://codepen.io/cjl750/pen/MXvYmg)
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+
+$numDots: 20
+$parentWidthBase: 0.8
+$parentWidth: $parentWidthBase * 100vw
+$parentMaxWidth: 1000px
+$dotWidth: 25px
+$active: #2C3E50
+$inactive: #AEB6BF
+$sidebarShadowSize: 4px
+
+.timeline
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  background: #eee
+  box-shadow: $sidebarShadowSize $sidebarShadowSize $sidebarShadowSize lightgray
+  padding: 1em 3em 1em 1em
+.timeline .timeline-input-flex-container
+  display: flex
+  justify-content: space-around
+  align-items: center
+  flex-wrap: wrap
+  width: 100%
+  position: relative
+  z-index: 0
+  margin-left: calc((#{$parentWidth} - #{$dotWidth}) / #{$numDots} - 20px) //make up for offset of .timeline-dot-info
+  padding-top: 8em
+.timeline input
+  width: $dotWidth
+  height: $dotWidth
+  background-color: $active
+  position: relative
+  border-radius: 50%
+  display: block
+  -moz-appearance: none
+  -webkit-appearance: none
+  appearance: none
+  cursor: pointer
+  &:focus
+    outline: none
+  &::before, &::after
+    content: ''
+    display: block
+    position: absolute
+    z-index: -1
+    top: 50%
+    transform: translateY(-50%)
+    background-color: $active
+    width: $parentWidth / $numDots
+    height: 5px
+    max-width: $parentMaxWidth / $numDots
+  &::before
+    left: calc(#{-$parentWidth / $numDots} + #{$dotWidth / 2})
+  &::after
+    right: calc(#{-$parentWidth / $numDots} + #{$dotWidth / 2})
+  &:checked
+    background-color: $active
+    &::before
+      background-color: $active
+    &::after
+      background-color: $inactive
+  &:checked
+    ~ input
+      &, &::before, &::after
+        background-color: $inactive
+    + .timeline-dot-info
+      span
+        font-size: 13px
+        font-weight: bold
+
+.timeline .timeline-dot-info
+  width: $dotWidth
+  height: $dotWidth
+  display: block
+  visibility: hidden
+  position: relative
+  z-index: -1
+  //position each span on top of the dot immediately before it; -1px at the end is just fudging the numbers for rounding error
+  left: calc((((#{$parentWidth} - #{$dotWidth}) / #{$numDots}) * -1) - 1px)
+  span
+    visibility: visible
+    position: absolute
+    font-size: 12px
+    &.year
+      bottom: -30px
+      left: calc(50% + 20px)
+      transform: translateX(calc(-50% - 20px))
+    &.label
+      top: -6.5em
+      transform: rotateZ(-60deg)
+      width: 10em
+      text-indent: -10px
+      white-space: nowrap
+
+.timeline .timeline-descriptions-wrapper
+  width: 100%
+  margin-top: 40px
+  margin-left: calc((-#{$parentWidth} - #{$dotWidth}) / #{$numDots}) //make up for offset of .dot-info
+  p
+    margin-top: 0
+    display: none
+    text-align: center
+
+@media (min-width: $parentMaxWidth / $parentWidthBase)
+  .timeline .timeline-input-flex-container
+    margin-left: #{($parentMaxWidth / $numDots) + ($dotWidth / 2)}
+  .timeline input
+    &::before
+      left: #{-($parentMaxWidth / $numDots) + ($dotWidth / 2)}
+    &::after
+      right: #{-($parentMaxWidth / $numDots) + ($dotWidth / 2)}
+  .timeline .timeline-dot-info
+    left: calc((((#{$parentMaxWidth} - #{$dotWidth}) / #{$numDots}) * -1) - 1px)
+  .timeline .timeline-descriptions-wrapper
+    margin-left: #{-($parentMaxWidth / $numDots) + ($dotWidth / 2)}
+
+
+@media (max-width: 879px)
+  .timeline
+    justify-content: initial
+  .timeline .timeline-input-flex-container
+    flex-wrap: wrap
+    justify-content: center
+    width: 400px
+    height: auto
+    margin-top: 15vh
+    margin-left: 0
+    padding-bottom: 30px
+  .timeline input, .timeline-dot-info
+    width: 60px
+    height: 60px
+    margin: 0 10px 50px
+  .timeline input
+    background-color: transparent !important
+    z-index: 1
+    &::before, &::after
+      content: none
+    &:checked
+      + .timeline-dot-info
+        background-color: $active
+        span
+          &.year
+            font-size: 14px
+          &.label
+            font-size: 12px
+  .timeline .timeline-dot-info
+    visibility: visible
+    border-radius: 50%
+    z-index: 0 // position behind input, so input remains clickable
+    left: 0
+    margin-left: -70px
+    background-color: $inactive
+    span
+      &.year
+        top: 0
+        left: 0
+        transform: none
+        width: 100%
+        height: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+        color: #ECF0F1
+      &.label
+        top: calc(100% + 5px)
+        left: 50%
+        transform: translateX(-50%)
+        text-indent: 0
+        text-align: center
+  .timeline .timeline-descriptions-wrapper
+    margin-top: 30px
+    margin-left: 0
+    text-align: center
+
+@media (max-width: 480px)
+  .timeline .timeline-input-flex-container
+    width: 340px
+
+@media (max-width: 400px)
+  .timeline .timeline-input-flex-container
+    width: 300px

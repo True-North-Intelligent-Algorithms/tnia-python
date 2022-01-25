@@ -1,0 +1,50 @@
+/* Adapted from: https://jsfiddle.net/a6tgy9so/1/ */
+
+.drag-handle {
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 0;
+  left: 0;
+  margin-left: 5px;
+  margin-top: 5px;
+  border-right: 10px solid transparent;
+  border-top: 10px solid black;
+  cursor: move;
+}
+
+.dockable {
+  /* Needed in Chrome for drag handles to be placed correctly. */
+  position: relative;
+}
+
+.dock-overlay {
+  opacity: 0.2;
+  display: none;
+  z-index: 1;
+  position: absolute;
+  width: 260px;
+  height: 5000vh;
+  top: 60px;
+  bottom: 0;
+}
+
+#dock-overlay-left {
+  left: 0;
+  right: auto;
+}
+
+#dock-overlay-right {
+  left: auto;
+  right: 0;
+}
+
+.drag-active {
+  outline: 3px dotted #666;
+  box-sizing: border-box;
+  background: lightgray;
+}
+
+.drag-over {
+  background: yellow;
+}

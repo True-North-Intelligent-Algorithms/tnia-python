@@ -15,11 +15,38 @@
   <header class="w3-display-container w3-content w3-wide" style="max-width:1500px;" id="home">
     <img class="w3-image" src="{{site.baseurl}}/images/logo.jpeg" alt="Image missing" width="300" height="100">
     <div class="w3-display-middle w3-margin-top w3-center">
-    <h1 class="w3-xxlarge w3-text-white"><span class="w3-padding w3-black w3-opacity-min"><b>TNIA-Python</b></span></h1>
+    <!--<h1 class="w3-xxlarge w3-text-white"><span class="w3-padding w3-black w3-opacity-min"><b>TNIA-Python</b></span></h1>-->
+    <h1><b>TNIA-Python</b></h1>
   </div>
 </header>
-   
 </div>
-    {{ content }}
+
+    <section id="left-column" class="sidebar dock">
+      <!-- Menu -->
+      {% include menu dockable=true %}
+    </section>
+
+
+  <section id="right-column" class="sidebar dock">
+
+    {% include layout/statbox %}
+
+    <div id="toc" class="toc menu dockable">
+      <div class="drag-handle"></div>
+      <h3>Page contents</h3>
+      <ul data-toc="#content" data-toc-headings="h1,h2,h3,h4,h5,h6"></ul>
+    </div>
+  </section>
+
+<!-- Main content -->
+    <section id="page" class="main style1">
+      <div class="container">
+        <div class="box alt"></div>
+        <div id="content" class="page-content">
+          {{content}}
+        </div>
+      </div>
+    </section>
+     {% include scripts %} 
   </body>
 </html>
