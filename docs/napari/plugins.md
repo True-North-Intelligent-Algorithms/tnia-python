@@ -1,3 +1,7 @@
+---
+layout: basic
+---
+
 # Napari Plugins
 
 ## add a dock widget plugin

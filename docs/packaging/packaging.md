@@ -1,3 +1,7 @@
+---
+layout: basic
+---
+
 # Packaging 
 
 A good overview of packaging is [here](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
