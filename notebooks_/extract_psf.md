@@ -1,4 +1,5 @@
 ---
+layout: basic
 title: Reverse Deconvolution
 ---
 
