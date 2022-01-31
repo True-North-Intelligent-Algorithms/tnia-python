@@ -12,7 +12,7 @@ setup(name='tnia-python',
       zip_safe=False,
       package_data = {'tnia-python':['napari.yaml']},
       entry_points={
-        'napari.plugin': ['Napari Test = tnia.napari.napari_demo', 'Designer Test = tnia.napari.qtdesigner_demo'],
-        'napari.manifest': ['tnia-python = tnia.napari.napari_npe2:napari.yaml']
+        'napari.plugin': ['Napari Test = tnia.napari.napari_demo'],
+        'napari.manifest': ['tnia-python = tnia.napari:napari.yaml']
       },
 )
