@@ -55,6 +55,19 @@
     <string>Adaptive</string>
    </property>
   </widget>
+  <widget class="QSlider" name="sliderThreshold">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>150</y>
+     <width>160</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

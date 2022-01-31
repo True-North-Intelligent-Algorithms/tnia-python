@@ -22,6 +22,10 @@ class Ui_Form(object):
         self.radioButtonAdaptive = QtWidgets.QRadioButton(Form)
         self.radioButtonAdaptive.setGeometry(QtCore.QRect(140, 60, 82, 17))
         self.radioButtonAdaptive.setObjectName("radioButtonAdaptive")
+        self.sliderThreshold = QtWidgets.QSlider(Form)
+        self.sliderThreshold.setGeometry(QtCore.QRect(100, 150, 160, 22))
+        self.sliderThreshold.setOrientation(QtCore.Qt.Horizontal)
+        self.sliderThreshold.setObjectName("sliderThreshold")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
