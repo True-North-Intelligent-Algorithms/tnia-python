@@ -71,6 +71,9 @@ def psf_from_beads(bead_image, background_factor=1.25):
     #from skimage.restoration import richardson_lucy
     im_32=bead_image.astype('float32')
     centroids_32=centroids.astype('float32')
+    centroids_32 = centroids_32+0.0000001
+    centroids_32 = centroids_32/centroids_32.sum()
+    #centroids_32 = centroids_+0.0000001
     print('call skimage rl')
     psf=richardson_lucy(im_32, centroids_32, 200)
 
