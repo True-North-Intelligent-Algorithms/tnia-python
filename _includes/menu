@@ -16,7 +16,6 @@
             
             {% include section title="Packaging" link="/packaging" %}
                 <li><a href="{{ site.baseurl }}/docs/packaging/packaging">Packaging Notes</a></li>
-                <li><a href="/platforms/android">Android</a></li>
             {% include section-end %} 
  
             {% include section title="Example Tests" link="/" %}
@@ -25,15 +24,11 @@
 
             {% include section title="Web" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/web/convert_notebook">Convert Notebook to markdown</a></li>
-                <li><a href="/platforms/android">Android</a></li>
             {% include section-end %} 
             
             {% include section title="Notebooks" link="/" %}
                 <li><a href="{{ site.baseurl }}/notebooks_/extract_psf">Extract PSF</a></li>
-                <li><a href="/platforms/android">Android</a></li>
             {% include section-end %} 
-
-
 
         </ul>
       </div>
