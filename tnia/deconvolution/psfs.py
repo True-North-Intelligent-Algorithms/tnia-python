@@ -76,8 +76,25 @@ def psf_from_beads(bead_image, background_factor=1.25):
     #centroids_32 = centroids_+0.0000001
     print('call skimage rl')
     psf=richardson_lucy(im_32, centroids_32, 200)
+    psf=psf/psf.sum()
 
-    return psf
+    return psf, im_32, centroids_32
 
+def gaussian_3d(xy_dim, z_dim, xy_sigma, z_sigma):
+    muu = 0.0
+    gauss = np.empty([z_dim,xy_dim,xy_dim])
+    x_, y_, z_ = np.meshgrid(np.linspace(-10,10,xy_dim), np.linspace(-10,10,xy_dim), np.linspace(-10,10,z_dim))
+    for x in range(xy_dim):
+        for y in range(xy_dim):
+            for z in range(z_dim):
+                tx=x_[x,y,z]
+                ty=y_[x,y,z]
+                tz=z_[x,y,z]
+            
+                gauss[z,y,x]=np.exp(-( (tx-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )*np.exp(-( (ty-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )*np.exp(-( (tz-muu)**2 / ( 2.0 * z_sigma**2 ) ) )
 
+    gauss=gauss+0.000000000001
+    gauss=gauss/gauss.sum()
+
+    return gauss
 
