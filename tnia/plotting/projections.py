@@ -33,7 +33,7 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
         sz (float, optional): z pixel size of 3D. Defaults to 1.
     """
  
-    slice_zy = np.rot90(image_to_show[:,:,x],3)
+    slice_zy = np.flip(np.rot90(image_to_show[:,:,x],1),0)
     slice_xz = image_to_show[:,y,:]
     slice_xy = image_to_show[z,:,:]
 
@@ -48,7 +48,7 @@ def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10)):
         sz (float, optional): z pixel size of 3D. Defaults to 1.
     """
     projection_y = np.max(image_to_show,1)
-    projection_x = np.rot90(np.max(image_to_show,2),3)
+    projection_x = np.flip(np.rot90(np.max(image_to_show,2),1),0)
     projection_z = np.max(image_to_show,0)
 
     return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize)
