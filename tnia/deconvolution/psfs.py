@@ -3,6 +3,8 @@ import numpy as np
 from skimage.filters import threshold_otsu
 from numpy.fft import ifftn, ifftshift, fftshift
 from tnia.segmentation.rendering import draw_centroids 
+from skimage.filters import median
+from skimage.morphology import cube
 
 def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
     m_params = msPSF.m_params
@@ -50,18 +52,21 @@ def paraxial_psf(n, wavelength, numerical_aperture, pixel_size):
     psf = fftshift(ifftn(ifftshift(otf)).astype(np.float32))
     return psf/psf.sum()
 
-def psf_from_beads(bead_image, background_factor=1.25):
+def psf_from_beads(bead_image, background_factor=1.25, apply_median=False):
     """ Extracts a PSF from a bead image using reverse deconvolution (a.k.a. PSF Distilling)
 
     Args:
         bead_image (numpy array): an image of a field of sub-resolution beads
         background_factor (float, optional): Used to modulate background subtraction. Defaults to 1.25.
-
+        apply_media (bool, optional): Apply a median filter, use if noise is being segmented as beads
     Returns:
         [numpy array]: the PSF
     """
     bead_image=bead_image-background_factor*bead_image.mean()
     bead_image[bead_image<=0]=.1
+
+    if (apply_median==True):
+        bead_image = median(bead_image, cube(3))
 
     thresholded = bead_image>threshold_otsu(bead_image)
 
