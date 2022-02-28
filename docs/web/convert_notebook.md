@@ -18,3 +18,7 @@ Note:  In the notebook need to go to edit->Edit Notebook Metadata and add the fo
     "title": "Title"
   }
 ```
+
+## Add to menu
+
+Go to '_includes/menu' and add the new notebook to the Notebooks section menu
