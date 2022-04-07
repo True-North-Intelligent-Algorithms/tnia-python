@@ -93,6 +93,7 @@ def applymap_zcyx(img, transform, transform_channel):
     aligned = np.zeros(img.shape, 'float32')
     
     for i in range(0,img.shape[0]):
+        print('registering frame',i)
         for c in range(0,img.shape[1]):
         
             if transform_channel[c]==0:
