@@ -5,20 +5,30 @@ from numpy.fft import ifftn, ifftshift, fftshift
 from tnia.segmentation.rendering import draw_centroids 
 from skimage.filters import median
 from skimage.morphology import cube
+from sdeconv.deconv import PSFGibsonLanni
 
 def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
+    gl = PSFGibsonLanni((z_size, xy_size, xy_size),1000*voxel_size_xy, 1000*voxel_size_z, NA, 1000*wvl, ni, ns)
+    return gl.run()
+
+def gibson_lanni_3D_old(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
     m_params = msPSF.m_params
     m_params['NA']=NA
     m_params['ni']=ni
     m_params['ni0']=ni
     m_params['ns']=ns
 
-    zv = np.arange(-z_size*voxel_size_z/2, z_size*voxel_size_z/2, voxel_size_z)
+    zv = np.zeros(z_size)
+
+    start = -(z_size-1)*voxel_size_z/2.
+
+    for z in range(z_size):
+        zv[z]=start+z*voxel_size_z
 
     psf = msPSF.gLXYZFocalScan(m_params, voxel_size_xy, xy_size, zv, True, pz, wvl)
     psf = psf/psf.sum()
 
-    return psf
+    return psf, zv
 
 def paraxial_otf(n, wavelength, numerical_aperture, pixel_size):
     '''
