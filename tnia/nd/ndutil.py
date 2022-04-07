@@ -1,5 +1,13 @@
 import numpy as np
 
+def centercrop(im, shape):
+    startz=int(im.shape[0]/2)-int(shape[0]/2)
+    starty=int(im.shape[1]/2)-int(shape[1]/2)
+    startx=int(im.shape[2]/2)-int(shape[2]/2)
+
+    return im[startz:startz+shape[0],starty:starty+shape[1],startx:startx+shape[2]]
+
+
 def makergb(r,g,b):
     """given 2d r, g and b numpy arrays combine into one rgb array
 
