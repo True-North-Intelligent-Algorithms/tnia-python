@@ -24,6 +24,20 @@ def show_xyz_max_clij(image_to_show, labels=False):
     ax1.imshow(projection_x)
     ax2.imshow(projection_y)
 
+def show_xy_yz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
+    """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
+
+    Args:
+        image_to_show (3d numpy array): image to plot
+        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
+        sz (float, optional): z pixel size of 3D. Defaults to 1.
+    """
+ 
+    slice_zy = np.flip(np.rot90(image_to_show[:,:,x],1),0)
+    slice_xy = image_to_show[z,:,:]
+
+    return show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize)
+
 def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
     """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
 
@@ -38,6 +52,7 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
     slice_xy = image_to_show[z,:,:]
 
     return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize)
+
 
 def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10)):
     show_xyz_projection(image_to_show, sxy, sz, figsize, np.max)
@@ -106,7 +121,7 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10)):
 
     return fig
 
-    
+
 # Copyright tnia 2021 - BSD License
 def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3)):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
