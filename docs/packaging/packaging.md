@@ -20,7 +20,14 @@ Note:  Data_files may be depracated, thus more research is needed into this topi
 
 ## Generating distribution archives
 
+You may need to install build, if it's not there already
+
+```
+pip install build
+```
+
 Go to the directory with setup.py in it and run
+
 
 ```
 python -m build
