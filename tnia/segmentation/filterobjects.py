@@ -23,3 +23,49 @@ def find_circular_objects(image, label_image, min_area, min_intensity, min_circu
             label_image_filtered[label_image_filtered==obj.label]=0
 
     return label_image_filtered
+
+def find_solid_objects(image, label_image, min_area, min_intensity, min_solidity):
+    """ filters dim, small and non-sol;id objects and keeps bright, large and solid objects 
+
+    Args:
+        image (np array): original intensity image which objects were segmented from
+        label_image (np array):  segmented objects labeled with integer indexes
+        max_area (number): min area to keep 
+        max_intensity (number): min intesnity to keep
+        max_solidity (number): min solidity to keep (solidity goes from 0 to 1, closer to 1 is more solid)
+
+    Returns:
+        [np array]: label image with filtered labels set to zero
+    """
+    object_list=regionprops(label_image,image)
+    label_image_filtered=np.zeros_like(label_image)
+
+    for obj in object_list:
+        
+        if obj.solidity < min_solidity or obj.area < min_area or obj.mean_intensity<min_intensity:
+            label_image_filtered[label_image_filtered==obj.label]=0
+
+    return label_image_filtered
+
+def find_large_objects(image, label_image, min_area):
+    """ filters small objects and keeps large objects 
+
+    Args:
+        image (np array): original intensity image which objects were segmented from
+        label_image (np array):  segmented objects labeled with integer indexes
+        max_area (number): min area to keep 
+
+    Returns:
+        [np array]: label image with filtered labels set to zero
+    """
+
+    object_list=regionprops(label_image)
+    import numpy as np
+    label_image_filtered=np.zeros_like(label_image)
+
+    for obj in object_list:
+        
+        if obj.area > min_area:
+            label_image_filtered[label_image==obj.label]=1
+
+    return label_image_filtered
