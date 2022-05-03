@@ -1,5 +1,11 @@
 import numpy as np
 
+def centercrop2d(im, shape):
+    starty=int(im.shape[0]/2)-int(shape[0]/2)
+    startx=int(im.shape[1]/2)-int(shape[1]/2)
+
+    return im[starty:starty+shape[0],startx:startx+shape[1]]
+
 def centercrop(im, shape):
     startz=int(im.shape[0]/2)-int(shape[0]/2)
     starty=int(im.shape[1]/2)-int(shape[1]/2)
