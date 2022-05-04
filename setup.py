@@ -10,9 +10,9 @@ setup(name='tnia-python',
       packages=find_packages(),
       #install_requires=['napari-plugin-engine','SimpleITK-SimpleElastix', 'pyclesperanto-prototype', 'napari[all]','rawpy','python-bioformats'],
       zip_safe=False,
-      package_data = {'tnia-python':['napari.yaml']},
-      entry_points={
-        'napari.plugin': ['Napari Test = tnia.napari.napari_demo'],
-        'napari.manifest': ['tnia-python = tnia.napari:napari.yaml']
-      },
+      #package_data = {'tnia-python':['napari.yaml']},
+      #entry_points={
+      #  'napari.plugin': ['Napari Test = tnia.napari.napari_demo'],
+      #  'napari.manifest': ['tnia-python = tnia.napari:napari.yaml']
+      #},
 )
