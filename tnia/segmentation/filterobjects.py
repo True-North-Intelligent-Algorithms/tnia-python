@@ -25,7 +25,7 @@ def find_circular_objects(image, label_image, min_area, min_intensity, min_circu
     return label_image_filtered
 
 def find_solid_objects(image, label_image, min_area, min_intensity, min_solidity):
-    """ filters dim, small and non-sol;id objects and keeps bright, large and solid objects 
+    """ filters dim, small and non-solid objects and keeps bright, large and solid objects 
 
     Args:
         image (np array): original intensity image which objects were segmented from
