@@ -13,10 +13,12 @@ def connect_2d_in_3d(labeled, threshold):
     """
     relabeled=[labeled[0,:,:]]
     for i in range(1,labeled.shape[0]):
-        print(i)
+        print(i,end=' ')
         previous=relabeled[i-1]
         current=labeled[i,:,:]
         relabeled.append(connect_labels(previous, current, 10))
+
+    return np.stack(relabeled)
 
 def connect_labels(previousImage, currentImage, threshold):
     """_summary_
