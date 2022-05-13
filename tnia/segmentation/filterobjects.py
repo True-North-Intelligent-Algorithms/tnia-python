@@ -1,5 +1,6 @@
 from skimage.measure import regionprops
 import math
+import numpy as np
 
 def find_circular_objects(image, label_image, min_area, min_intensity, min_circularity):
     """ filters dim, small and non-circular objects and keeps bright, large and circular objectgs 
@@ -18,7 +19,8 @@ def find_circular_objects(image, label_image, min_area, min_intensity, min_circu
     label_image_filtered=label_image.copy()
 
     for obj in object_list:
-        circularity = 4*math.pi*(obj.area/obj.perimeter**2)    
+
+        circularity = (4*math.pi*obj.area)/(obj.perimeter**2)
         if circularity < min_circularity or obj.area < min_area or obj.mean_intensity<min_intensity:
             label_image_filtered[label_image_filtered==obj.label]=0
 
@@ -38,7 +40,7 @@ def find_solid_objects(image, label_image, min_area, min_intensity, min_solidity
         [np array]: label image with filtered labels set to zero
     """
     object_list=regionprops(label_image,image)
-    label_image_filtered=np.zeros_like(label_image)
+    label_image_filtered=label_image.copy()
 
     for obj in object_list:
         
@@ -69,3 +71,16 @@ def find_large_objects(image, label_image, min_area):
             label_image_filtered[label_image==obj.label]=1
 
     return label_image_filtered
+
+def filter_flat_objects(label_image, min_depth):
+    object_list=regionprops(label_image)
+    label_image_filtered=np.zeros_like(label_image)
+
+    for obj in object_list:
+        if obj.bbox[3]-obj.bbox[0]>min_depth:
+            for c in obj.coords:
+                label_image_filtered[c[0],c[1],c[2]]=obj.label
+
+
+    return label_image_filtered
+
