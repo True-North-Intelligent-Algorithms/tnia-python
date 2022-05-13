@@ -16,7 +16,7 @@ def connect_2d_in_3d(labeled, threshold):
         print(i,end=' ')
         previous=relabeled[i-1]
         current=labeled[i,:,:]
-        relabeled.append(connect_labels(previous, current, 10))
+        relabeled.append(connect_labels(previous, current, threshold))
 
     return np.stack(relabeled)
 
@@ -59,10 +59,12 @@ def connect_labels(previousImage, currentImage, threshold):
                       previouspoint = tree.query(index)
                       #print(f"prviouspoint {previouspoint}")
                       previouslabel = previousImage[int(indices[previouspoint[1]][0]), int(indices[previouspoint[1]][1])]
+                      #print()
                       #print(f"previouslabels {previouslabel}")
                       #hjkhkj
                       if previouspoint[0] > threshold:
                              relabelimage[np.where(currentImage == currentlabel)] = currentlabel
                       else:
+                             #print('match', previouspoint, 'threshold', threshold)
                              relabelimage[np.where(currentImage == currentlabel)] = previouslabel
     return relabelimage 
