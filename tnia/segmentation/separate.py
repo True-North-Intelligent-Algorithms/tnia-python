@@ -28,7 +28,7 @@ def separate_touching(segmented, min_distance, num_erosions):
     #eroded = erosion(closed, disk(2))
     distance = ndi.distance_transform_edt(segmented)
     coords = peak_local_max(distance, min_distance=min_distance, exclude_border=False)
-    print(coords.shape)
+    #print(coords.shape)
     mask = np.zeros(distance.shape, dtype=bool)
     mask[tuple(coords.T)] = True
     markers, _ = ndi.label(mask)
@@ -68,7 +68,8 @@ def separate_touching2(im, segmented, min_distance, spot_sigma, distance_sigma):
     blurred_distance = gaussian(im, distance_sigma)
     binary_distance = blurred_distance>threshold_otsu(blurred_distance)
  
-    fill_holes_3d_slicer(binary_distance)
+    # TODO:  Address fill holes step, only valid for 3D
+    #fill_holes_3d_slicer(binary_distance)
     
     distance = ndi.distance_transform_edt(binary_distance)
 
