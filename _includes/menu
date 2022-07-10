@@ -31,7 +31,7 @@
             {% include section-end %} 
        
             {% include section title="VS Code" link="/" %}
-                <li><a href="{{ site.baseurl }}/docs/vscode/settings.md">Settings</a></li>
+                <li><a href="{{ site.baseurl }}/docs/vscode/settings">Settings</a></li>
             {% include section-end %} 
 
 
