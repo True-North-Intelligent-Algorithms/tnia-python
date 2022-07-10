@@ -29,6 +29,11 @@
             {% include section title="Notebooks" link="/" %}
                 <li><a href="{{ site.baseurl }}/notebooks_/extract_psf">Extract PSF</a></li>
             {% include section-end %} 
+       
+            {% include section title="VS Code" link="/" %}
+                <li><a href="{{ site.baseurl }}/docs/vscode/settings.md">Extract PSF</a></li>
+            {% include section-end %} 
+
 
         </ul>
       </div>
