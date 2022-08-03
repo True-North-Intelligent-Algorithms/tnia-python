@@ -55,7 +55,7 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
 
 
 def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10)):
-    show_xyz_projection(image_to_show, sxy, sz, figsize, np.max)
+    return show_xyz_projection(image_to_show, sxy, sz, figsize, np.max)
  
 def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10)):
     show_xyz_projection(image_to_show, sxy, sz, figsize, np.sum)
