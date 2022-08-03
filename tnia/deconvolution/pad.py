@@ -51,7 +51,7 @@ def next_smooth(x):
     return -1
 
 def get_next_smooth(size):
-    """ for an nd tuble compute the next smooth size for each element
+    """ for an nd tuple compute the next smooth size for each element
 
     Args:
         size ([type]): nd input tuple 
@@ -87,7 +87,7 @@ def pad(img, paddedsize, mode):
         [nd array]: padded image
     """
     padding = tuple(map(lambda i,j: ( math.ceil((i-j)/2), math.floor((i-j)/2) ),paddedsize,img.shape))
-    return np.pad(img, padding,mode)
+    return np.pad(img, padding,mode), padding
 
 def unpad(padded, imgsize):
     """ crop padded back to imgsize
