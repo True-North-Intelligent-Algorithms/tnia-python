@@ -5,11 +5,37 @@ from numpy.fft import ifftn, ifftshift, fftshift
 from tnia.segmentation.rendering import draw_centroids 
 from skimage.filters import median
 from skimage.morphology import cube
-from sdeconv.deconv import PSFGibsonLanni
+import sdeconv
 
 def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
-    gl = PSFGibsonLanni((z_size, xy_size, xy_size),1000*voxel_size_xy, 1000*voxel_size_z, NA, 1000*wvl, ni, ns)
-    return gl.run()
+    """[summary]
+        Generates and returns a Gibson Lanni PSF using the sdeconv library
+
+        The function checks the version of sdeconv installed and uses the older implementation
+        PSFGibsonLanni if major version is '0', or newer (PyTorch based) version if major version is '1'.
+
+    """
+    version_list=sdeconv.__version__.split('.')
+    
+    if version_list[0] == '0':
+        print('sdeconv 1.x.x detected')
+        from sdeconv.deconv import PSFGibsonLanni
+        gl = PSFGibsonLanni((z_size, xy_size, xy_size),1000*voxel_size_xy, 1000*voxel_size_z, NA, 1000)
+        return gl.run()
+    elif version_list[0] == '1':
+        print('sdeconv 1.x.x detected')
+        from sdeconv.psfs import SPSFGibsonLanni
+
+        gl = SPSFGibsonLanni((z_size, xy_size, xy_size), NA=NA, ni=ni, ns=ns, res_lateral=voxel_size_xy, res_axial=voxel_size_z, wavelength=wvl, pZ=pz)
+        psf=gl()
+        print(psf.shape)
+        print(type(psf))
+        psf_=psf.cpu()
+        psf= psf_.numpy()
+        print(type(psf_))
+        psf=psf/psf.sum()
+
+        return psf
 
 def gibson_lanni_3D_old(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
     m_params = msPSF.m_params
