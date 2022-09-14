@@ -84,3 +84,15 @@ def filter_flat_objects(label_image, min_depth):
 
     return label_image_filtered
 
+def filter_objects_zlocation(label_image, start_z, end_z):
+    object_list=regionprops(label_image)
+    label_image_filtered=np.zeros_like(label_image)
+
+    for obj in object_list:
+        if obj.centroid[0]>=start_z and obj.centroid[0]<=end_z:
+            for c in obj.coords:
+                label_image_filtered[c[0],c[1],c[2]]=obj.label
+
+
+    return label_image_filtered
+
