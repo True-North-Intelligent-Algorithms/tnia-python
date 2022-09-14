@@ -7,7 +7,7 @@ from skimage.filters import median
 from skimage.morphology import cube
 import sdeconv
 
-def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
+def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False):
     """[summary]
         Generates and returns a Gibson Lanni PSF using the sdeconv library
 
@@ -21,22 +21,22 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
         print('sdeconv 1.x.x detected')
         from sdeconv.deconv import PSFGibsonLanni
         gl = PSFGibsonLanni((z_size, xy_size, xy_size),1000*voxel_size_xy, 1000*voxel_size_z, NA, 1000)
-        return gl.run()
+        psf = gl.run()
     elif version_list[0] == '1':
         print('sdeconv 1.x.x detected')
         from sdeconv.psfs import SPSFGibsonLanni
 
         gl = SPSFGibsonLanni((z_size, xy_size, xy_size), NA=NA, ni=ni, ns=ns, res_lateral=voxel_size_xy, res_axial=voxel_size_z, wavelength=wvl, pZ=pz)
         psf=gl()
-        print(psf.shape)
-        print(type(psf))
         psf_=psf.cpu()
         psf= psf_.numpy()
-        print(type(psf_))
-        psf=psf/psf.sum()
-
-        return psf
-
+    
+    psf = psf.astype('float32')
+    if (confocal):
+        psf=psf*psf
+    psf = psf/psf.sum()
+    return psf
+     
 def gibson_lanni_3D_old(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
     m_params = msPSF.m_params
     m_params['NA']=NA
