@@ -9,7 +9,10 @@
         <ul>
 
         <li><a href="https://github.com/True-North-Intelligent-Algorithms/tnia-python">Github</a></li>
-
+            {% include section title="Command Line" link="/commandline" %}
+              <li><a href="{{ site.baseurl }}/docs/commandline/grep">Grep Hints</a></li>
+            {% include section-end %} 
+            
             {% include section title="Napari" link="/napari" %}
               <li><a href="{{ site.baseurl }}/docs/napari/plugins">Plugins</a></li>
             {% include section-end %} 
@@ -24,6 +27,7 @@
 
             {% include section title="Web" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/web/convert_notebook">Convert Notebook to markdown</a></li>
+                <li><a href="{{ site.baseurl }}/docs/web/add_page">Add a help page to this menu</a></li>
             {% include section-end %} 
             
             {% include section title="Notebooks" link="/" %}
