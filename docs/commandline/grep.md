@@ -1,3 +1,7 @@
+---
+layout: basic
+---
+
 ## Helpful grep commands
 
 ### Search recursively through files but look in only one file type
