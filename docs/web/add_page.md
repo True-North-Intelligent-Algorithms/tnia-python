@@ -16,4 +16,4 @@ Instructions on how to add a page and show it on the sidebar menu.
 layout: basic
 ---
 ```
-4.  Next modify the file ```_includes/menu``` to add a link to the new page.  Note ```menu``` has NO extension (this can be confusing if grepping with *.* as the file type, as it will not find the ```menu``` file) 
+4.  Next modify the file _includes/menu to add a link to the new page.  Note 'menu' has NO extension (this can be confusing if grepping with *.* as the file type, as it will not find the 'menu' file) 
