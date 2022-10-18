@@ -31,7 +31,7 @@
             {% include section-end %} 
             
             {% include section title="Python" link="/" %}
-                <li><a href="{{ site.baseurl }}/docs/python/IndexingHints">Some indexing tricks and hints</a></li>
+                <li><a href="{{ site.baseurl }}/docs/Python/IndexingHints">Some indexing tricks and hints</a></li>
             {% include section-end %} 
             
             {% include section title="Notebooks" link="/" %}
