@@ -38,7 +38,7 @@ def show_xy_yz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
 
     return show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize)
 
-def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
+def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None):
     """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
 
     Args:
@@ -51,16 +51,16 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
     slice_xz = image_to_show[:,y,:]
     slice_xy = image_to_show[z,:,:]
 
-    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize)
+    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap)
 
 
-def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10)):
-    return show_xyz_projection(image_to_show, sxy, sz, figsize, np.max)
+def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None):
+    return show_xyz_projection(image_to_show, sxy, sz, figsize, np.max, colormap)
  
-def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10)):
-    show_xyz_projection(image_to_show, sxy, sz, figsize, np.sum)
+def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None):
+    show_xyz_projection(image_to_show, sxy, sz, figsize, np.sum, colormap)
     
-def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np.max):
+def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np.max, colormap=None):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
 
     Args:
@@ -74,9 +74,9 @@ def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np
     projection_x = np.flip(np.rot90(projector(image_to_show,2),1),0)
     projection_z = projector(image_to_show,0)
 
-    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize)
+    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap)
 
-def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10)):
+def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None):
     """ shows pre-computed xy, xz and zy of a 3D image in a plot
 
     Args:
@@ -112,11 +112,11 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10)):
         zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
 
-    ax0.imshow(xy)
+    ax0.imshow(xy, colormap)
     ax0.set_title('xy')
-    ax1.imshow(zy)
+    ax1.imshow(zy, colormap)
     ax1.set_title('zy')
-    ax2.imshow(xz)
+    ax2.imshow(xz, colormap)
     ax2.set_title('xz')
 
     return fig
