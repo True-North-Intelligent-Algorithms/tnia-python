@@ -30,6 +30,10 @@
                 <li><a href="{{ site.baseurl }}/docs/web/add_page">Add a help page to this menu</a></li>
             {% include section-end %} 
             
+            {% include section title="Python" link="/" %}
+                <li><a href="{{ site.baseurl }}/docs/python/IndexingHints">Some indexing tricks and hints</a></li>
+            {% include section-end %} 
+            
             {% include section title="Notebooks" link="/" %}
                 <li><a href="{{ site.baseurl }}/notebooks_/extract_psf">Extract PSF</a></li>
             {% include section-end %} 
