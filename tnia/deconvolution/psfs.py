@@ -26,7 +26,7 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
         print('sdeconv 1.x.x detected')
         from sdeconv.psfs import SPSFGibsonLanni
 
-        gl = SPSFGibsonLanni((z_size, xy_size, xy_size), NA=NA, ni=ni, ns=ns, res_lateral=voxel_size_xy, res_axial=voxel_size_z, wavelength=wvl, pZ=pz)
+        gl = SPSFGibsonLanni((z_size, xy_size, xy_size), NA=NA, ni=ni, ni0=ni, ns=ns, res_lateral=voxel_size_xy, res_axial=voxel_size_z, wavelength=wvl, pZ=pz)
         psf=gl()
         psf_=psf.cpu()
         psf= psf_.numpy()
