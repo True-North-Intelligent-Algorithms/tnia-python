@@ -18,7 +18,7 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
     version_list=sdeconv.__version__.split('.')
     
     if version_list[0] == '0':
-        print('sdeconv 1.x.x detected')
+        print('sdeconv 0.x.x detected')
         from sdeconv.deconv import PSFGibsonLanni
         gl = PSFGibsonLanni((z_size, xy_size, xy_size),1000*voxel_size_xy, 1000*voxel_size_z, NA, 1000)
         psf = gl.run()
