@@ -5,32 +5,61 @@ layout: basic
 # tnia-python
 A collection of useful python utilities from True North Intelligent Algorithms
 
-# Install on Windows
+---
+layout: basic
+---
 
-Note: due to issue with 'pip install pyopencl' pyopencl needs to be installed with conda 
+## Install TNIA-Python in editable mode
 
-run
+The best way to install is to get the code from github and then install in editable mode.  THis allows one to run and modify the notebooks, and modify other code then have modifications available immediately. 
 
-conda install -c conda-forge pyopencl=2020.3.1  
-pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python  
+```
+git clone https://github.com/True-North-Intelligent-Algorithms/tnia-python.git
+```
 
-(to include CLIJ Deconvolution you need to explicitly clone that repository and navigate to the locaton of setup.py, as the setup.py is not at the top level)  
-   
-git clone https://github.com/clij/clij2-fft.git  
-cd clij2-fft/python  
-pip install .  
+Then navigate to the location where you cloned the code and run 
 
-# Install on Linux
+```
+pip install -e .
+```
 
-Note: due to issue with 'pip install pyopencl' on windows it wasn't included in setup.py requirements. pyopencl needs to be installed separate
+## Install from git
 
-pip install pyopencl  
-pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python  
+```
+pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python
+```
 
-(to include CLIJ Deconvolution you need to explicitly clone that repository and navigate to the locaton of setup.py, as the setup.py is not at the top level)  
-  
-git clone https://github.com/clij/clij2-fft.git  
-cd clij2-fft/python  
-pip install .  
+## Dependencies  
 
+We tend not to install many of the dependencies via setup.py.  The dependencies are complex and not all are needed to run many examples.  Thus we leave it up to the user to install dependencies manually, allowing them to potentially install a minimum set of dependencies for the specific code they are interested in running.
 
+```
+    conda create --name decon-napari python=3.9
+    conda activate decon-napari
+    conda install -c conda-forge jupyterlab
+    conda install -c conda-forge pyopencl==2021.2.6 hdbscan numba=0.55.1
+    pip install devbio-napari
+    conda install -c conda-forge fftw
+    pip install napari-sdeconv
+    pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python
+    pip install --index-url https://test.pypi.org/simple/ --no-deps clij2-fft
+    pip install stardist
+```
+
+Mac-users please also install this:
+
+```
+    conda install -c conda-forge ocl_icd_wrapper_apple
+```
+
+Linux users please also install this:
+
+```
+    conda install -c conda-forge ocl-icd-system
+```
+
+If opencl is not working Linux users may need to install opencl with pip
+
+```
+pip install pyopencl
+```
