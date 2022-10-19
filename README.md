@@ -44,6 +44,7 @@ We tend not to install many of the dependencies via setup.py.  The dependencies 
     pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python
     pip install --index-url https://test.pypi.org/simple/ --no-deps clij2-fft
     pip install stardist
+    pip install raster-geometry
 ```
 
 Mac-users please also install this:
