@@ -6,6 +6,8 @@ from tnia.segmentation.rendering import draw_centroids
 from skimage.filters import median
 from skimage.morphology import cube
 import sdeconv
+from skimage.measure import label
+from skimage.measure import regionprops
 
 def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False):
     """[summary]
@@ -139,3 +141,21 @@ def gaussian_3d(xy_dim, z_dim, xy_sigma, z_sigma):
 
     return gauss
 
+def recenter_psf_axial(psf, newz):
+    """ recenters a PSF.   Useful for recentering a theoretical PSF that was generated at off center z location (often done when modelling spherical aberration) 
+    
+    Note currently the center is an approximation, in the future this could be improved by using the float center and interpolation 
+
+    Args:
+        psf (numpy array): array with off center PSF
+        newz (int): desired new z size after centering PSF
+
+    Returns:
+        _type_: _description_
+    """
+    thresholded = psf>threshold_otsu(psf)
+    labels=label(thresholded)
+    objects = regionprops(labels)
+    cz=int(objects[0].centroid[0])
+    psf=psf[int(cz-newz/2):int(cz+newz/2),:,:]
+    return psf
