@@ -38,6 +38,25 @@ def show_xy_yz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
 
     return show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize)
 
+def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=None):
+    """ extracts xy, xz, and zy slices at center of a 3D image and plots them
+
+    Args:
+        image_to_show (_type_): _description_
+        sxy (int, optional): _description_. Defaults to 1.
+        sz (int, optional): _description_. Defaults to 1.
+        figsize (tuple, optional): _description_. Defaults to (10,10).
+        colormap (_type_, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
+    xc=int(image_to_show.shape[2]/2)
+    yc=int(image_to_show.shape[1]/2)
+    zc=int(image_to_show.shape[0]/2)
+
+    return show_xyz_slice(image_to_show, xc, yc, zc, sxy, sz,figsize, colormap)
+
 def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None):
     """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
 
