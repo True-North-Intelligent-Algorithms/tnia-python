@@ -24,8 +24,20 @@ def show_xyz_max_clij(image_to_show, labels=False):
     ax1.imshow(projection_x)
     ax2.imshow(projection_y)
 
-def show_xy_yz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
-    """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
+def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
+    """ extracts xy, and zy center slices 3D image and plots them
+
+    Args:
+        image_to_show (_type_): _description_
+        sxy (int, optional): _description_. Defaults to 1.
+        sz (int, optional): _description_. Defaults to 1.
+        figsize (tuple, optional): _description_. Defaults to (10,3).
+    """
+
+    return show_xy_zy_slice(im, int(im.shape[2]/2), int(im.shape[1]/2), int(im.shape[0]/2), sxy, sz, figsize, colormap, vmax)
+
+def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
+    """ extracts xy,  and zy slices at x, y, z of a 3D image and plots them
 
     Args:
         image_to_show (3d numpy array): image to plot
@@ -36,9 +48,9 @@ def show_xy_yz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10)):
     slice_zy = np.flip(np.rot90(image_to_show[:,:,x],1),0)
     slice_xy = image_to_show[z,:,:]
 
-    return show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize)
+    return show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize, colormap, vmax)
 
-def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=None):
+def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=None, vmax=None):
     """ extracts xy, xz, and zy slices at center of a 3D image and plots them
 
     Args:
@@ -55,9 +67,9 @@ def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=
     yc=int(image_to_show.shape[1]/2)
     zc=int(image_to_show.shape[0]/2)
 
-    return show_xyz_slice(image_to_show, xc, yc, zc, sxy, sz,figsize, colormap)
+    return show_xyz_slice(image_to_show, xc, yc, zc, sxy, sz,figsize, colormap, vmax)
 
-def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None):
+def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
     """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
 
     Args:
@@ -70,16 +82,16 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap
     slice_xz = image_to_show[:,y,:]
     slice_xy = image_to_show[z,:,:]
 
-    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap)
+    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap, vmax)
 
 
-def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None):
-    return show_xyz_projection(image_to_show, sxy, sz, figsize, np.max, colormap)
+def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
+    return show_xyz_projection(image_to_show, sxy, sz, figsize, np.max, colormap, vmax)
  
-def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None):
-    show_xyz_projection(image_to_show, sxy, sz, figsize, np.sum, colormap)
+def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
+    show_xyz_projection(image_to_show, sxy, sz, figsize, np.sum, colormap, vmax)
     
-def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np.max, colormap=None):
+def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np.max, colormap=None, vmax=None):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
 
     Args:
@@ -93,9 +105,9 @@ def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np
     projection_x = np.flip(np.rot90(projector(image_to_show,2),1),0)
     projection_z = projector(image_to_show,0)
 
-    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap)
+    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap, vmax)
 
-def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None):
+def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
     """ shows pre-computed xy, xz and zy of a 3D image in a plot
 
     Args:
@@ -131,18 +143,18 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None):
         zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
 
-    ax0.imshow(xy, colormap)
+    ax0.imshow(xy, colormap, vmax=vmax)
     ax0.set_title('xy')
-    ax1.imshow(zy, colormap)
+    ax1.imshow(zy, colormap, vmax=vmax)
     ax1.set_title('zy')
-    ax2.imshow(xz, colormap)
+    ax2.imshow(xz, colormap, vmax=vmax)
     ax2.set_title('xz')
 
     return fig
 
 
 # Copyright tnia 2021 - BSD License
-def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3)):
+def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None ):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
 
     Args:
@@ -153,11 +165,11 @@ def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3)):
     projection_x = np.flip(np.rot90(np.max(image_to_show,2),1),0)
     projection_z = np.max(image_to_show,0)
 
-    return show_xy_zy(projection_z, projection_x, sxy, sz, figsize)
+    return show_xy_zy(projection_z, projection_x, sxy, sz, figsize, colormap, vmax)
 
 
 # Copyright tnia 2021 - BSD License
-def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3)):
+def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
     """ shows pre-computed xy, xz and zy of a 3D image in a plot
 
     Args:
@@ -188,13 +200,14 @@ def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3)):
     ax1=fig.add_subplot(spec[1])
    
     if z_xy_ratio!=1:
-        xz=resize(xz, (int(xz.shape[0]*z_xy_ratio), xz.shape[1]))
+        #xz=resize(xz, (int(xz.shape[0]*z_xy_ratio), xz.shape[1]))
         zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
 
-    ax0.imshow(xy)
+    ax0.imshow(xy, colormap, vmax=vmax)
     ax0.set_title('xy')
-    ax1.imshow(zy)
+    ax1.imshow(zy, colormap, vmax=vmax)
     ax1.set_title('zy')
 
     return fig
+
