@@ -11,6 +11,11 @@
         <li><a href="https://github.com/True-North-Intelligent-Algorithms/tnia-python">Github</a></li>
             {% include section title="Command Line" link="/commandline" %}
               <li><a href="{{ site.baseurl }}/docs/commandline/grep">Grep Hints</a></li>
+              <li><a href="{{ site.baseurl }}/docs/commandline/ubuntu">Grep Hints</a></li>
+            {% include section-end %} 
+            
+            {% include section title="3rd Party tools" link="/3rdpartytools" %}
+              <li><a href="{{ site.baseurl }}/docs/3rdpartytools/opencv">OpenCV</a></li>
             {% include section-end %} 
             
             {% include section title="Napari" link="/napari" %}
