@@ -1,3 +1,7 @@
+---
+layout: basic
+---
+
 ## Some commands that are specific to Ubuntu/Linux
 
 ### Changing Java version
