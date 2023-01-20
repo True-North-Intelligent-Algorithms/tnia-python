@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='tnia-python',
-      version='0.1.6',
+      version='0.1.7',
       description='A collection of utilities',
       url='http://github.com/tnia/tnia-python',
       author='Brian Northan',
