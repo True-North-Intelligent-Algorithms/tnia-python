@@ -6,7 +6,9 @@ layout: basic
 
 ## Get the location of the max of a 3D array
 
+```
 np.unravel_index(a.argmax(), a.shape)
+```
 
 ## Make an index a variable trick
 
