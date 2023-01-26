@@ -4,6 +4,12 @@ layout: basic
 
 ## Indexing Hints
 
+## Get the location of the max of a 3D array
+
+```
+np.unravel_index(a.argmax(), a.shape)
+```
+
 ## Make an index a variable trick
 
 Sometimes it is useful to make an index into a variable to re-use and keep track of it.  This can be done with the ```np.s_``` function.  Below is an example.  
