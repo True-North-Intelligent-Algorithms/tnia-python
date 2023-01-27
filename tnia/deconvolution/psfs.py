@@ -141,7 +141,7 @@ def gaussian_3d(xy_dim, z_dim, xy_sigma, z_sigma):
 
     return gauss
 
-def recenter_psf_axial(psf, newz):
+def recenter_psf_axial(psf, newz, return_labels=False):
     """ recenters a PSF.   Useful for recentering a theoretical PSF that was generated at off center z location (often done when modelling spherical aberration) 
     
     Note currently the center is an approximation, in the future this could be improved by using the float center and interpolation 
@@ -156,6 +156,11 @@ def recenter_psf_axial(psf, newz):
     thresholded = psf>threshold_otsu(psf)
     labels=label(thresholded)
     objects = regionprops(labels)
-    cz=int(objects[0].centroid[0])
+    #cz=int(objects[0].centroid[0])
+    cz,cy,cx=np.unravel_index(psf.argmax(), psf.shape)
     psf=psf[int(cz-newz/2):int(cz+newz/2),:,:]
-    return psf
+
+    if return_labels:
+        return psf, labels
+    else:
+        return psf
