@@ -25,24 +25,32 @@ def show_xyz_max_clij(image_to_show, labels=False):
     ax2.imshow(projection_y)
 
 def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
-    """ extracts xy, and zy center slices 3D image and plots them
+    """ extracts xy, and zy center slices of a 3D image and plots them
 
     Args:
         image_to_show (_type_): _description_
         sxy (int, optional): _description_. Defaults to 1.
         sz (int, optional): _description_. Defaults to 1.
-        figsize (tuple, optional): _description_. Defaults to (10,3).
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
     """
 
     return show_xy_zy_slice(im, int(im.shape[2]/2), int(im.shape[1]/2), int(im.shape[0]/2), sxy, sz, figsize, colormap, vmax)
 
 def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
-    """ extracts xy,  and zy slices at x, y, z of a 3D image and plots them
+    """ extracts xy, and zy slices at x, y, z of a 3D image and plots them
 
     Args:
         image_to_show (3d numpy array): image to plot
+        x (int): x position of slice
+        y (int): y position of slice
+        z (int): z position of slice
         sxy (float, optional): xy pixel size of 3D. Defaults to 1.
         sz (float, optional): z pixel size of 3D. Defaults to 1.
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (colormap, optional): pyplot colormap to use . Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
     """
  
     slice_zy = np.flip(np.rot90(image_to_show[:,:,x],1),0)
@@ -59,7 +67,7 @@ def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=
         sz (int, optional): _description_. Defaults to 1.
         figsize (tuple, optional): _description_. Defaults to (10,10).
         colormap (_type_, optional): _description_. Defaults to None.
-
+        vmax (float, optional): maximum value for display range. Defaults to None.
     Returns:
         _type_: _description_
     """
@@ -74,8 +82,14 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap
 
     Args:
         image_to_show (3d numpy array): image to plot
+        x (int): x position of slice
+        y (int): y position of slice
+        z (int): z position of slice
         sxy (float, optional): xy pixel size of 3D. Defaults to 1.
         sz (float, optional): z pixel size of 3D. Defaults to 1.
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
     """
  
     slice_zy = np.flip(np.rot90(image_to_show[:,:,x],1),0)
@@ -84,8 +98,18 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap
 
     return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap, vmax)
 
-
 def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
+    """ plots max xy, xz, and zy projections of a 3D image
+
+    Args:
+        image_to_show (3d numpy array): image to plot
+        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
+        sz (float, optional): z pixel size of 3D. Defaults to 1.
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
+    """
+ 
     return show_xyz_projection(image_to_show, sxy, sz, figsize, np.max, colormap, vmax)
  
 def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
@@ -100,6 +124,8 @@ def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np
         sz (float, optional): z pixel size of 3D. Defaults to 1.
         figsize (tuple): size of figure to
         projector: function to project with
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
     """
     projection_y = projector(image_to_show,1)
     projection_x = np.flip(np.rot90(projector(image_to_show,2),1),0)
@@ -116,7 +142,9 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
         zy (2d numpy array): zy projection
         sxy (float, optional): xy pixel size of 3D. Defaults to 1.
         sz (float, optional): z pixel size of 3D. Defaults to 1.
-
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
     Returns:
         [type]: [description]
     """
@@ -161,6 +189,9 @@ def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3), colormap=None, vma
         image_to_show (3d numpy array): image to plot
         sxy (float, optional): xy pixel size of 3D. Defaults to 1.
         sz (float, optional): z pixel size of 3D. Defaults to 1.
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
     """
     projection_x = np.flip(np.rot90(np.max(image_to_show,2),1),0)
     projection_z = np.max(image_to_show,0)
@@ -178,6 +209,9 @@ def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
         zy (2d numpy array): zy projection
         sxy (float, optional): xy pixel size of 3D. Defaults to 1.
         sz (float, optional): z pixel size of 3D. Defaults to 1.
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
 
     Returns:
         [type]: [description]
