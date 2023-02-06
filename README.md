@@ -12,10 +12,6 @@ For now, the user-base of the library is likely only people I am working with di
 
 In the coming months (years) I plan to keep iterating on the library and making it more usable.  Please reach out to me if you have any questions. 
 
----
-layout: basic
----
-
 ## Install TNIA-Python in editable mode
 
 The best way to install is to get the code from github and then install in editable mode.  THis allows one to run and modify the notebooks, and modify other code then have modifications available immediately. 
