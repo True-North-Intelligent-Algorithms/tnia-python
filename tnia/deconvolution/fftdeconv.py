@@ -59,7 +59,11 @@ def fftdeconv(image, psf_temp, num_iters=100, process_psf=False, reblurred=None)
         HTratio = fftconv(ratio, otfT)
         recon = recon * HTratio / HTones
         calc_time = timeit.default_timer() - start_time
-        print("Iteration %d completed in %f s." % (iter + 1, calc_time))
+
+        # if iter % 10 == 0:
+        if iter % 10 == 0:
+            print(iter, end =" ")
+        #print("Iteration %d completed in %f s." % (iter + 1, calc_time))
 
     # Reblur, collect from GPU and save if argument given
     if reblurred is not None:
