@@ -10,13 +10,33 @@ from skimage.measure import label
 from skimage.measure import regionprops
 
 def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False):
-    """[summary]
-        Generates and returns a Gibson Lanni PSF using the sdeconv library
-
-        The function checks the version of sdeconv installed and uses the older implementation
-        PSFGibsonLanni if major version is '0', or newer (PyTorch based) version if major version is '1'.
-
     """
+       Generates a 3D PSF using the Gibson-Lanni model.
+
+         Parameters
+            ----------
+            NA : float
+                Numerical aperture of the objective.
+            ni : float
+                Refractive index of the immersion medium.
+            ns : float
+                Refractive index of the sample.
+            voxel_size_xy : float
+                Voxel size in the xy plane in microns.
+            voxel_size_z : float    
+                Voxel size in the z direction in microns.
+            xy_size : int
+                Number of voxels in the xy plane.
+            z_size : int
+                Number of voxels in the z direction.
+            pz : float
+                Position of the focal plane in microns.
+            wvl : float
+                Wavelength of the light in microns.
+            confocal : bool
+                If True, the PSF is convolved with itself to simulate a confocal PSF.
+    """ 
+    
     version_list=sdeconv.__version__.split('.')
     
     if version_list[0] == '0':
@@ -38,30 +58,18 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
         psf=psf*psf
     psf = psf/psf.sum()
     return psf
-     
-def gibson_lanni_3D_old(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
-    m_params = msPSF.m_params
-    m_params['NA']=NA
-    m_params['ni']=ni
-    m_params['ni0']=ni
-    m_params['ns']=ns
 
-    zv = np.zeros(z_size)
-
-    start = -(z_size-1)*voxel_size_z/2.
-
-    for z in range(z_size):
-        zv[z]=start+z*voxel_size_z
-
-    psf = msPSF.gLXYZFocalScan(m_params, voxel_size_xy, xy_size, zv, True, pz, wvl)
-    psf = psf/psf.sum()
-
-    return psf, zv
-
+        #Note this function inspired by code from https://github.com/jdmanton/rl_positivity_sim by James Manton
 def paraxial_otf(n, wavelength, numerical_aperture, pixel_size):
-    '''
-        Note this function inspired by code from https://github.com/jdmanton/rl_positivity_sim by James Manton
-    '''
+    """Generates a paraxial OTF for a given wavelength, numerical aperture, and pixel size
+
+    Args:
+        n (int): the size of the OTF
+        wavelength (float): the wavelength of the light in microns
+        numerical_aperture (float): the numerical aperture of the objective
+        pixel_size (float): the pixel size in microns
+    """    
+
     nx, ny=(n,n)
     
     resolution  = 0.5 * wavelength / numerical_aperture
@@ -124,6 +132,17 @@ def psf_from_beads(bead_image, background_factor=1.25, apply_median=False):
     return psf, im_32, centroids_32
 
 def gaussian_3d(xy_dim, z_dim, xy_sigma, z_sigma):
+    """ Generates a 3D Gaussian PSF
+
+    Args:
+        xy_dim (_type_): x and y dimensions of the PSF 
+        z_dim (_type_): z dimension of the PSF
+        xy_sigma (_type_): x and y sigma of the PSF
+        z_sigma (_type_): z sigma of the PSF
+
+    Returns:
+        [numpy array]: the PSF
+    """
     muu = 0.0
     gauss = np.empty([z_dim,xy_dim,xy_dim])
     x_, y_, z_ = np.meshgrid(np.linspace(-10,10,xy_dim), np.linspace(-10,10,xy_dim), np.linspace(-10,10,z_dim))
@@ -180,3 +199,24 @@ def recenter_psf_axial(psf, newz, return_labels=False):
         return psf, labels
     else:
         return psf
+
+     
+def gibson_lanni_3D_old(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
+    m_params = msPSF.m_params
+    m_params['NA']=NA
+    m_params['ni']=ni
+    m_params['ni0']=ni
+    m_params['ns']=ns
+
+    zv = np.zeros(z_size)
+
+    start = -(z_size-1)*voxel_size_z/2.
+
+    for z in range(z_size):
+        zv[z]=start+z*voxel_size_z
+
+    psf = msPSF.gLXYZFocalScan(m_params, voxel_size_xy, xy_size, zv, True, pz, wvl)
+    psf = psf/psf.sum()
+
+    return psf, zv
+
