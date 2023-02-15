@@ -141,6 +141,22 @@ def gaussian_3d(xy_dim, z_dim, xy_sigma, z_sigma):
 
     return gauss
 
+def gaussian_2d(xy_dim, xy_sigma):
+    muu = 0.0
+    gauss = np.empty([xy_dim,xy_dim])
+    x_, y_ = np.meshgrid(np.linspace(-10,10,xy_dim), np.linspace(-10,10,xy_dim))
+    for x in range(xy_dim):
+        for y in range(xy_dim):
+            tx=x_[x,y]
+            ty=y_[x,y]
+            
+            gauss[y,x]=np.exp(-( (tx-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )*np.exp(-( (ty-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )
+
+    gauss=gauss+0.000000000001
+    gauss=gauss/gauss.sum()
+
+    return gauss
+
 def recenter_psf_axial(psf, newz, return_labels=False):
     """ recenters a PSF.   Useful for recentering a theoretical PSF that was generated at off center z location (often done when modelling spherical aberration) 
     
