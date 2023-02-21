@@ -35,6 +35,10 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
                 Wavelength of the light in microns.
             confocal : bool
                 If True, the PSF is convolved with itself to simulate a confocal PSF.
+
+            Returns
+            -------
+            psf : ndarray
     """ 
     
     version_list=sdeconv.__version__.split('.')
@@ -63,11 +67,15 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
 def paraxial_otf(n, wavelength, numerical_aperture, pixel_size):
     """Generates a paraxial OTF for a given wavelength, numerical aperture, and pixel size
 
-    Args:
+    Parameters:
+    ----------
         n (int): the size of the OTF
         wavelength (float): the wavelength of the light in microns
         numerical_aperture (float): the numerical aperture of the objective
         pixel_size (float): the pixel size in microns
+    Returns:
+    -------
+        otf (numpy array): the OTF
     """    
 
     nx, ny=(n,n)
@@ -94,6 +102,18 @@ def paraxial_otf(n, wavelength, numerical_aperture, pixel_size):
     return otf
 
 def paraxial_psf(n, wavelength, numerical_aperture, pixel_size):
+    """Generates a paraxial PSF for a given wavelength, numerical aperture, and pixel size
+
+    Parameters:
+    ----------
+        n (int): the size of the PSF
+        wavelength (float): the wavelength of the light in microns
+        numerical_aperture (float): the numerical aperture of the objective
+        pixel_size (float): the pixel size in microns
+    Returns:
+    -------
+        psf (numpy array): the PSF
+    """
     otf = paraxial_otf(n, wavelength, numerical_aperture, pixel_size)
     psf = fftshift(ifftn(ifftshift(otf)).astype(np.float32))
     return psf/psf.sum()
@@ -101,12 +121,14 @@ def paraxial_psf(n, wavelength, numerical_aperture, pixel_size):
 def psf_from_beads(bead_image, background_factor=1.25, apply_median=False):
     """ Extracts a PSF from a bead image using reverse deconvolution (a.k.a. PSF Distilling)
 
-    Args:
+    Parameters:
+    ----------
         bead_image (numpy array): an image of a field of sub-resolution beads
         background_factor (float, optional): Used to modulate background subtraction. Defaults to 1.25.
         apply_media (bool, optional): Apply a median filter, use if noise is being segmented as beads
     Returns:
-        [numpy array]: the PSF
+    -------
+        psf (numpy array): the PSF
     """
     bead_image=bead_image-background_factor*bead_image.mean()
     bead_image[bead_image<=0]=.1
@@ -134,14 +156,15 @@ def psf_from_beads(bead_image, background_factor=1.25, apply_median=False):
 def gaussian_3d(xy_dim, z_dim, xy_sigma, z_sigma):
     """ Generates a 3D Gaussian PSF
 
-    Args:
-        xy_dim (_type_): x and y dimensions of the PSF 
-        z_dim (_type_): z dimension of the PSF
-        xy_sigma (_type_): x and y sigma of the PSF
-        z_sigma (_type_): z sigma of the PSF
-
+    Parameters:
+    ----------
+        xy_dim (int): the size of the PSF in the xy plane
+        z_dim (int): the size of the PSF in the z direction
+        xy_sigma (float): the sigma of the Gaussian in the xy plane
+        z_sigma (float): the sigma of the Gaussian in the z direction
     Returns:
-        [numpy array]: the PSF
+    -------
+        psf (numpy array): the PSF
     """
     muu = 0.0
     gauss = np.empty([z_dim,xy_dim,xy_dim])
@@ -161,6 +184,16 @@ def gaussian_3d(xy_dim, z_dim, xy_sigma, z_sigma):
     return gauss
 
 def gaussian_2d(xy_dim, xy_sigma):
+    """ Generates a 2D Gaussian PSF
+    
+    Parameters:
+    ----------
+        xy_dim (int): the size of the PSF in the xy plane
+        xy_sigma (float): the sigma of the Gaussian in the xy plane
+    Returns:
+    -------
+        psf (numpy array): the PSF
+    """
     muu = 0.0
     gauss = np.empty([xy_dim,xy_dim])
     x_, y_ = np.meshgrid(np.linspace(-10,10,xy_dim), np.linspace(-10,10,xy_dim))
@@ -181,12 +214,14 @@ def recenter_psf_axial(psf, newz, return_labels=False):
     
     Note currently the center is an approximation, in the future this could be improved by using the float center and interpolation 
 
-    Args:
+    Parameters:
+    ----------
         psf (numpy array): array with off center PSF
         newz (int): desired new z size after centering PSF
 
     Returns:
-        _type_: _description_
+    -------
+        [numpy array]: centered PSF
     """
     thresholded = psf>threshold_otsu(psf)
     labels=label(thresholded)
