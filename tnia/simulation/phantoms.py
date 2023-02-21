@@ -3,8 +3,54 @@ import raster_geometry as rg
 from random import uniform, seed
 import math
 
-def sphere3d(size, radius):
-    return rg.sphere(size, radius).astype(np.float32)
+def sphere3d(size, radius, intensity=1, z_down_sample=1):
+    sphere=intensity*rg.sphere(size, radius).astype(np.float32)
+
+    return sphere[::z_down_sample,:,::z_down_sample]
+
+def sphere_slice_3d(size, radius, intensity=1, z_down_sample=1):
+    """Returns a slice of a 3D sphere.
+
+    Args:
+        size (list or tuple): The size of the 3D sphere.
+        radius (float): The radius of the sphere.
+        intensity (float, optional): The intensity of the sphere. Default is 1.
+        z_down_sample (int, optional): The downsampling factor in the z direction. Default is 1.
+
+    Returns:
+        numpy.ndarray: A 2D slice of the 3D sphere.
+    """
+    sphere = intensity * rg.sphere(size, radius).astype(np.float32)
+    z_indices = np.arange(0, size[0], z_down_sample)
+    sphere_slice = np.take(sphere, z_indices, axis=0)
+    return sphere_slice[:, :, z_indices]
+
+
+def add_sphere3d(im, radius, x_center, y_center, z_center, intensity=1, z_down_sample=1):
+    """Adds a sphere to a 3D numpy array.
+
+    Args:
+        im (numpy.ndarray): The 3D numpy array to add the sphere to.
+        radius (int): The radius of the sphere.
+        x_center (int): The x-coordinate of the center of the sphere.
+        y_center (int): The y-coordinate of the center of the sphere.
+        z_center (int): The z-coordinate of the center of the sphere.
+        intensity (float, optional): The intensity of the sphere. Default is 1.
+        z_down_sample (int, optional): The downsampling factor in the z direction. Default is 1.
+
+    Returns:
+        None
+    """
+    sphere = intensity * rg.sphere([radius*2, radius*2, radius*2], radius).astype(np.float32)
+    sphere = sphere[::z_down_sample, :, :]
+    size = sphere.shape
+    z_start = z_center - size[0] // 2
+    z_end =  z_start + size[0]
+    y_start = y_center - size[1] // 2
+    y_end = y_start + size[1]
+    x_start = x_center - size[2] // 2
+    x_end = x_start + size[2]
+    im[z_start:z_end, y_start:y_end, x_start:x_end] = sphere
 
 def ramp2d(shape,min,max):
     """ create an image of a 2D ramp to simulate uneven background
