@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
-import pyclesperanto_prototype as cle
 import numpy as np
 from skimage.transform import resize
 
@@ -8,6 +7,7 @@ def show_xyz_max_clij(image_to_show, labels=False):
     """
     This function generates three projections using clij, in X-, Y- and Z-direction and shows them.
     """
+    import pyclesperanto_prototype as cle
     fig=plt.figure(figsize=(10,10))
 
     spec=gridspec.GridSpec(ncols=2, nrows=2, height_ratios=[258,100], width_ratios=[258,100])
