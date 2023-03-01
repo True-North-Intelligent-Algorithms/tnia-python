@@ -1,17 +1,25 @@
 import numpy as np
 
-def centercrop2d(im, shape):
-    starty=int(im.shape[0]/2)-int(shape[0]/2)
-    startx=int(im.shape[1]/2)-int(shape[1]/2)
-
-    return im[starty:starty+shape[0],startx:startx+shape[1]]
-
 def centercrop(im, shape):
-    startz=int(im.shape[0]/2)-int(shape[0]/2)
-    starty=int(im.shape[1]/2)-int(shape[1]/2)
-    startx=int(im.shape[2]/2)-int(shape[2]/2)
+    """
+    Center crops the input image to the desired output shape.
 
-    return im[startz:startz+shape[0],starty:starty+shape[1],startx:startx+shape[2]]
+    Args:
+        im (numpy.ndarray): The input image to crop.
+        shape (tuple): The desired output shape. Must have the same number of dimensions as the input image.
+
+    Returns:
+        numpy.ndarray: The center-cropped image.
+    """
+
+    if len(im.shape) != len(shape):
+        raise ValueError("Input image and desired output shape must have the same number of dimensions.")
+
+    start_indices = [(im.shape[i] - shape[i]) // 2 for i in range(len(im.shape))]
+
+    slices = [slice(start_indices[i], start_indices[i] + shape[i]) for i in range(len(im.shape))]
+
+    return im[tuple(slices)]
 
 
 def makergb(r,g,b):
