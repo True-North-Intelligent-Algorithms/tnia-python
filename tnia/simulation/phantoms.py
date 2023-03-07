@@ -25,6 +25,92 @@ def sphere_slice_3d(size, radius, intensity=1, z_down_sample=1):
     sphere_slice = np.take(sphere, z_indices, axis=0)
     return sphere_slice[:, :, z_indices]
 
+def sphere_fits(large_arr, small_arr,x,y,z):
+  # Get the dimensions of the arrays
+    l, w, h = large_arr.shape
+    sl, sw, sh = small_arr.shape
+
+    # Calculate the start and end indices for the small array in each dimension
+    start_x = x - sw//2
+    end_x = start_x + sw
+    start_y = y - sh//2
+    end_y = start_y + sh
+    start_z = z - sl//2
+    end_z = start_z + sl
+
+    # Calculate the overlapping slice of the small array
+    slice_z = slice(max(start_z, 0), min(end_z, l))
+    slice_y = slice(max(start_y, 0), min(end_y, h))
+    slice_x = slice(max(start_x, 0), min(end_x, w))
+    small_slice_z = slice(max(-start_z, 0), min(sl - (end_z - l), sl))
+    small_slice_y = slice(max(-start_y, 0), min(sh - (end_y - h), sh))
+    small_slice_x = slice(max(-start_x, 0), min(sw - (end_x - w), sw))
+    small_slice = small_arr[small_slice_z, small_slice_y, small_slice_x]
+
+    # Check if the slice is empty
+    if np.any(np.logical_and(large_arr[slice_z, slice_y, slice_x]>0,small_slice>0)):
+        return False
+    
+    return True
+
+def add_small_to_large(large_arr, small_arr,x,y,z, check_empty=False):
+  # Get the dimensions of the arrays
+    l, w, h = large_arr.shape
+    sl, sw, sh = small_arr.shape
+
+    # Calculate the start and end indices for the small array in each dimension
+    start_x = x - sw//2
+    end_x = start_x + sw
+    start_y = y - sh//2
+    end_y = start_y + sh
+    start_z = z - sl//2
+    end_z = start_z + sl
+
+    # Calculate the overlapping slice of the small array
+    slice_z = slice(max(start_z, 0), min(end_z, l))
+    slice_y = slice(max(start_y, 0), min(end_y, h))
+    slice_x = slice(max(start_x, 0), min(end_x, w))
+    small_slice_z = slice(max(-start_z, 0), min(sl - (end_z - l), sl))
+    small_slice_y = slice(max(-start_y, 0), min(sh - (end_y - h), sh))
+    small_slice_x = slice(max(-start_x, 0), min(sw - (end_x - w), sw))
+    small_slice = small_arr[small_slice_z, small_slice_y, small_slice_x]
+
+    if check_empty:
+        # Check if the slice is empty
+        if np.any(np.logical_and(large_arr[slice_z, slice_y, slice_x]>0,small_slice>0)):
+            return False
+
+    # Add the small slice to the large array
+    large_arr[slice_z, slice_y, slice_x] += small_slice
+    
+    return True
+
+
+def mask_small_to_large(large_arr, small_arr,x,y,z):
+  # Get the dimensions of the arrays
+    l, w, h = large_arr.shape
+    sl, sw, sh = small_arr.shape
+
+    # Calculate the start and end indices for the small array in each dimension
+    start_x = x - sw//2
+    end_x = start_x + sw
+    start_y = y - sh//2
+    end_y = start_y + sh
+    start_z = z - sl//2
+    end_z = start_z + sl
+
+    # Calculate the overlapping slice of the small array
+    slice_z = slice(max(start_z, 0), min(end_z, l))
+    slice_y = slice(max(start_y, 0), min(end_y, h))
+    slice_x = slice(max(start_x, 0), min(end_x, w))
+    small_slice_z = slice(max(-start_z, 0), min(sl - (end_z - l), sl))
+    small_slice_y = slice(max(-start_y, 0), min(sh - (end_y - h), sh))
+    small_slice_x = slice(max(-start_x, 0), min(sw - (end_x - w), sw))
+    small_slice = small_arr[small_slice_z, small_slice_y, small_slice_x]
+    
+    # Add the small slice to the large array
+    large_arr[slice_z, slice_y, slice_x] = 0 
+
 
 def add_sphere3d(im, radius, x_center, y_center, z_center, intensity=1, z_down_sample=1):
     """Adds a sphere to a 3D numpy array.
