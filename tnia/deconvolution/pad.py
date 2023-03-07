@@ -89,15 +89,18 @@ def pad(img, paddedsize, mode):
     padding = tuple(map(lambda i,j: ( math.ceil((i-j)/2), math.floor((i-j)/2) ),paddedsize,img.shape))
     return np.pad(img, padding,mode), padding
 
+
 def unpad(padded, imgsize):
-    """ crop padded back to imgsize
+    """Crop padded back to imgsize.
 
     Args:
-        padded ([type]): [description]
-        imgsize ([type]): [description]
+        padded (numpy.ndarray or cupy.ndarray): The padded array.
+        imgsize (tuple): The target size of the unpadded array.
 
     Returns:
-        [type]: [description]
+        numpy.ndarray or cupy.ndarray: The unpadded array.
     """
-    padding = tuple(map(lambda i,j: ( math.ceil((i-j)/2), math.floor((i-j)/2) ),padded.shape, imgsize))
-    return padded[padding[0][0]:padding[0][0]+imgsize[0], padding[1][0]:padding[1][0]+imgsize[1], padding[2][0]:padding[2][0]+imgsize[2]]
+    padding = tuple(map(lambda i,j: (math.ceil((i-j)/2), math.floor((i-j)/2)), padded.shape, imgsize))
+    slices = tuple(slice(p[0], p[0]+s) for p, s in zip(padding, imgsize))
+
+    return padded[slices]
