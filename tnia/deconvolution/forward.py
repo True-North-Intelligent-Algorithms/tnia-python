@@ -1,8 +1,14 @@
 from numpy.fft import fftn, ifftn, ifftshift 
 from cupy.random import poisson
 import cupy as cp
-from tnia.deconvolution.pad import pad, unpad
+from tnia.deconvolution.pad import pad, unpad, get_next_smooth
+from tnia.utility.cupy_checker import get_platform
 
+
+def add_poisson_noise(img):
+    img = cp.array(img)
+    img = poisson(img.astype(float))
+    return cp.asnumpy(img).astype('float32')
 
 def forward(field, psf, background_level, add_poisson=True):
     '''
@@ -31,6 +37,7 @@ def forward(field, psf, background_level, add_poisson=True):
 
     # compute the extended size of the image and psf
     extended_size = [field.shape[i]+2*int(psf.shape[i]/2) for i in range(len(field.shape))]
+    extended_size = get_next_smooth(extended_size)
     original_size = field.shape
     
     # pad the image and psf to the extended size computed above
@@ -41,15 +48,21 @@ def forward(field, psf, background_level, add_poisson=True):
     otf = fftn(ifftshift(psf))
     field_imaged = ifftn(fftn(field)*otf)
     field_imaged = field_imaged+background_level
+    
+    # unpad before poisson noise is added
+    field_imaged=unpad(field_imaged, original_size)
 
     field_imaged = cp.array(field_imaged)
     
-    # unpad before poisson noise is added
-    field_imaged=unpad(cp.asnumpy(field_imaged), original_size)
-
     # add poisson noise   
     if add_poisson:
-        field = poisson(field_imaged.astype(float))
+        field_imaged = poisson(field_imaged.astype(float))
 
     # return field as numpy array
-    return cp.asnumpy(field).astype('float32')
+    return cp.asnumpy(field_imaged).astype('float32')
+
+
+def convolve(x, h):
+    pl = get_platform(x)
+    return pl.fft.irfftn(pl.fft.rfftn(x) * pl.fft.rfftn(pl.fft.ifftshift(h)), x.shape)
+
