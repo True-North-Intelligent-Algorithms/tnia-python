@@ -228,7 +228,8 @@ def recenter_psf_axial(psf, newz, return_labels=False):
     objects = regionprops(labels)
     #cz=int(objects[0].centroid[0])
     cz,cy,cx=np.unravel_index(psf.argmax(), psf.shape)
-    psf=psf[int(cz-newz/2):int(cz+newz/2),:,:]
+    start=cz-newz//2
+    psf=psf[start:start+newz,:,:]
 
     if return_labels:
         return psf, labels
