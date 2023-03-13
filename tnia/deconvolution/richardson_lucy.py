@@ -3,14 +3,15 @@ from numpy.fft import fftn, ifftn, fftshift
 import cupy as cp
 from tnia.deconvolution.pad import pad, unpad
 
-def richardson_lucy_cp(image, psf, num_iters, noncirc=False):
-    """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option, uses cupy
+def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
+    """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses cupy
 
     Args:
         image [numpy 32 bit float array]: the image to be deconvolved 
         psf [numpy 32 bit float array]: the point spread function
         num_iters (int): the number of iterations to perform
         noncirc (bool, optional): If true use non-circulant edge handling. Defaults to False.
+        mask (numpy 32 bit float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
 
     Returns:
         [numpy 32 bit float array]: the deconvolved image
@@ -23,6 +24,11 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False):
     
     HTones = np.ones_like(image)
 
+    if (mask is not None):
+        HTones = HTones * mask
+        mask_values = image*(1-mask)
+        image=image*mask
+    
     # if noncirc==True then pad the image, psf and HTOnes array to the extended size
     if noncirc:
         # compute the extended size of the image and psf
@@ -37,7 +43,7 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False):
     image = cp.array(image)
     psf = cp.array(psf)
     HTones = cp.array(HTones)
-    
+
     otf = cp.fft.fftn(cp.fft.ifftshift(psf))
     otf_ = cp.conjugate(otf)
 
@@ -65,6 +71,86 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False):
 
     if noncirc:
         estimate = unpad(estimate, original_size)
+
+    if (mask is not None):
+        estimate = estimate*mask + mask_values
+    
+    return estimate
+
+
+# WIP - version of RL that uses real FFT.  Seems to work and uses less memory, but is slower than the above version
+def richardson_lucy_cp_rfft(image, psf, num_iters, noncirc=False, mask=None):
+    """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses cupy
+
+    Args:
+        image [numpy 32 bit float array]: the image to be deconvolved 
+        psf [numpy 32 bit float array]: the point spread function
+        num_iters (int): the number of iterations to perform
+        noncirc (bool, optional): If true use non-circulant edge handling. Defaults to False.
+        mask (numpy 32 bit float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
+
+    Returns:
+        [numpy 32 bit float array]: the deconvolved image
+    """
+    
+    # if noncirc==False and (image.shape != psf.shape) then pad the psf
+    if noncirc==False and (image.shape != psf.shape):
+        print('padding psf')
+        psf,_=pad(psf, image.shape, 'constant')
+    
+    HTones = np.ones_like(image)
+
+    if (mask is not None):
+        HTones = HTones * mask
+        mask_values = image*(1-mask)
+        image=image*mask
+
+    # if noncirc==True then pad the image, psf and HTOnes array to the extended size
+    if noncirc:
+        # compute the extended size of the image and psf
+        extended_size = [image.shape[i]+2*int(psf.shape[i]/2) for i in range(len(image.shape))]
+
+        # pad the image, psf and HTOnes array to the extended size computed above
+        original_size = image.shape
+        image,_=pad(image, extended_size, 'constant')
+        HTones,_=pad(HTones, extended_size, 'constant')
+        psf,_=pad(psf, extended_size, 'constant')
+    
+    image = cp.array(image)
+    psf = cp.array(np.fft.ifftshift(psf))
+    HTones = cp.array(HTones)
+    
+    otf = cp.fft.rfftn(psf)
+    psf = None
+    otf_ = cp.conjugate(otf)
+
+    if noncirc:
+        estimate = cp.ones_like(image)*cp.mean(image)
+    else:
+        estimate = image
+
+    HTones = cp.fft.irfftn(cp.fft.rfftn(HTones) * otf_, image.shape)
+    HTones[HTones<1e-6] = 1
+
+    print()
+    for i in range(num_iters):
+        if i % 10 == 0:
+            print(i, end =" ")
+        
+        reblurred = cp.fft.irfftn(cp.fft.rfftn(estimate) * otf, image.shape)
+
+        ratio = image / (reblurred + 1e-12)
+        correction=cp.fft.irfftn(cp.fft.rfftn(ratio) * otf_, image.shape)
+        estimate = estimate * correction/HTones 
+    print()        
+    
+    estimate = cp.asnumpy(estimate)
+
+    if noncirc:
+        estimate = unpad(estimate, original_size)
+
+    if (mask is not None):
+        estimate = estimate*mask + mask_values
     
     return estimate
  
