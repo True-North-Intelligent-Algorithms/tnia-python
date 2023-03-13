@@ -11,7 +11,7 @@ def random_label_cmap(n=2**16, h = (0,1), l = (.4,1), s =(.2,.8)):
     cols[0] = 0
     return matplotlib.colors.ListedColormap(cols)
 
-def imshow2d(im, width=8, height=6, colormap=None):
+def imshow2d(im, width=8, height=6, colormap=None, vmin=None, vmax=None):
     """ a little helper to show images of differnt sizes using pyplot.  Just makes calls to imshow more readable. 
 
     Args:
@@ -23,10 +23,10 @@ def imshow2d(im, width=8, height=6, colormap=None):
         [type]: returns the figure
     """
     fig, ax = plt.subplots(figsize=(width,height))
-    ax.imshow(im, colormap)
+    ax.imshow(im, colormap, vmin=vmin, vmax=vmax)
     return fig
 
-def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormap=None):
+def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormap=None, vmin=None, vmax=None):
     """ a little helper to show a grid of images of differnt sizes using pyplot.  Just makes calls to imshow more readable. 
 
     Args:
@@ -46,7 +46,7 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormap=None):
         #print('types')
         #print(type(im), type(ax), type(title))
         #print()
-        ax.imshow(im, colormap)
+        ax.imshow(im, colormap,vmin=vmin, vmax=vmax)
         ax.set_title(title)
 
     return fig 
