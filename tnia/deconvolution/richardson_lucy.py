@@ -12,6 +12,7 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
         num_iters (int): the number of iterations to perform
         noncirc (bool, optional): If true use non-circulant edge handling. Defaults to False.
         mask (numpy 32 bit float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
+            'bad' pixels will be zeroed during the deconvolution and then replaced with the original value after the deconvolution.
 
     Returns:
         [numpy 32 bit float array]: the deconvolved image
@@ -88,6 +89,7 @@ def richardson_lucy_cp_rfft(image, psf, num_iters, noncirc=False, mask=None):
         num_iters (int): the number of iterations to perform
         noncirc (bool, optional): If true use non-circulant edge handling. Defaults to False.
         mask (numpy 32 bit float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
+            'bad' pixels will be zeroed during the deconvolution and then replaced with the original value after the deconvolution.
 
     Returns:
         [numpy 32 bit float array]: the deconvolved image
