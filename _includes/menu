@@ -17,6 +17,7 @@
             
             {% include section title="3rd Party tools" link="/3rdpartytools" %}
               <li><a href="{{ site.baseurl }}/docs/3rdpartytools/opencv">OpenCV</a></li>
+              <li><a href="{{ site.baseurl }}/docs/3rdpartytools/boost">Boost</a></li>
             {% include section-end %} 
             
             {% include section title="Napari" link="/napari" %}
