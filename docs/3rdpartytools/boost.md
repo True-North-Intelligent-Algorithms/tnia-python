@@ -1,3 +1,7 @@
+---
+layout: basic
+---
+
 ## Boost
 
 Boost provides free peer-reviewed portable C++ source libraries..  Boost can be found [here](https://www.boost.org/)
