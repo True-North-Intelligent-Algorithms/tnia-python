@@ -25,7 +25,7 @@
               <li><a href="{{ site.baseurl }}/docs/napari/plugins">Plugins</a></li>
             {% include section-end %} 
             
-            {% include section title="Packaging" link="/packaging" %}
+            {% include section title="Python Packaging" link="/packaging" %}
                 <li><a href="{{ site.baseurl }}/docs/packaging/packaging">Packaging Notes</a></li>
             {% include section-end %} 
  
@@ -40,6 +40,10 @@
             
             {% include section title="Python" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/Python/IndexingHints">Some indexing tricks and hints</a></li>
+            {% include section-end %} 
+            
+            {% include section title="Java" link="/" %}
+                <li><a href="{{ site.baseurl }}/docs/java/javacpp">JavaCPP hints</a></li>
             {% include section-end %} 
             
             {% include section title="Notebooks" link="/" %}
