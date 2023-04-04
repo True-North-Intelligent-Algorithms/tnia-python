@@ -9,23 +9,23 @@
         <ul>
 
         <li><a href="https://github.com/True-North-Intelligent-Algorithms/tnia-python">Github</a></li>
-            {% include section title="Command Line" link="/commandline" %}
+            {% include section title="Command Line" link="/" %}
               <li><a href="{{ site.baseurl }}/docs/commandline/grep">Grep Hints</a></li>
               <li><a href="{{ site.baseurl }}/docs/commandline/bashgeneral">General Bash Hints</a></li>
               <li><a href="{{ site.baseurl }}/docs/commandline/ubuntu">Ubuntu Hints</a></li>
             {% include section-end %} 
             
-            {% include section title="3rd Party tools" link="/3rdpartytools" %}
+            {% include section title="3rd Party tools" link="/" %}
               <li><a href="{{ site.baseurl }}/docs/3rdpartytools/opencv">OpenCV</a></li>
               <li><a href="{{ site.baseurl }}/docs/3rdpartytools/boost">Boost</a></li>
               <li><a href="{{ site.baseurl }}/docs/3rdpartytools/inteloneapi">Intel oneAPI</a></li>
             {% include section-end %} 
             
-            {% include section title="Napari" link="/napari" %}
+            {% include section title="Napari" link="/" %}
               <li><a href="{{ site.baseurl }}/docs/napari/plugins">Plugins</a></li>
             {% include section-end %} 
             
-            {% include section title="Python Packaging" link="/packaging" %}
+            {% include section title="Python Packaging" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/packaging/packaging">Packaging Notes</a></li>
             {% include section-end %} 
  
