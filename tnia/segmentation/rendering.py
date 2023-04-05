@@ -26,25 +26,33 @@ def draw_label_outline(img, segmented):
 
     return rgb
 
-def draw_centroids(segmented, img=None):
-    """ draws centroids of connected objects in segmented onto img (if img is None draws cetroids on a blank image)
-    
+def draw_centroids(segmented, output=None, img=None):
+    """Draws centroids of connected objects in a binary image onto another image or a blank image.
+
     Args:
-        segmented (numpy array): binary pre-segmented image
-        img (numpy array, optional): Image to draw centroids onto if None centroids are drawn on empty iamge. Defaults to None.
+        segmented (numpy.ndarray): A binary pre-segmented image.
+        output (numpy.ndarray, optional): An image to draw centroids onto. If None, centroids are drawn on an empty image of the same size as segmented. Defaults to None.
+        img (numpy.ndarray, optional): An optional gray scale image to use as a scaling factor for the centroids. If not None, the centroids will be scaled with the pixel value in img. Defaults to None.
+
+    Returns:
+        numpy.ndarray: An image with centroids drawn on it.
     """
 
-    if img is None:
-        img = np.zeros_like(segmented)
+    if output is None:
+        output = np.zeros_like(segmented)
 
     labels=label(segmented)
 
     objects = regionprops(labels)
 
-    for o in objects:
-        img[int(o.centroid[0]),int(o.centroid[1]),int(o.centroid[2])]=1
-
-    return img
+    if img is None:
+        for o in objects:
+            output[int(o.centroid[0]),int(o.centroid[1]),int(o.centroid[2])]=1
+    else:
+        for o in objects:
+            output[int(o.centroid[0]),int(o.centroid[1]),int(o.centroid[2])]=img[int(o.centroid[0]),int(o.centroid[1]),int(o.centroid[2])]
+        
+    return output
 
     
 
