@@ -2,11 +2,11 @@
 layout: basic
 ---
 
-## Intel One API
+## Intel oneAPI
 
 IntelOneAPI base toolkit can be found [here](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html#base-kit).
 
-IntelOneAPI has windows and linux installers.  It should be installed in the directory below
+IntelOneAPI has windows and linux installers.  It should end up being installed in the directory below
 
 ```
 C:\Program Files (x86)\Intel\oneAPI
@@ -22,3 +22,9 @@ If using CMake we have to set parameters to tell CMake where to find IntelOneAPI
 -DMKL_INCLUDE_DIR="C:/Program Files (x86)/Intel/oneAPI/mkl/latest/include" \
 -DMKL_LIBRARY_DIR="C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/intel64" \
 ```
+
+## Linking Intel oneAPI
+
+For IPP see [these instructions](https://www.intel.com/content/www/us/en/docs/ipp/developer-guide-oneapi/2022-2/linking-options.html)
+
+Note:  There are both static and dynamic versions of the library.  There are also non-threaded and threaded versions.  You need to use the table to choose the linking model and the threading model then link using the appropriate directory and libary names. 
