@@ -129,6 +129,8 @@ def psf_from_beads(bead_image, background_factor=1.25, apply_median=False):
     Returns:
     -------
         psf (numpy array): the PSF
+        bead_image (numpy array): the bead image (with background subtracted and optional median filter applied)
+        centroids (numpy array): the bead centroids
     """
     bead_image=bead_image-background_factor*bead_image.mean()
     bead_image[bead_image<=0]=.1
@@ -138,7 +140,7 @@ def psf_from_beads(bead_image, background_factor=1.25, apply_median=False):
 
     thresholded = bead_image>threshold_otsu(bead_image)
 
-    centroids = draw_centroids(thresholded)
+    centroids = draw_centroids(thresholded,img=bead_image)
 
     from clij2fft.richardson_lucy import richardson_lucy
     #from skimage.restoration import richardson_lucy
