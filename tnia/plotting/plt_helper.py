@@ -51,4 +51,45 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormap=None, v
 
     return fig 
 
-#def plot_line(line, tittle)
+def plot_line(line, ax, coords=None, linestyle='-',linewidth=1, color='k', bars=False, label=None):
+    if coords is None:
+        coords = np.arange(len(line))
+    
+    if bars:
+        ax.bar(coords, line, width=linewidth, color=color, label=label)
+    else:
+        ax.plot(coords, line, linestyle=linestyle, linewidth=linewidth, color=color, label=label)
+
+def plot_lines(lines, ax=None, coords=None, linestyles=None, linewidths=None, linecolors=None, bars=None, labels=None):
+    
+    if (ax==None):
+        fig, ax = plt.subplots()
+    else:
+        fig=None
+    
+    if linestyles is None:
+        linestyles = ['-']*len(lines)
+    if linewidths is None:
+        linewidths = [1]*len(lines)
+    if linecolors is None:
+        linecolors = ['k']*len(lines)
+    if bars is None:
+        bars = [False]*len(lines)
+    if coords is None:
+        coords = [np.arange(len(line))]*len(lines)
+    if labels is None:
+        labels = [None]*len(lines)
+
+    for coord, line, linestyle, linewidth, linecolor, bar, label in zip(coords, lines, linestyles, linewidths, linecolors, bars, labels):
+        plot_line(line, ax, coord, linestyle=linestyle, linewidth=linewidth, color=linecolor, bars=bar, label=label)
+
+    ax.legend()
+
+    return fig
+'''
+def draw_bimodal_hist(data, thresh, params, ax=None, title='bimodal hist'):
+    if (ax==None):
+        fig, ax = plt.subplots()
+    else:
+        fig=None
+'''
