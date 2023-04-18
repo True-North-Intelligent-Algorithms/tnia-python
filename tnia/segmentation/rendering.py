@@ -47,11 +47,13 @@ def draw_centroids(segmented, output=None, img=None):
 
     if img is None:
         for o in objects:
-            output[int(o.centroid[0]),int(o.centroid[1]),int(o.centroid[2])]=1
+            idx = tuple(int(c) for c in o.centroid)
+            output[idx] = 1
     else:
         for o in objects:
-            output[int(o.centroid[0]),int(o.centroid[1]),int(o.centroid[2])]=img[int(o.centroid[0]),int(o.centroid[1]),int(o.centroid[2])]
-        
+            idx = tuple(int(c) for c in o.centroid)
+            output[idx] = img[idx]
+
     return output
 
     
