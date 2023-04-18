@@ -8,6 +8,7 @@ from skimage.morphology import cube
 import sdeconv
 from skimage.measure import label
 from skimage.measure import regionprops
+from skimage.feature import peak_local_max
 
 def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False):
     """
@@ -118,14 +119,16 @@ def paraxial_psf(n, wavelength, numerical_aperture, pixel_size):
     psf = fftshift(ifftn(ifftshift(otf)).astype(np.float32))
     return psf/psf.sum()
 
-def psf_from_beads(bead_image, background_factor=1.25, apply_median=False):
+def psf_from_beads(bead_image, background_factor=1.25, apply_median=False, peak_method=1, thresh=0):
     """ Extracts a PSF from a bead image using reverse deconvolution (a.k.a. PSF Distilling)
 
     Parameters:
     ----------
         bead_image (numpy array): an image of a field of sub-resolution beads
         background_factor (float, optional): Used to modulate background subtraction. Defaults to 1.25.
-        apply_media (bool, optional): Apply a median filter, use if noise is being segmented as beads
+        apply_median (bool, optional): Apply a median filter, use if noise is being segmented as beads
+        peak_method (int, optional): 1=centroid of label regions, 2=local max
+        thresh (float, optional): threshold for peak detection. Defaults to 0.
     Returns:
     -------
         psf (numpy array): the PSF
@@ -140,17 +143,34 @@ def psf_from_beads(bead_image, background_factor=1.25, apply_median=False):
 
     thresholded = bead_image>threshold_otsu(bead_image)
 
-    centroids = draw_centroids(thresholded,img=bead_image)
+    # peak method is centroid
+    if peak_method==1:
+        centroids = draw_centroids(thresholded,img=bead_image)
+    # peak method is local max
+    elif peak_method==2:
+        # find peaks
+        peaks = peak_local_max(bead_image, min_distance=1, threshold_abs=0.1, exclude_border=False)
 
-    from clij2fft.richardson_lucy import richardson_lucy
-    #from skimage.restoration import richardson_lucy
+        centroids = np.zeros_like(bead_image)
+        # only keep peaks above threshold
+        for peak in peaks:
+            idx = tuple(int(p) for p in peak)
+            if bead_image[idx]>thresh:
+                centroids[idx]=bead_image[idx]
+        
     im_32=bead_image.astype('float32')
     centroids_32=centroids.astype('float32')
     centroids_32 = centroids_32+0.0000001
     centroids_32 = centroids_32/centroids_32.sum()
-    #centroids_32 = centroids_+0.0000001
-    print('call skimage rl')
-    psf=richardson_lucy(im_32, centroids_32, 200)
+    
+    try:
+        from tnia.deconvolution.richardson_lucy import richardson_lucy_cp
+        rl = richardson_lucy_cp
+    except:
+        from clij2fft.richardson_lucy import richardson_lucy
+        rl = richardson_lucy
+
+    psf = rl(im_32, centroids_32, 200)
     psf=psf/psf.sum()
 
     return psf, im_32, centroids_32
@@ -211,7 +231,7 @@ def gaussian_2d(xy_dim, xy_sigma):
 
     return gauss
 
-def recenter_psf_axial(psf, newz, return_labels=False):
+def recenter_psf_axial(psf, newz, use_centroid=False, return_labels=False):
     """ recenters a PSF.   Useful for recentering a theoretical PSF that was generated at off center z location (often done when modelling spherical aberration) 
     
     Note currently the center is an approximation, in the future this could be improved by using the float center and interpolation 
@@ -220,24 +240,30 @@ def recenter_psf_axial(psf, newz, return_labels=False):
     ----------
         psf (numpy array): array with off center PSF
         newz (int): desired new z size after centering PSF
+        use_centroid (bool, optional): use the centroid of the PSF to center it. Defaults to False.
+        return_labels (bool, optional): return the labels from the segmentation. Defaults to False.
 
     Returns:
     -------
         [numpy array]: centered PSF
     """
-    thresholded = psf>threshold_otsu(psf)
-    labels=label(thresholded)
-    objects = regionprops(labels)
-    #cz=int(objects[0].centroid[0])
-    cz,cy,cx=np.unravel_index(psf.argmax(), psf.shape)
+    
+    # if using centroid, segment the PSF and find the centroid
+    if use_centroid:
+        thresholded = psf>threshold_otsu(psf)
+        labels=label(thresholded)
+        objects = regionprops(labels)
+        cz=int(objects[0].centroid[0])
+    else:
+        cz,cy,cx=np.unravel_index(psf.argmax(), psf.shape)
+    
     start=cz-newz//2
     psf=psf[start:start+newz,:,:]
 
-    if return_labels:
+    if use_centroid and return_labels:
         return psf, labels
     else:
         return psf
-
      
 def gibson_lanni_3D_old(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
     m_params = msPSF.m_params
