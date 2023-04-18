@@ -171,11 +171,11 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
         zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
 
-    ax0.imshow(xy, colormap, vmax=vmax)
+    ax0.imshow(xy, colormap, vmax=vmax, extent=[0,xdim*sxy,0,ydim*sxy])
     ax0.set_title('xy')
-    ax1.imshow(zy, colormap, vmax=vmax)
+    ax1.imshow(zy, colormap, vmax=vmax, extent=[0,zdim*sz,0,ydim*sxy])
     ax1.set_title('zy')
-    ax2.imshow(xz, colormap, vmax=vmax)
+    ax2.imshow(xz, colormap, vmax=vmax, extent=[0,xdim*sxy,0,zdim*sz])
     ax2.set_title('xz')
 
     return fig
@@ -237,10 +237,9 @@ def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
         #xz=resize(xz, (int(xz.shape[0]*z_xy_ratio), xz.shape[1]))
         zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
-
-    ax0.imshow(xy, colormap, vmax=vmax)
+    ax0.imshow(xy, colormap, vmax=vmax, extent = [0, xdim*sxy, 0, ydim*sxy])
     ax0.set_title('xy')
-    ax1.imshow(zy, colormap, vmax=vmax)
+    ax1.imshow(zy, colormap, vmax=vmax, extent = [0, zdim*sz, 0, ydim*sxy])
     ax1.set_title('zy')
 
     return fig
