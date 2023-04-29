@@ -55,7 +55,7 @@ def sphere_fits(large_arr, small_arr,x,y,z):
 
 def add_small_to_large(large_arr, small_arr,x,y,z, check_empty=False):
   # Get the dimensions of the arrays
-    l, w, h = large_arr.shape
+    l, h, w = large_arr.shape
     sl, sw, sh = small_arr.shape
 
     # Calculate the start and end indices for the small array in each dimension
