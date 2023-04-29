@@ -9,6 +9,10 @@ import sdeconv
 from skimage.measure import label
 from skimage.measure import regionprops
 from skimage.feature import peak_local_max
+from skimage.transform import resize
+from skimage.io import imread
+import json
+from tnia.nd.ndutil import centercrop
 
 def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False):
     """
@@ -264,6 +268,59 @@ def recenter_psf_axial(psf, newz, use_centroid=False, return_labels=False):
         return psf, labels
     else:
         return psf
+
+def load_psf(path_):
+    """ loads a PSF
+
+    it is assumed that under the directory path_ there is a file called psf.tif, and a file called psf.json.  The json file contains the metadata for the PSF
+
+    Parameters:
+    ----------
+        path_ (str): path to the PSF
+
+    Returns:
+    -------
+        [numpy array]: PSF
+        dict: metadata for the PSF
+    """
+    psf = imread(path_+'//psf.tif')
+    json_ = json.load(open(path_+'//psf.json'))
+    return psf, json_
+
+def load_and_resize_psf(path_, new_spacing=None, new_size = None):
+    """ loads a PSF and resizes it to a new size and spacing
+
+    it is assumed that under the directory path_ there is a file called psf.tif, and a file called psf.json.  The json file contains the metadata for the PSF
+
+    Parameters:
+    ----------
+        path_ (str): path to the PSF
+        new_spacing (float): new spacing of the PSF
+        new_size (int): new size of the PSF
+
+    Returns:
+    -------
+        [numpy array]: resized PSF
+    """
+    psf, json_ = load_psf(path_)
+
+    if new_spacing is not None:
+        xy_spacing = json_.get('xy_spacing', 1)
+        z_spacing = json_.get('z_spacing', 1)
+
+        # rescale the PSF
+        new_x = int(psf.shape[2]*xy_spacing/new_spacing[2])
+        new_y = int(psf.shape[1]*xy_spacing/new_spacing[1])
+        new_z = int(psf.shape[0]*z_spacing/new_spacing[0])
+
+        psf = resize(psf, (new_z,new_y,new_x), order=1, mode='constant', cval=0, clip=True, preserve_range=True, anti_aliasing=True)
+
+    # if new size is not none, crop the PSF
+    if new_size is not None:
+        psf = centercrop(psf, new_size[2]) 
+    psf = psf/psf.sum()
+
+    return psf
      
 def gibson_lanni_3D_old(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl):
     m_params = msPSF.m_params
