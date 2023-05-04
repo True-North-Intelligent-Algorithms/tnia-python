@@ -24,8 +24,13 @@ def show_xyz_slice_interactive(im, sxy=1, sz=1,figsize=(10,10), colormap=None, v
         maximum value to use for the colormap
     """
     def display(x,y,z):
-        show_xyz_slice(im, x, y, z, sxy, sz,figsize, colormap, vmax)
-
+        fig = show_xyz_slice(im, x, y, z, sxy, sz,figsize, colormap, vmax)
+        fig.axes[0].axvline(x, color='r')
+        fig.axes[0].axhline(y, color='r')
+        fig.axes[1].axvline(z, color='r')
+        fig.axes[1].axhline(y, color='r')
+        fig.axes[2].axvline(x, color='r')
+        fig.axes[2].axhline(z, color='r')
     x_slider = IntSlider(min=0, max=im.shape[2]-1, step=1, value=im.shape[2]//2)
     y_slider = IntSlider(min=0, max=im.shape[1]-1, step=1, value=im.shape[1]//2)
     z_slider = IntSlider(min=0, max=im.shape[0]-1, step=1, value=im.shape[0]//2)
