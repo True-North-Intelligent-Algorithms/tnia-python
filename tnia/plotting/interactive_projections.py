@@ -2,7 +2,7 @@
 from ipywidgets import interact, IntSlider, FloatRangeSlider
 from tnia.plotting.projections import show_xyz_slice
 
-def show_xyz_slice_interactive(im, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
+def show_xyz_slice_interactive(im, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
     """
     Display an interactive widget to explore a 3D image by showing a slice in the x, y, and z directions.
 
@@ -24,7 +24,7 @@ def show_xyz_slice_interactive(im, sxy=1, sz=1,figsize=(10,10), colormap=None, v
         maximum value to use for the colormap
     """
     def display(x,y,z):
-        fig = show_xyz_slice(im, x, y, z, sxy, sz,figsize, colormap, vmax)
+        fig = show_xyz_slice(im, x, y, z, sxy, sz,figsize, colormap, vmax, gamma)
         fig.axes[0].axvline(x, color='r')
         fig.axes[0].axhline(y, color='r')
         fig.axes[1].axvline(z, color='r')

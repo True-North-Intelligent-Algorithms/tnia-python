@@ -2,29 +2,9 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import numpy as np
 from skimage.transform import resize
+from matplotlib.colors import PowerNorm
 
-def show_xyz_max_clij(image_to_show, labels=False):
-    """
-    This function generates three projections using clij, in X-, Y- and Z-direction and shows them.
-    """
-    import pyclesperanto_prototype as cle
-    fig=plt.figure(figsize=(10,10))
-
-    spec=gridspec.GridSpec(ncols=2, nrows=2, height_ratios=[258,100], width_ratios=[258,100])
-
-    ax0=fig.add_subplot(spec[0])
-    ax1=fig.add_subplot(spec[1])
-    ax2=fig.add_subplot(spec[2])
-
-    projection_x = cle.maximum_x_projection(image_to_show)
-    projection_y = cle.maximum_y_projection(image_to_show)
-    projection_z = cle.maximum_z_projection(image_to_show)
-
-    ax0.imshow(projection_z)
-    ax1.imshow(projection_x)
-    ax2.imshow(projection_y)
-
-def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
+def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None):
     """ extracts xy, and zy center slices of a 3D image and plots them
 
     Args:
@@ -36,9 +16,9 @@ def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmax
         vmax (float, optional): maximum value for display range. Defaults to None.
     """
 
-    return show_xy_zy_slice(im, int(im.shape[2]/2), int(im.shape[1]/2), int(im.shape[0]/2), sxy, sz, figsize, colormap, vmax)
+    return show_xy_zy_slice(im, int(im.shape[2]/2), int(im.shape[1]/2), int(im.shape[0]/2), sxy, sz, figsize, colormap, vmax, gamma)
 
-def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
+def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None):
     """ extracts xy, and zy slices at x, y, z of a 3D image and plots them
 
     Args:
@@ -56,9 +36,9 @@ def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colorma
     slice_zy = np.flip(np.rot90(image_to_show[:,:,x],1),0)
     slice_xy = image_to_show[z,:,:]
 
-    return show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize, colormap, vmax)
+    return show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize, colormap, vmax, gamma)
 
-def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=None, vmax=None):
+def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=None, vmax=None, gamma=None):
     """ extracts xy, xz, and zy slices at center of a 3D image and plots them
 
     Args:
@@ -75,9 +55,9 @@ def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=
     yc=int(image_to_show.shape[1]/2)
     zc=int(image_to_show.shape[0]/2)
 
-    return show_xyz_slice(image_to_show, xc, yc, zc, sxy, sz,figsize, colormap, vmax)
+    return show_xyz_slice(image_to_show, xc, yc, zc, sxy, sz,figsize, colormap, vmax, gamma)
 
-def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
+def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
     """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
 
     Args:
@@ -96,9 +76,9 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap
     slice_xz = image_to_show[:,y,:]
     slice_xy = image_to_show[z,:,:]
 
-    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap, vmax)
+    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap, vmax, gamma)
 
-def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
+def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
     """ plots max xy, xz, and zy projections of a 3D image
 
     Args:
@@ -112,10 +92,10 @@ def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax
  
     return show_xyz_projection(image_to_show, sxy, sz, figsize, np.max, colormap, vmax)
  
-def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
-    show_xyz_projection(image_to_show, sxy, sz, figsize, np.sum, colormap, vmax)
+def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
+    show_xyz_projection(image_to_show, sxy, sz, figsize, np.sum, colormap, vmax, gamma)
     
-def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np.max, colormap=None, vmax=None):
+def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np.max, colormap=None, vmax=None, gamma=None):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
 
     Args:
@@ -131,9 +111,9 @@ def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np
     projection_x = np.flip(np.rot90(projector(image_to_show,2),1),0)
     projection_z = projector(image_to_show,0)
 
-    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap, vmax)
+    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap, vmax, gamma)
 
-def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
+def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
     """ shows pre-computed xy, xz and zy of a 3D image in a plot
 
     Args:
@@ -170,19 +150,27 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None):
         xz=resize(xz, (int(xz.shape[0]*z_xy_ratio), xz.shape[1]))
         zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
-
-    ax0.imshow(xy, colormap, vmax=vmax, extent=[0,xdim*sxy,0,ydim*sxy])
-    ax0.set_title('xy')
-    ax1.imshow(zy, colormap, vmax=vmax, extent=[0,zdim*sz,0,ydim*sxy])
-    ax1.set_title('zy')
-    ax2.imshow(xz, colormap, vmax=vmax, extent=[0,xdim*sxy,0,zdim*sz])
-    ax2.set_title('xz')
+    if gamma is None:
+        ax0.imshow(xy, colormap, vmax=vmax, extent=[0,xdim*sxy,0,ydim*sxy])
+        ax0.set_title('xy')
+        ax1.imshow(zy, colormap, vmax=vmax, extent=[0,zdim*sz,0,ydim*sxy])
+        ax1.set_title('zy')
+        ax2.imshow(xz, colormap, vmax=vmax, extent=[0,xdim*sxy,0,zdim*sz])
+        ax2.set_title('xz')
+    else:
+        norm=PowerNorm(gamma=gamma, vmax=vmax)
+        ax0.imshow(xy, colormap, norm=norm, extent=[0,xdim*sxy,0,ydim*sxy])
+        ax0.set_title('xy')
+        ax1.imshow(zy, colormap, norm=norm, extent=[0,zdim*sz,0,ydim*sxy])
+        ax1.set_title('zy')
+        ax2.imshow(xz, colormap, norm=norm, extent=[0,xdim*sxy,0,zdim*sz])
+        ax2.set_title('xz')
 
     return fig
 
 
 # Copyright tnia 2021 - BSD License
-def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None ):
+def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None ):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
 
     Args:
@@ -196,11 +184,11 @@ def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3), colormap=None, vma
     projection_x = np.flip(np.rot90(np.max(image_to_show,2),1),0)
     projection_z = np.max(image_to_show,0)
 
-    return show_xy_zy(projection_z, projection_x, sxy, sz, figsize, colormap, vmax)
+    return show_xy_zy(projection_z, projection_x, sxy, sz, figsize, colormap, vmax, gamma)
 
 
 # Copyright tnia 2021 - BSD License
-def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
+def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None):
     """ shows pre-computed xy, xz and zy of a 3D image in a plot
 
     Args:
@@ -237,10 +225,17 @@ def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None):
         #xz=resize(xz, (int(xz.shape[0]*z_xy_ratio), xz.shape[1]))
         zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
-    ax0.imshow(xy, colormap, vmax=vmax, extent = [0, xdim*sxy, 0, ydim*sxy])
-    ax0.set_title('xy')
-    ax1.imshow(zy, colormap, vmax=vmax, extent = [0, zdim*sz, 0, ydim*sxy])
-    ax1.set_title('zy')
-
+    if gamma is None:
+        ax0.imshow(xy, colormap, vmax=vmax, extent = [0, xdim*sxy, 0, ydim*sxy])
+        ax0.set_title('xy')
+        ax1.imshow(zy, colormap, vmax=vmax, extent = [0, zdim*sz, 0, ydim*sxy])
+        ax1.set_title('zy')
+    else:
+        norm = PowerNorm(gamma=gamma, vmin=0, vmax=vmax)
+        ax0.imshow(xy, colormap, norm=norm, extent = [0, xdim*sxy, 0, ydim*sxy])
+        ax0.set_title('xy')
+        ax1.imshow(zy, colormap, norm=norm, extent = [0, zdim*sz, 0, ydim*sxy])
+        ax1.set_title('zy')
+    
     return fig
 
