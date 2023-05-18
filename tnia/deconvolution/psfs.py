@@ -14,7 +14,7 @@ from skimage.io import imread
 import json
 from tnia.nd.ndutil import centercrop
 
-def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False):
+def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False, use_psfm=False):
     """
        Generates a 3D PSF using the Gibson-Lanni model.
 
@@ -46,27 +46,32 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
             psf : ndarray
     """ 
     
-    version_list=sdeconv.__version__.split('.')
-    
-    if version_list[0] == '0':
-        print('sdeconv 0.x.x detected')
-        from sdeconv.deconv import PSFGibsonLanni
-        gl = PSFGibsonLanni((z_size, xy_size, xy_size),1000*voxel_size_xy, 1000*voxel_size_z, NA, 1000)
-        psf = gl.run()
-    elif version_list[0] == '1':
-        print('sdeconv 1.x.x detected')
-        from sdeconv.psfs import SPSFGibsonLanni
+    if use_psfm:
+        import psfmodels as psfm
+        psf = psfm.make_psf(z_size, xy_size, model='scalar', dxy=voxel_size_xy, dz=voxel_size_z, pz=pz, ni0=ni, ni=ni, ns=ns, NA=NA, wvl=wvl)
+        return psf
+    else:
+        version_list=sdeconv.__version__.split('.')
+        
+        if version_list[0] == '0':
+            print('sdeconv 0.x.x detected')
+            from sdeconv.deconv import PSFGibsonLanni
+            gl = PSFGibsonLanni((z_size, xy_size, xy_size),1000*voxel_size_xy, 1000*voxel_size_z, NA, 1000)
+            psf = gl.run()
+        elif version_list[0] == '1':
+            print('sdeconv 1.x.x detected')
+            from sdeconv.psfs import SPSFGibsonLanni
 
-        gl = SPSFGibsonLanni((z_size, xy_size, xy_size), NA=NA, ni=ni, ni0=ni, ns=ns, res_lateral=voxel_size_xy, res_axial=voxel_size_z, wavelength=wvl, pZ=pz)
-        psf=gl()
-        psf_=psf.cpu()
-        psf= psf_.numpy()
-    
-    psf = psf.astype('float32')
-    if (confocal):
-        psf=psf*psf
-    psf = psf/psf.sum()
-    return psf
+            gl = SPSFGibsonLanni((z_size, xy_size, xy_size), NA=NA, ni=ni, ni0=ni, ns=ns, res_lateral=voxel_size_xy, res_axial=voxel_size_z, wavelength=wvl, pZ=pz)
+            psf=gl()
+            psf_=psf.cpu()
+            psf= psf_.numpy()
+        
+        psf = psf.astype('float32')
+        if (confocal):
+            psf=psf*psf
+        psf = psf/psf.sum()
+        return psf
 
         #Note this function inspired by code from https://github.com/jdmanton/rl_positivity_sim by James Manton
 def paraxial_otf(n, wavelength, numerical_aperture, pixel_size):
