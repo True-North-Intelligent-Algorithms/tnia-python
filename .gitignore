@@ -135,3 +135,8 @@ dmypy.json
 
 # Jekyll
 _site/
+
+notebooks/Deconvolution/CZNIH/
+
+# ignore .h5 files
+*.h5
