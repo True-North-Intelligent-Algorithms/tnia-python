@@ -151,17 +151,17 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, 
         zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
     if gamma is None:
-        ax0.imshow(xy, colormap, vmax=vmax, extent=[0,xdim*sxy,0,ydim*sxy])
+        ax0.imshow(xy, colormap, vmax=vmax, extent=[0,xdim*sxy,ydim*sxy,0])
         ax0.set_title('xy')
-        ax1.imshow(zy, colormap, vmax=vmax, extent=[0,zdim*sz,0,ydim*sxy])
+        ax1.imshow(zy, colormap, vmax=vmax, extent=[0,zdim*sz,ydim*sxy,0])
         ax1.set_title('zy')
         ax2.imshow(xz, colormap, vmax=vmax, extent=[0,xdim*sxy,0,zdim*sz])
         ax2.set_title('xz')
     else:
         norm=PowerNorm(gamma=gamma, vmax=vmax)
-        ax0.imshow(xy, colormap, norm=norm, extent=[0,xdim*sxy,0,ydim*sxy])
+        ax0.imshow(xy, colormap, norm=norm, extent=[0,xdim*sxy,ydim*sxy,0])
         ax0.set_title('xy')
-        ax1.imshow(zy, colormap, norm=norm, extent=[0,zdim*sz,0,ydim*sxy])
+        ax1.imshow(zy, colormap, norm=norm, extent=[0,zdim*sz,ydim*sxy,0])
         ax1.set_title('zy')
         ax2.imshow(xz, colormap, norm=norm, extent=[0,xdim*sxy,0,zdim*sz])
         ax2.set_title('xz')
@@ -226,15 +226,15 @@ def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gam
         zy=resize(zy, (zy.shape[0], int(zy.shape[1]*z_xy_ratio)))
 
     if gamma is None:
-        ax0.imshow(xy, colormap, vmax=vmax, extent = [0, xdim*sxy, 0, ydim*sxy])
+        ax0.imshow(xy, colormap, vmax=vmax, extent = [0, xdim*sxy, ydim*sxy,0])
         ax0.set_title('xy')
-        ax1.imshow(zy, colormap, vmax=vmax, extent = [0, zdim*sz, 0, ydim*sxy])
+        ax1.imshow(zy, colormap, vmax=vmax, extent = [0, zdim*sz, ydim*sxy,0])
         ax1.set_title('zy')
     else:
         norm = PowerNorm(gamma=gamma, vmin=0, vmax=vmax)
-        ax0.imshow(xy, colormap, norm=norm, extent = [0, xdim*sxy, 0, ydim*sxy])
+        ax0.imshow(xy, colormap, norm=norm, extent = [0, xdim*sxy, ydim*sxy,0])
         ax0.set_title('xy')
-        ax1.imshow(zy, colormap, norm=norm, extent = [0, zdim*sz, 0, ydim*sxy])
+        ax1.imshow(zy, colormap, norm=norm, extent = [0, zdim*sz, ydim*sxy,0])
         ax1.set_title('zy')
     
     return fig
