@@ -40,6 +40,8 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
                 Wavelength of the light in microns.
             confocal : bool
                 If True, the PSF is convolved with itself to simulate a confocal PSF.
+            use_psfm : bool
+                If True, the PSF is generated using the psfmodels package. Otherwise, the PSF is generated using sdeconv.
 
             Returns
             -------
