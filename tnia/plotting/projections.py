@@ -155,7 +155,7 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, 
         ax0.set_title('xy')
         ax1.imshow(zy, colormap, vmax=vmax, extent=[0,zdim*sz,ydim*sxy,0])
         ax1.set_title('zy')
-        ax2.imshow(xz, colormap, vmax=vmax, extent=[0,xdim*sxy,0,zdim*sz])
+        ax2.imshow(xz, colormap, vmax=vmax, extent=[0,xdim*sxy,zdim*sz,0])
         ax2.set_title('xz')
     else:
         norm=PowerNorm(gamma=gamma, vmax=vmax)
@@ -163,7 +163,7 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, 
         ax0.set_title('xy')
         ax1.imshow(zy, colormap, norm=norm, extent=[0,zdim*sz,ydim*sxy,0])
         ax1.set_title('zy')
-        ax2.imshow(xz, colormap, norm=norm, extent=[0,xdim*sxy,0,zdim*sz])
+        ax2.imshow(xz, colormap, norm=norm, extent=[0,xdim*sxy,zdim*sz,0])
         ax2.set_title('xz')
 
     return fig
