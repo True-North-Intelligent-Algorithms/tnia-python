@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import PowerNorm
 
 def random_label_cmap(n=2**16, h = (0,1), l = (.4,1), s =(.2,.8)):
     import matplotlib
@@ -26,7 +27,7 @@ def imshow2d(im, width=8, height=6, colormap=None, vmin=None, vmax=None):
     ax.imshow(im, colormap, vmin=vmin, vmax=vmax)
     return fig
 
-def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormap=None, vmin=None, vmax=None):
+def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormap=None, vmin=None, vmax=None, gamma=None):
     """ a little helper to show a grid of images of differnt sizes using pyplot.  Just makes calls to imshow more readable. 
 
     Args:
@@ -46,7 +47,13 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormap=None, v
         #print('types')
         #print(type(im), type(ax), type(title))
         #print()
-        ax.imshow(im, colormap,vmin=vmin, vmax=vmax)
+
+        if gamma is not None:
+            norm = PowerNorm(gamma=gamma, vmin=vmin, vmax=vmax)
+            ax.imshow(im, colormap,norm=norm)
+        else:
+            ax.imshow(im, colormap,vmin=vmin, vmax=vmax)
+
         ax.set_title(title)
 
     return fig 
