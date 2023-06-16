@@ -55,6 +55,8 @@ def forward(field, psf, background_level, add_poisson=True, gpu=False):
         return field_imaged    
     else:
         # perform forward imaging on GPU, using cupy, del and mempool.free_all_blocks() is used to delete variables and free memory
+
+        # TODO: consider smarter imports so we aren't constantly importing cupy (right now it is moved here to avoid import errors running numpy version when cupy isn't installed)
         import cupy as cp
         
         temp = ifftshift(psf)
