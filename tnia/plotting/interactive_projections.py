@@ -25,12 +25,12 @@ def show_xyz_slice_interactive(im, sxy=1, sz=1,figsize=(10,10), colormap=None, v
     """
     def display(x,y,z):
         fig = show_xyz_slice(im, x, y, z, sxy, sz,figsize, colormap, vmax, gamma)
-        fig.axes[0].axvline(x, color='r')
-        fig.axes[0].axhline(y, color='r')
-        fig.axes[1].axvline(z, color='r')
-        fig.axes[1].axhline(y, color='r')
-        fig.axes[2].axvline(x, color='r')
-        fig.axes[2].axhline(z, color='r')
+        fig.axes[0].axvline(x*sxy+0.5, color='r')
+        fig.axes[0].axhline(y*sxy+0.5, color='r')
+        fig.axes[1].axvline(z*sz+0.5*sz, color='r')
+        fig.axes[1].axhline(y*sxy+0.5, color='r')
+        fig.axes[2].axvline(x*sxy+0.5, color='r')
+        fig.axes[2].axhline(z*sz+0.5*sz, color='r')
     x_slider = IntSlider(min=0, max=im.shape[2]-1, step=1, value=im.shape[2]//2)
     y_slider = IntSlider(min=0, max=im.shape[1]-1, step=1, value=im.shape[1]//2)
     z_slider = IntSlider(min=0, max=im.shape[0]-1, step=1, value=im.shape[0]//2)
