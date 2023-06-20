@@ -19,6 +19,7 @@
               <li><a href="{{ site.baseurl }}/docs/3rdpartytools/opencv">OpenCV</a></li>
               <li><a href="{{ site.baseurl }}/docs/3rdpartytools/boost">Boost</a></li>
               <li><a href="{{ site.baseurl }}/docs/3rdpartytools/inteloneapi">Intel oneAPI</a></li>
+              <li><a href="{{ site.baseurl }}/docs/3rdpartytools/cuda">Cuda</a></li>
             {% include section-end %} 
             
             {% include section title="Napari" link="/" %}
