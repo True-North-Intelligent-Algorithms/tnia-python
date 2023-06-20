@@ -16,7 +16,8 @@ See https://forums.developer.nvidia.com/t/how-to-uninstall-cuda-toolkit-and-cudn
 
 1.  It seems like you need to be careful that all paths are set correctly.  This includes the following.  Be careful that CUDACXX points to the executable of the compiler, not just the path.  
 
- export PATH="/usr/local/cuda-11.7/bin:$PATH"
- export LD_LIBRARY_PATH="/usr/local/cuda-11.7/lib64:$L  D_LIBRARY_PATH"
- export CUDA_PATH='/usr/local/cuda-11.7/'
- export CUDACXX='/usr/local/cuda-11.7/bin/nvcc'
+ export PATH="/usr/local/cuda-11.7/bin:$PATH"  
+ export LD_LIBRARY_PATH="/usr/local/cuda-11.7/lib64:$L  D_LIBRARY_PATH"  
+ export CUDA_PATH='/usr/local/cuda-11.7/'  
+ export CUDACXX='/usr/local/cuda-11.7/bin/nvcc'  
+ 
