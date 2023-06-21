@@ -5,7 +5,6 @@ from numpy.fft import ifftn, ifftshift, fftshift
 from tnia.segmentation.rendering import draw_centroids 
 from skimage.filters import median
 from skimage.morphology import cube
-import sdeconv
 from skimage.measure import label
 from skimage.measure import regionprops
 from skimage.feature import peak_local_max
@@ -53,6 +52,7 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
         psf = psfm.make_psf(z_size, xy_size, model='scalar', dxy=voxel_size_xy, dz=voxel_size_z, pz=pz, ni0=ni, ni=ni, ns=ns, NA=NA, wvl=wvl)
         return psf
     else:
+        import sdeconv
         version_list=sdeconv.__version__.split('.')
         
         if version_list[0] == '0':
