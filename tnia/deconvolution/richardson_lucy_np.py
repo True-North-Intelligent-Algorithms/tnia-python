@@ -5,16 +5,18 @@ from tnia.deconvolution.pad import pad, unpad
 def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None):
     """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses numpy
 
+    Note: NumPy FFT functions always cast 32 bit arrays to float64, so passing in 32 bit arrays to save memory will not work. 
+
     Args:
-        image [numpy 32 bit float array]: the image to be deconvolved 
-        psf [numpy 32 bit float array]: the point spread function
+        image [numpy float array]: the image to be deconvolved 
+        psf [numpy float array]: the point spread function
         num_iters (int): the number of iterations to perform
         noncirc (bool, optional): If true use non-circulant edge handling. Defaults to False.
-        mask (numpy 32 bit float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
+        mask (numpy float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
             'bad' pixels will be zeroed during the deconvolution and then replaced with the original value after the deconvolution.
 
     Returns:
-        [numpy 32 bit float array]: the deconvolved image
+        [numpy float array]: the deconvolved image
     """
     
     # if noncirc==False and (image.shape != psf.shape) then pad the psf

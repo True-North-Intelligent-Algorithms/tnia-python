@@ -5,17 +5,20 @@ from tnia.deconvolution.pad import pad, unpad
 
 def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
     """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses cupy
+    
+    Note: Cupy FFT behavior is different than numpy.  Cupy FFT always returns real arrays of type float32 and complex of type complex64.
+    So using 64 bit inputs for more precision will not work. 
 
     Args:
-        image [numpy 32 bit float array]: the image to be deconvolved 
-        psf [numpy 32 bit float array]: the point spread function
+        image [numpy float array]: the image to be deconvolved 
+        psf [numpy float array]: the point spread function
         num_iters (int): the number of iterations to perform
         noncirc (bool, optional): If true use non-circulant edge handling. Defaults to False.
-        mask (numpy 32 bit float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
+        mask (numpy float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
             'bad' pixels will be zeroed during the deconvolution and then replaced with the original value after the deconvolution.
 
     Returns:
-        [numpy 32 bit float array]: the deconvolved image
+        [numpy float array]: the deconvolved image
     """
     
     # if noncirc==False and (image.shape != psf.shape) then pad the psf
@@ -83,16 +86,19 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
 def richardson_lucy_cp_rfft(image, psf, num_iters, noncirc=False, mask=None):
     """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses cupy
 
+    Note: Cupy FFT behavior is different than numpy.  Cupy FFT always returns real arrays of type float32 and complex of type complex64.
+    So using 64 bit inputs for more precision will not work. 
+
     Args:
-        image [numpy 32 bit float array]: the image to be deconvolved 
-        psf [numpy 32 bit float array]: the point spread function
+        image [numpy float array]: the image to be deconvolved 
+        psf [numpy float array]: the point spread function
         num_iters (int): the number of iterations to perform
         noncirc (bool, optional): If true use non-circulant edge handling. Defaults to False.
-        mask (numpy 32 bit float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
+        mask (numpy float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
             'bad' pixels will be zeroed during the deconvolution and then replaced with the original value after the deconvolution.
 
     Returns:
-        [numpy 32 bit float array]: the deconvolved image
+        [numpy float array]: the deconvolved image
     """
     
     # if noncirc==False and (image.shape != psf.shape) then pad the psf
@@ -155,25 +161,4 @@ def richardson_lucy_cp_rfft(image, psf, num_iters, noncirc=False, mask=None):
         estimate = estimate*mask + mask_values
     
     return estimate
- 
-# WIP code for numpy version 
-def richardson_lucy_np(image, psf, num_iters):
-    if (image.shape != psf.shape):
-        print('padding psf')
-        psf,_=pad(psf, image.shape, 'constant')
-   
-    otf = fftn(fftshift(psf))
-    otf_ = np.conjugate(otf)    
-    estimate = image#np.ones(image.shape)/image.sum()
-
-    print()
-    for i in range(num_iters):
-        print(i, end =" ")
-        reblurred = np.real(ifftn(fftn(estimate) * otf))
-        ratio = image / (reblurred + 1e-30)
-        correction =  np.real((ifftn(fftn(ratio) * otf_)).astype(float))
-        estimate = estimate * correction
-    print()
-    return estimate
-
-   
+  
