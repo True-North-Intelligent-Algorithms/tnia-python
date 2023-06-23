@@ -112,7 +112,7 @@ def mask_small_to_large(large_arr, small_arr,x,y,z):
     large_arr[slice_z, slice_y, slice_x] = 0 
 
 
-def add_sphere3d(im, radius, x_center, y_center, z_center, intensity=1, z_down_sample=1):
+def add_sphere3d(img, radius, x_center, y_center, z_center, intensity=1, z_down_sample=1):
     """Adds a sphere to a 3D numpy array.
 
     Args:
@@ -127,17 +127,11 @@ def add_sphere3d(im, radius, x_center, y_center, z_center, intensity=1, z_down_s
     Returns:
         None
     """
-    sphere = intensity * rg.sphere([radius*2, radius*2, radius*2], radius).astype(np.float32)
-    sphere = sphere[::z_down_sample, :, :]
-    size = sphere.shape
-    z_start = z_center - size[0] // 2
-    z_end =  z_start + size[0]
-    y_start = y_center - size[1] // 2
-    y_end = y_start + size[1]
-    x_start = x_center - size[2] // 2
-    x_end = x_start + size[2]
-    im[z_start:z_end, y_start:y_end, x_start:x_end] = sphere
 
+    size = [2*radius, 2*radius, 2*radius]
+    sphere = rg.sphere(size, radius).astype(np.float32)
+    add_small_to_large(img, intensity*sphere, x_center, y_center, z_center, True)
+    
 def ramp2d(shape,min,max):
     """ create an image of a 2D ramp to simulate uneven background
 
