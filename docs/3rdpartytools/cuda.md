@@ -4,6 +4,18 @@ layout: basic
 
 ## Notes for installing Cuda on Ubuntu
 
+There are different ways to install.  Cuda can be installed by package manager (apt) or by downloading Cuda from NVIDIA's website.  
+
+## Nvidia drivers
+
+Use 'nvidia-smi' command to check if driver is installed.  If installed a print-out of device and driver information will be shown. 
+
+If Nvidia drivers are not installed by the installer they can be installed with the 'ubuntu-drivers' tool.  Documentation can be found [here](https://help.ubuntu.com/community/NvidiaDriversInstallation)
+
+## Uninstalling
+
+You have to remember how you installed Cuda if uninstalling
+
 1.  Note that there are different ways to install, and you have to remember how you installed Cuda if uninstalling.  Cuda can be installed by package manager (apt) or by downloading Cuda from NVIDIA's website.  
 2.  If downloading from the web site, you need to extract and run the 'uninstaller'.
 
