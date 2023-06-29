@@ -28,6 +28,7 @@
             
             {% include section title="Python Packaging" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/packaging/packaging">Packaging Notes</a></li>
+                  <li><a href="{{ site.baseurl }}/docs/packaging/conda">Conda Notes</a></li>
             {% include section-end %} 
  
             {% include section title="Example Tests" link="/" %}
