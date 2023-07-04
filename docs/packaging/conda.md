@@ -16,7 +16,7 @@ conda list --revisions
 
 then roll back to an earlier revision.  Often it makes sense to roll back base to revision 0, as we don't ussually want to install anything in base
 
-To roll back to revision 0 
+To roll back to revision 0 (Note: if you have installed packages you use in base, then take an inventory of these packages before rolling back, and install them in a new environment). 
 
 ```
 conda install --revision 0
