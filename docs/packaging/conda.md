@@ -1,3 +1,7 @@
+---
+layout: basic
+---
+
 ## Dealing with extruciatingly slow Conda update
 
 Common advice is to update conda with ```conda update conda``` or use [mamba](https://anaconda.org/conda-forge/mamba) ```conda install -c conda-forge mamba```.  
