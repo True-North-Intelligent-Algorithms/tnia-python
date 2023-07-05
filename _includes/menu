@@ -9,7 +9,13 @@
         <ul>
 
         <li><a href="https://github.com/True-North-Intelligent-Algorithms/tnia-python">Github</a></li>
-            {% include section title="Command Line" link="/" %}
+
+            {% include section title="Setting up machines" link="/" %}
+              <li><a href="{{ site.baseurl }}/docs/machinesetup/deconvolution_dl_nvidia_windows">Decon DL Nvidia Windows</a></li>
+              <li><a href="{{ site.baseurl }}/docs/machinesetup/deconvolution_dl_nvidia_linux">Decon DL Nvidia Linux</a></li>
+            {% include section-end %} 
+
+          {% include section title="Command Line" link="/" %}
               <li><a href="{{ site.baseurl }}/docs/commandline/grep">Grep Hints</a></li>
               <li><a href="{{ site.baseurl }}/docs/commandline/bashgeneral">General Bash Hints</a></li>
               <li><a href="{{ site.baseurl }}/docs/commandline/ubuntu">Ubuntu Hints</a></li>
