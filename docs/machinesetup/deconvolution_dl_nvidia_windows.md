@@ -18,7 +18,7 @@ After disabling IE enhanced security optionally install Chrome.
 
 Install the newest nvidia drivers from [here](https://www.nvidia.com/download/index.aspx).   You will be asked for product type and series.  
 
-For AWS ec2 machines the AWS G5 series of P3 series are often used for high performance GPU processing and machine learning.   Double check what type of GPU your instance is using.  G5 series uses Tesla A10G.  
+For AWS ec2 machines the AWS G5 series or the P3 series are often used for high performance GPU processing and machine learning.   Double check what type of GPU your instance is using.  G5 series uses Tesla A10G.  
 
 You will have to choose Cuda Tooklit.   Not sure if it matters what version...  
 
