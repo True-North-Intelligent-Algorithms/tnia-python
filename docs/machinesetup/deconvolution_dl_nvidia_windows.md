@@ -29,7 +29,7 @@ See [here](https://docs.conda.io/en/latest/miniconda.html)
 ### Install Git for Windows
 
 https://gitforwindows.org/
-e
+
 ## Install Visual Studio Code 
 
 Install Visual Studio Code with the following extensions
