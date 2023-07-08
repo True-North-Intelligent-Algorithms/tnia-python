@@ -70,9 +70,9 @@ python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU')
 
 It is important to specify cuda11x to be compatible with cudatoolkit 11.2  
 
-pip install cupy-cuda11x
-pip install stardist
-pip install psfmodels
-pip install --index-url https://test.pypi.org/simple/ --no-deps clij2-fft
+pip install cupy-cuda11x  
+pip install stardist  
+pip install psfmodels  
+pip install --index-url https://test.pypi.org/simple/ --no-deps clij2-fft  
 
 
