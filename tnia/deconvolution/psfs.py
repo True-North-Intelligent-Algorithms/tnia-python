@@ -15,7 +15,9 @@ from tnia.nd.ndutil import centercrop
 
 def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False, use_psfm=False):
     """
-       Generates a 3D PSF using the Gibson-Lanni model.
+       Generates a 3D PSF using the Gibson-Lanni model.  If use_psfm is True the psfmodels implementation will be used.  Otherwise, the sdeconv implementation will be used.
+
+       Note this function does NOT center the result from sdeconv, which is not centered by default.
 
          Parameters
             ----------
@@ -75,7 +77,58 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
         psf = psf/psf.sum()
         return psf
 
-        #Note this function inspired by code from https://github.com/jdmanton/rl_positivity_sim by James Manton
+def gibson_lanni_3D_partial_confocal(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, use_psfm=False, confocal_factor=1):
+    """
+       Generates a 3D PSF using the Gibson-Lanni model.  If use_psfm is True the psfmodels implementation will be used.  Otherwise, the sdeconv implementation will be used.
+
+       Note this function centers the result from sdeconv, which is not centered by default.
+
+         Parameters
+            ----------
+            NA : float
+                Numerical aperture of the objective.
+            ni : float
+                Refractive index of the immersion medium.
+            ns : float
+                Refractive index of the sample.
+            voxel_size_xy : float
+                Voxel size in the xy plane in microns.
+            voxel_size_z : float    
+                Voxel size in the z direction in microns.
+            xy_size : int
+                Number of voxels in the xy plane.
+            z_size : int
+                Number of voxels in the z direction.
+            pz : float
+                Position of the focal plane in microns.
+            wvl : float
+                Wavelength of the light in microns.
+            use_psfm : bool
+                If True, the PSF is generated using the psfmodels package. Otherwise, the PSF is generated using sdeconv.
+            confocal_factor:
+                Factor by which the PSF is raised to the power of.  A value of 1 is a widefield PSF (no change)
+                A value of 2 is a fully confocal PSF (PSF raised to the power of 2).
+                A value between 1 and 2 is an ad-hoc approximation of a partially confocal PSF (this option should be used carefully)
+            Returns
+            -------
+            psf : ndarray
+    """ 
+    if use_psfm:
+        psf = gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, False, True)
+    else:
+        z_compute_psf_dim = z_size+z_size//2
+        z_crop_psf_dim = z_size
+
+        psf = gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_compute_psf_dim, pz, wvl, False, False)
+        psf=recenter_psf_axial(psf, z_crop_psf_dim)
+    
+    psf = psf.astype('float32')
+    psf=psf**confocal_factor
+    psf=psf/psf.sum()
+
+    return psf 
+
+#Note this function inspired by code from https://github.com/jdmanton/rl_positivity_sim by James Manton
 def paraxial_otf(n, wavelength, numerical_aperture, pixel_size):
     """Generates a paraxial OTF for a given wavelength, numerical aperture, and pixel size
 
@@ -185,62 +238,6 @@ def psf_from_beads(bead_image, background_factor=1.25, apply_median=False, peak_
     psf=psf/psf.sum()
 
     return psf, im_32, centroids_32
-
-def gaussian_3d(xy_dim, z_dim, xy_sigma, z_sigma):
-    """ Generates a 3D Gaussian PSF
-
-    Parameters:
-    ----------
-        xy_dim (int): the size of the PSF in the xy plane
-        z_dim (int): the size of the PSF in the z direction
-        xy_sigma (float): the sigma of the Gaussian in the xy plane
-        z_sigma (float): the sigma of the Gaussian in the z direction
-    Returns:
-    -------
-        psf (numpy array): the PSF
-    """
-    muu = 0.0
-    gauss = np.empty([z_dim,xy_dim,xy_dim])
-    x_, y_, z_ = np.meshgrid(np.linspace(-10,10,xy_dim), np.linspace(-10,10,xy_dim), np.linspace(-10,10,z_dim))
-    for x in range(xy_dim):
-        for y in range(xy_dim):
-            for z in range(z_dim):
-                tx=x_[x,y,z]
-                ty=y_[x,y,z]
-                tz=z_[x,y,z]
-            
-                gauss[z,y,x]=np.exp(-( (tx-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )*np.exp(-( (ty-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )*np.exp(-( (tz-muu)**2 / ( 2.0 * z_sigma**2 ) ) )
-
-    gauss=gauss+0.000000000001
-    gauss=gauss/gauss.sum()
-
-    return gauss
-
-def gaussian_2d(xy_dim, xy_sigma):
-    """ Generates a 2D Gaussian PSF
-    
-    Parameters:
-    ----------
-        xy_dim (int): the size of the PSF in the xy plane
-        xy_sigma (float): the sigma of the Gaussian in the xy plane
-    Returns:
-    -------
-        psf (numpy array): the PSF
-    """
-    muu = 0.0
-    gauss = np.empty([xy_dim,xy_dim])
-    x_, y_ = np.meshgrid(np.linspace(-10,10,xy_dim), np.linspace(-10,10,xy_dim))
-    for x in range(xy_dim):
-        for y in range(xy_dim):
-            tx=x_[x,y]
-            ty=y_[x,y]
-            
-            gauss[y,x]=np.exp(-( (tx-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )*np.exp(-( (ty-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )
-
-    gauss=gauss+0.000000000001
-    gauss=gauss/gauss.sum()
-
-    return gauss
 
 def recenter_psf_axial(psf, newz, use_centroid=False, return_labels=False):
     """ recenters a PSF.   Useful for recentering a theoretical PSF that was generated at off center z location (often done when modelling spherical aberration) 
