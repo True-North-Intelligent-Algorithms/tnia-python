@@ -4,29 +4,33 @@ from random import uniform, seed
 import math
 
 def sphere3d(size, radius, intensity=1, z_down_sample=1):
-    sphere=intensity*rg.sphere(size, radius).astype(np.float32)
-
-    return sphere[::z_down_sample,:,::z_down_sample]
-
-def sphere_slice_3d(size, radius, intensity=1, z_down_sample=1):
-    """Returns a slice of a 3D sphere.
+    """ Creates a 3D sphere.
 
     Args:
-        size (list or tuple): The size of the 3D sphere.
+        size (list or tuple): The size of the volume to create.
         radius (float): The radius of the sphere.
         intensity (float, optional): The intensity of the sphere. Default is 1.
         z_down_sample (int, optional): The downsampling factor in the z direction. Default is 1.
-
     Returns:
-        numpy.ndarray: A 2D slice of the 3D sphere.
+        numpy.ndarray: A 3D volume of size 'size' containing a sphere of radius 'radius'.
     """
-    sphere = intensity * rg.sphere(size, radius).astype(np.float32)
-    z_indices = np.arange(0, size[0], z_down_sample)
-    sphere_slice = np.take(sphere, z_indices, axis=0)
-    return sphere_slice[:, :, z_indices]
+    sphere=intensity*rg.sphere(size, radius).astype(np.float32)
+
+    return sphere[::z_down_sample,:,:]
 
 def sphere_fits(large_arr, small_arr,x,y,z):
-  # Get the dimensions of the arrays
+    """ checks if a sphere fits in a larger array
+
+    Args:
+        large_arr (numpy.ndarray): The larger array.
+        small_arr (numpy.ndarray): The smaller array which contains the sphere.
+        x (int): The x coordinate of the center of the sphere.
+        y (int): The y coordinate of the center of the sphere.
+        z (int): The z coordinate of the center of the sphere.
+    Returns:
+        bool: True if the sphere fits in the larger array, False otherwise.
+    """
+    # Get the dimensions of the arrays
     l, w, h = large_arr.shape
     sl, sw, sh = small_arr.shape
 
@@ -54,7 +58,19 @@ def sphere_fits(large_arr, small_arr,x,y,z):
     return True
 
 def add_small_to_large(large_arr, small_arr,x,y,z, check_empty=False):
-  # Get the dimensions of the arrays
+    """ Adds a small array to a larger array.
+
+    Args:
+        large_arr (numpy.ndarray): The larger array.
+        small_arr (numpy.ndarray): The smaller array to add to the larger array.
+        x (int): The x coordinate of the center of the smaller array.
+        y (int): The y coordinate of the center of the smaller array.
+        z (int): The z coordinate of the center of the smaller array.
+        check_empty (bool, optional): If True, the function will check if the overlapping slice is empty before adding the small array. Default is False.
+    Returns:
+        bool: True if the small array was added to the larger array, False otherwise.
+    """
+    # Get the dimensions of the arrays
     l, h, w = large_arr.shape
     sl, sw, sh = small_arr.shape
 
@@ -87,7 +103,17 @@ def add_small_to_large(large_arr, small_arr,x,y,z, check_empty=False):
 
 
 def mask_small_to_large(large_arr, small_arr,x,y,z):
-  # Get the dimensions of the arrays
+    """
+    Masks a small array to a larger array.
+    
+    Args:
+        large_arr (numpy.ndarray): The larger array.
+        small_arr (numpy.ndarray): The smaller array to add to the larger array.
+        x (int): The x coordinate of the center of the smaller array.
+        y (int): The y coordinate of the center of the smaller array.
+        z (int): The z coordinate of the center of the smaller array.
+    """
+    # Get the dimensions of the arrays
     l, w, h = large_arr.shape
     sl, sw, sh = small_arr.shape
 
@@ -108,7 +134,7 @@ def mask_small_to_large(large_arr, small_arr,x,y,z):
     small_slice_x = slice(max(-start_x, 0), min(sw - (end_x - w), sw))
     small_slice = small_arr[small_slice_z, small_slice_y, small_slice_x]
     
-    # Add the small slice to the large array
+    # mask out the area of the smaller array within the larger array
     large_arr[slice_z, slice_y, slice_x] = 0 
 
 
