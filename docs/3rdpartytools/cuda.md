@@ -14,10 +14,17 @@ If Nvidia drivers are not installed by the installer they can be installed with 
 
 ## Uninstalling
 
-You have to remember how you installed Cuda if uninstalling
+To install the Cuda tookkit from the .run file it will suggest uninstalling the previous driver and or previous cuda (if a previous driver is found)
 
-1.  Note that there are different ways to install, and you have to remember how you installed Cuda if uninstalling.  Cuda can be installed by package manager (apt) or by downloading Cuda from NVIDIA's website.  
-2.  If downloading from the web site, you need to extract and run the 'uninstaller'.
+You have to remember how you installed the driver and/or Cuda if uninstalling
+
+1.  Note if uninstalling driver installation from apt
+```
+sudo apt-get remove --purge nvidia\*
+sudo apt-get autoremove
+```
+  
+2.  If uninstalling .run file installation from the Nvidia web site, you need to extract and run the 'uninstaller'.
 
 ** Run the .run file with the --extract=ANY_ABSOLUTE_PATH to extract the uninstaller
 ** Then you can find the cuda-uninstaller in the above given path inside the ‘bin’ dir, run it and select which cuda versions you’d like to uninstall
