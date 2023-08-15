@@ -24,10 +24,7 @@ sudo apt-get remove --purge nvidia\*
 sudo apt-get autoremove
 ```
   
-2.  If uninstalling .run file installation from the Nvidia web site, you need to extract and run the 'uninstaller'.
-
-** Run the .run file with the --extract=ANY_ABSOLUTE_PATH to extract the uninstaller
-** Then you can find the cuda-uninstaller in the above given path inside the ‘bin’ dir, run it and select which cuda versions you’d like to uninstall
+2.  If uninstalling .run file installation from the Nvidia web site, run cuda-uninstaller in /usr/local/cuda-11.7/bin
 
 See https://forums.developer.nvidia.com/t/how-to-uninstall-cuda-toolkit-and-cudnn-under-linux/47923/13
 
