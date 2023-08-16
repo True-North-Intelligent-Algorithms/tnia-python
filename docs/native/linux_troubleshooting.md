@@ -1,3 +1,7 @@
+---
+layout: basic
+---
+
 ## Linux trouble shotting
 
 ### to look at the dependencies of a library
