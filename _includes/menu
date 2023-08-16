@@ -63,7 +63,7 @@
                 <li><a href="{{ site.baseurl }}/docs/vscode/cmake">CMake</a></li>
             {% include section-end %} 
  
-            {% include section title="Native="/" %}
+            {% include section title="Native" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/native/linux_troubleshooting">Settings</a></li>
             {% include section-end %} 
 
