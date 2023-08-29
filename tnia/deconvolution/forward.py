@@ -1,4 +1,4 @@
-from numpy.fft import fftn, ifftn, ifftshift 
+from numpy.fft import fftn, ifftn, ifftshift, rfftn, irfftn
 import numpy as np
 from tnia.deconvolution.pad import pad, unpad, get_next_smooth
 
@@ -37,11 +37,16 @@ def forward(field, psf, background_level, add_poisson=True, gpu=False):
     # pad the image and psf to the extended size computed above
     field,_=pad(field, extended_size, 'constant')
     psf,_=pad(psf, extended_size, 'constant')
-    
+
+    try:
+        import cupy as cp
+    except:
+        gpu = False
+
     if gpu==False:
         # perform forward imaging 
-        otf = fftn(ifftshift(psf))
-        field_imaged = ifftn(fftn(field)*otf)
+        otf = rfftn(ifftshift(psf))
+        field_imaged = irfftn(rfftn(field)*otf)
         field_imaged = field_imaged+background_level
         
         # unpad before poisson noise is added
@@ -49,16 +54,14 @@ def forward(field, psf, background_level, add_poisson=True, gpu=False):
 
         # add poisson noise   
         if add_poisson:
+            # set small negative values that may occur to 0
+            field_imaged[field_imaged<0]=0
             field_imaged = np.random.poisson(field_imaged.astype(float))
 
         # return field as numpy array
         return field_imaged    
     else:
         # perform forward imaging on GPU, using cupy, del and mempool.free_all_blocks() is used to delete variables and free memory
-
-        # TODO: consider smarter imports so we aren't constantly importing cupy (right now it is moved here to avoid import errors running numpy version when cupy isn't installed)
-        import cupy as cp
-        
         temp = ifftshift(psf)
         
         mempool=cp.get_default_memory_pool()
