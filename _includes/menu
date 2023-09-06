@@ -15,6 +15,14 @@
                 <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/preparatio">Preparation</a></li>
             {% include section-end %} 
 
+            {% include section title="Courses" link="/" %}
+              {% include section title="intro-to-data-analysis" link="/" %}
+                <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/introduction">Introduction</a></li>
+                <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/preparatio">Preparation</a></li>
+              {% include section-end %} 
+            {% include section-end %} 
+
+
             {% include section title="Setting up machines" link="/" %}
               <li><a href="{{ site.baseurl }}/docs/machinesetup/deconvolution_dl_nvidia_windows">Decon DL Nvidia Windows</a></li>
               <li><a href="{{ site.baseurl }}/docs/machinesetup/deconvolution_dl_nvidia_linux">Decon DL Nvidia Linux</a></li>
