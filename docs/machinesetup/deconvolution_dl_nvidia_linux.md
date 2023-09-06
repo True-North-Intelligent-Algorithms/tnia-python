@@ -21,3 +21,5 @@ sudo ubuntu-drivers install nvidia:525
 ```
 
 Full instruction [here](https://help.ubuntu.com/community/NvidiaDriversInstallation)
+
+test363
