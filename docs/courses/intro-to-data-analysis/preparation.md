@@ -38,7 +38,7 @@ Go to www.github.com and get an account.  Github is a web site that allows you t
 
 ## Download and install Visual Studio Code
 
-Go get Visual Studio Code from [here]
+Go get Visual Studio Code from [here](https://code.visualstudio.com/)
 
 #### Why do I need Visual Studio Code
 
