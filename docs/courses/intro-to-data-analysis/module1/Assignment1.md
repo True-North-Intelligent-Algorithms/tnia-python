@@ -32,7 +32,14 @@ https://github.com/True-North-Intelligent-Algorithms/tnia-python/blob/main/noteb
 
 Download these files.  These are game logs for Nikola Jokic, Lebron James, and Scottie Barnes.  Try to restructure the code used to find the high scoring game/opponent and date for Jalen Brunson and make into a function that can be called to find the high scoring game of any player.  For example your function could take the name of the file as input, then do all the operations needed to open the file, parse the data, and return the answer.  Then use your function to get the high scoring game date and opponent for Jokic, Lebron James and Barnes. 
 
-6.  In the directory with the notebooks there are now csv files with game logs for minor league baseball players Alan Roden, and Jackson Holliday.  Download the files.  
+6.  In the directory with the notebooks there are now csv files with game logs for minor league baseball players Alan Roden, and Jackson Holliday.  
+
+https://github.com/True-North-Intelligent-Algorithms/tnia-python/blob/main/notebooks/courses/intro-to-data-analysis/module1/Roden_2023.csv
+
+https://github.com/True-North-Intelligent-Algorithms/tnia-python/blob/main/notebooks/courses/intro-to-data-analysis/module1/Holliday_2023.csv
+
+
+Download the files.  
 
 Then write a Python notebook that opens each file and calculates the players batting average.  Batting average is calculated as follows
 
