@@ -1,0 +1,200 @@
+Rk,G,Date,Age,Tm,,Opp,,GS,MP,FG,FGA,FG%,3P,3PA,3P%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,GmSc,+/-
+1,1,2018-10-18,33-292,LAL,@,POR,L (-9),1,37:20,9,16,.563,0,4,.000,8,9,.889,2,10,12,6,1,0,6,3,26,20.4,-4
+2,2,2018-10-20,33-294,LAL,,HOU,L (-9),1,38:52,9,22,.409,1,7,.143,5,7,.714,0,5,5,5,2,1,1,0,24,18.1,-13
+3,3,2018-10-22,33-296,LAL,,SAS,L (-1),1,42:52,11,25,.440,2,8,.250,8,11,.727,2,6,8,14,1,1,5,2,32,26.6,-5
+4,4,2018-10-24,33-298,LAL,@,PHO,W (+18),1,28:04,7,16,.438,1,5,.200,4,4,1.000,0,7,7,10,3,0,0,1,19,22.3,+19
+5,5,2018-10-25,33-299,LAL,,DEN,W (+7),1,34:40,10,17,.588,1,5,.200,7,10,.700,0,11,11,11,3,0,2,3,28,29.7,+13
+6,6,2018-10-27,33-301,LAL,@,SAS,L (-4),1,34:18,13,21,.619,2,6,.333,7,8,.875,1,10,11,4,2,0,4,3,35,28.4,-1
+7,7,2018-10-29,33-303,LAL,@,MIN,L (-4),1,36:16,11,23,.478,3,6,.500,4,5,.800,3,7,10,8,2,2,5,2,29,24.3,-6
+8,8,2018-10-31,33-305,LAL,,DAL,W (+1),1,38:34,11,19,.579,2,3,.667,5,7,.714,0,5,5,6,3,0,3,3,29,23.8,+5
+9,9,2018-11-03,33-308,LAL,@,POR,W (+4),1,31:21,9,20,.450,1,5,.200,9,11,.818,0,5,5,7,0,2,3,1,28,21.2,-22
+10,10,2018-11-04,33-309,LAL,,TOR,L (-14),1,28:17,6,12,.500,2,3,.667,4,7,.571,0,2,2,6,0,1,3,3,18,12.1,-16
+11,11,2018-11-07,33-312,LAL,,MIN,W (+4),1,38:32,10,21,.476,3,9,.333,1,2,.500,1,10,11,9,0,2,3,1,24,20.9,+3
+12,12,2018-11-10,33-315,LAL,@,SAC,W (+15),1,31:17,10,18,.556,3,6,.500,2,3,.667,1,6,7,2,1,0,3,2,25,17.1,+2
+13,13,2018-11-11,33-316,LAL,,ATL,W (+1),1,34:18,10,20,.500,3,9,.333,3,7,.429,3,4,7,4,2,0,4,1,26,18.1,+22
+14,14,2018-11-14,33-319,LAL,,POR,W (+9),1,36:00,13,19,.684,5,6,.833,13,15,.867,2,8,10,9,1,3,4,0,44,44.3,+4
+15,15,2018-11-17,33-322,LAL,@,ORL,L (-13),1,25:53,8,19,.421,3,6,.500,3,4,.750,0,4,4,7,0,1,3,0,22,15.3,-11
+16,16,2018-11-18,33-323,LAL,@,MIA,W (+16),1,38:29,19,31,.613,6,8,.750,7,10,.700,1,7,8,3,2,1,2,3,51,40.1,+20
+17,17,2018-11-21,33-326,LAL,@,CLE,W (+4),1,35:30,11,20,.550,2,6,.333,8,12,.667,2,12,14,7,0,1,4,3,32,26.2,+9
+18,18,2018-11-23,33-328,LAL,,UTA,W (+7),1,35:04,8,17,.471,2,5,.400,4,6,.667,1,9,10,7,2,1,5,1,22,18.1,+13
+19,19,2018-11-25,33-330,LAL,,ORL,L (-4),1,40:27,8,14,.571,2,7,.286,6,11,.545,0,4,4,7,0,1,6,4,24,14.6,-14
+20,20,2018-11-27,33-332,LAL,@,DEN,L (-32),1,30:04,5,15,.333,0,4,.000,4,6,.667,0,7,7,2,2,2,4,0,14,7.6,-23
+21,21,2018-11-29,33-334,LAL,,IND,W (+8),1,38:09,15,27,.556,2,7,.286,6,10,.600,1,8,9,7,2,0,4,2,38,28.7,+19
+22,22,2018-11-30,33-335,LAL,,DAL,W (+11),1,31:19,12,21,.571,2,4,.500,2,4,.500,2,3,5,4,0,1,4,3,28,17.9,+10
+23,23,2018-12-02,33-337,LAL,,PHO,W (+24),1,30:59,9,17,.529,1,5,.200,3,4,.750,0,6,6,8,0,1,5,0,22,16.4,+12
+24,24,2018-12-05,33-340,LAL,,SAS,W (+8),1,39:42,15,24,.625,3,7,.429,9,13,.692,0,5,5,6,2,0,2,1,42,34.9,+19
+25,25,2018-12-07,33-342,LAL,@,SAS,L (-13),1,37:21,13,28,.464,3,8,.375,6,9,.667,2,6,8,11,2,0,1,4,35,29.7,-19
+26,26,2018-12-08,33-343,LAL,@,MEM,W (+23),1,31:38,9,18,.500,0,3,.000,2,3,.667,1,7,8,9,2,0,5,2,20,15.9,+21
+27,27,2018-12-10,33-345,LAL,,MIA,W (+3),1,37:31,10,19,.526,4,7,.571,4,8,.500,0,9,9,12,1,0,2,0,28,27.2,+18
+28,28,2018-12-13,33-348,LAL,@,HOU,L (-15),1,36:26,12,18,.667,3,6,.500,2,6,.333,0,5,5,4,2,0,3,1,29,22.5,-9
+29,29,2018-12-15,33-350,LAL,@,CHO,W (+28),1,30:13,7,15,.467,2,6,.333,8,12,.667,1,11,12,11,1,0,3,0,24,24.4,+31
+30,30,2018-12-16,33-351,LAL,@,WAS,L (-18),1,32:00,5,16,.313,0,2,.000,3,6,.500,0,6,6,3,0,1,4,0,13,3.2,-21
+31,31,2018-12-18,33-353,LAL,@,BRK,L (-5),1,41:12,13,23,.565,2,7,.286,8,13,.615,1,12,13,8,1,1,5,1,36,29.3,+4
+32,32,2018-12-21,33-356,LAL,,NOP,W (+8),1,38:45,8,20,.400,0,4,.000,6,9,.667,2,10,12,14,2,0,2,3,22,23.0,+13
+33,33,2018-12-23,33-358,LAL,,MEM,L (-8),1,35:37,8,14,.571,2,5,.400,4,4,1.000,1,13,14,7,1,1,4,0,22,22.6,-3
+34,34,2018-12-25,33-360,LAL,@,GSW,W (+26),1,21:15,6,11,.545,0,2,.000,5,8,.625,2,11,13,5,1,0,2,1,17,17.3,+5
+35,,2018-12-27,33-362,LAL,@,SAC,L (-1),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+36,,2018-12-28,33-363,LAL,,LAC,L (-11),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+37,,2018-12-30,34-000,LAL,,SAC,W (+7),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+38,,2019-01-02,34-003,LAL,,OKC,L (-7),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+39,,2019-01-04,34-005,LAL,,NYK,L (-7),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+40,,2019-01-06,34-007,LAL,@,MIN,L (-22),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+41,,2019-01-07,34-008,LAL,@,DAL,W (+10),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+42,,2019-01-09,34-010,LAL,,DET,W (+13),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+43,,2019-01-11,34-012,LAL,@,UTA,L (-18),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+44,,2019-01-13,34-014,LAL,,CLE,L (-6),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+45,,2019-01-15,34-016,LAL,,CHI,W (+7),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+46,,2019-01-17,34-018,LAL,@,OKC,W (+10),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+47,,2019-01-19,34-020,LAL,@,HOU,L (-4),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+48,,2019-01-21,34-022,LAL,,GSW,L (-19),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+49,,2019-01-24,34-025,LAL,,MIN,L (-15),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+50,,2019-01-27,34-028,LAL,,PHO,W (+14),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+51,,2019-01-29,34-030,LAL,,PHI,L (-16),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+52,35,2019-01-31,34-032,LAL,@,LAC,W (+3),1,40:26,9,22,.409,1,6,.167,5,7,.714,1,13,14,9,1,0,4,0,24,19.3,+2
+53,,2019-02-02,34-034,LAL,@,GSW,L (-14),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+54,36,2019-02-05,34-037,LAL,@,IND,L (-42),1,30:13,7,12,.583,2,5,.400,2,3,.667,0,7,7,9,1,0,6,1,18,15.0,-17
+55,37,2019-02-07,34-039,LAL,@,BOS,W (+1),1,37:44,11,21,.524,5,10,.500,1,5,.200,2,10,12,12,3,0,3,4,28,27.3,+11
+56,38,2019-02-10,34-042,LAL,@,PHI,L (-23),1,33:09,8,16,.500,2,6,.333,0,0,,0,10,10,9,0,0,4,3,18,14.1,0
+57,39,2019-02-12,34-044,LAL,@,ATL,L (-4),1,43:03,8,20,.400,3,10,.300,9,11,.818,2,9,11,16,3,1,2,3,28,32.2,0
+58,40,2019-02-21,34-053,LAL,,HOU,W (+5),1,40:08,11,23,.478,0,4,.000,7,10,.700,4,8,12,6,1,1,4,1,29,22.8,+6
+59,41,2019-02-23,34-055,LAL,@,NOP,L (-13),1,38:31,11,17,.647,3,6,.500,2,6,.333,0,7,7,12,4,1,4,0,27,29.1,-10
+60,42,2019-02-25,34-057,LAL,@,MEM,L (-5),1,39:44,8,23,.348,0,4,.000,8,10,.800,3,9,12,11,3,0,5,3,24,19.6,+2
+61,43,2019-02-27,34-059,LAL,,NOP,W (+6),1,37:19,13,24,.542,4,9,.444,3,8,.375,1,5,6,10,2,1,2,2,33,28.5,+2
+62,44,2019-03-01,34-061,LAL,,MIL,L (-11),1,38:49,10,19,.526,3,8,.375,8,10,.800,2,5,7,10,1,0,3,2,31,28.0,-4
+63,45,2019-03-02,34-062,LAL,@,PHO,L (-9),1,40:46,10,21,.476,4,9,.444,3,7,.429,0,9,9,16,0,0,3,2,27,24.8,-1
+64,46,2019-03-04,34-064,LAL,,LAC,L (-8),1,42:24,9,18,.500,1,6,.167,8,12,.667,0,8,8,6,1,1,2,3,27,21.5,-11
+65,47,2019-03-06,34-066,LAL,,DEN,L (-16),1,31:07,13,22,.591,2,7,.286,3,8,.375,0,7,7,7,1,1,4,4,31,21.9,-8
+66,48,2019-03-09,34-069,LAL,,BOS,L (-13),1,27:46,13,23,.565,1,5,.200,3,7,.429,2,8,10,12,0,0,3,0,30,26.7,+11
+67,49,2019-03-12,34-072,LAL,@,CHI,W (+16),1,33:24,15,23,.652,2,4,.500,4,5,.800,1,9,10,4,2,0,5,2,36,27.9,+9
+68,50,2019-03-14,34-074,LAL,@,TOR,L (-13),1,31:47,12,23,.522,1,5,.200,4,7,.571,0,4,4,6,1,0,4,2,29,18.1,0
+69,,2019-03-15,34-075,LAL,@,DET,L (-14),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+70,51,2019-03-17,34-077,LAL,@,NYK,L (-1),1,35:00,11,26,.423,0,6,.000,11,13,.846,2,4,6,8,0,1,2,2,33,24.5,+9
+71,,2019-03-19,34-079,LAL,@,MIL,L (-14),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+72,52,2019-03-22,34-082,LAL,,BRK,L (-5),1,36:42,8,25,.320,1,7,.143,8,12,.667,3,6,9,14,1,1,8,3,25,15.3,-2
+73,53,2019-03-24,34-084,LAL,,SAC,W (+5),1,35:16,9,22,.409,3,6,.500,8,9,.889,2,9,11,11,2,1,4,1,29,26.9,+5
+74,54,2019-03-26,34-086,LAL,,WAS,W (+18),1,33:54,11,20,.550,1,6,.167,0,2,.000,0,7,7,14,1,0,3,1,23,22.1,+3
+75,,2019-03-27,34-087,LAL,@,UTA,L (-15),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+76,55,2019-03-29,34-089,LAL,,CHO,W (+14),1,31:58,11,19,.579,4,7,.571,1,2,.500,0,3,3,9,0,0,6,1,27,18.5,+14
+77,,2019-03-31,34-091,LAL,@,NOP,W (+28),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+78,,2019-04-02,34-093,LAL,@,OKC,L (-16),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+79,,2019-04-04,34-095,LAL,,GSW,L (-18),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+80,,2019-04-05,34-096,LAL,@,LAC,W (+5),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+81,,2019-04-07,34-098,LAL,,UTA,W (+4),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+82,,2019-04-09,34-100,LAL,,POR,L (-3),Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive,Inactive
+More James Pages
+LeBron James Overview
+
+Game Logs
+
+High School & Amateur 2003-04 2004-05 2005-06 2006-07 2007-08 2008-09 2009-10 2010-11 2011-12 2012-13 2013-14 2014-15 2015-16 2016-17 2017-18 2018-19 2019-20 2020-21 2021-22 2022-23 Career Playoffs
+Splits
+
+2003-04 2004-05 2005-06 2006-07 2007-08 2008-09 2009-10 2010-11 2011-12 2012-13 2013-14 2014-15 2015-16 2016-17 2017-18 2018-19 2019-20 2020-21 2021-22 2022-23 Career
+Shooting
+
+2003-04 2004-05 2005-06 2006-07 2007-08 2008-09 2009-10 2010-11 2011-12 2012-13 2013-14 2014-15 2015-16 2016-17 2017-18 2018-19 2019-20 2020-21 2021-22 2022-23
+Other LeBron James Pages
+
+Game Finder Streak Finder Span Finder Shot Finder Event Finder Quarter Finder Teammates & Opponents High School & Amateur Game Log
+Compare LeBron James to other players
+More LeBron James pages at Sports Reference
+
+International Stats at Basketball-Reference.com
+Login Create Account
+You are here: BBR Home Page > Players > J > LeBron James > 2018-19 Game Log
+Full Site Menu 
+Return to Top
+Players
+In the News: V. Wembanyama, L. James, K. Durant, J. Embiid, J. Harden, S. Curry, L. Dončić ...
+All-Time Greats: E. Hayes, J. Stockton, H. Olajuwon, W. Chamberlain, D. Schayes, J. Havlicek ...
+Active Greats: L. James, G. Antetokounmpo, C. Paul, J. Harden, S. Curry, K. Durant ...
+Teams
+Atlantic: Toronto, Boston, New York, Brooklyn, Philadelphia
+Central: Cleveland, Indiana, Detroit, Chicago, Milwaukee
+Southeast: Miami, Atlanta, Charlotte, Washington, Orlando
+Northwest: Oklahoma City, Portland, Utah, Denver, Minnesota
+Pacific: Golden State, Los Angeles Clippers, Sacramento, Phoenix, Los Angeles Lakers
+Southwest: San Antonio, Dallas, Memphis, Houston, New Orleans
+Seasons
+2023-24, 2022-23, 2021-22, 2020-21, 2019-20, 2018-19, 2017-18 ...
+Leaders
+Season Points, Career Rebounds, Active Assists, Yearly Steals, Progressive Blocks ...
+Or, view "Trailers" for Season Field Goal Pct, or Career Blocks Per Game
+NBA Scores
+Yesterday's Games and Scores from any date in BAA/NBA or ABA history
+NBA Schedules
+Team Schedules and League Schedules
+NBA Standings
+Today's Standings and Standings for any date in history
+Stathead
+Player Finders: Season Finder, Game Finder, Streak Finder, Span Finder
+Team Finders: Season Finder, Game Finder, Streak Finder, Span Finder
+Other Finders: Versus Finder (NEW), Shot Finder
+Coaches
+Richie Guerin, Rudy Tomjanovich, Jim O'Brien, Mike Fratello, Alvin Gentry ...
+Awards
+NBA MVP, All-NBA, Defensive Player of the Year, Rookie of the Year, All-Rookie, Hall of Fame ...
+NBA Contracts
+Main Index, Team Payrolls, Player Contracts, Glossary ...
+Playoffs
+2023 NBA Playoffs, 2022 NBA Playoffs, 2021 NBA Playoffs, 2020 NBA Playoffs, 2019 NBA Playoffs, 2018 NBA Playoffs, 2017 NBA Playoffs, Playoffs Series History ...
+All-Star Games
+2023 All-Star Game, 2022 All-Star Game, 2021 All-Star Game, 2020 All-Star Game, 2019 All-Star Game, 2018 All-Star Game ...
+NBA Draft
+2023 Draft, 2022 Draft, 2021 Draft, 2020 Draft, 2019 Draft, 2018 Draft, 2017 Draft ...
+Frivolities
+Players who played for multiple teams (WNBA), Birthdays, Colleges, High Schools, Milestone Watch ...
+Executives
+R.C. Buford, Wayne Embry, Stan Kasten, Danny Ainge, Don Nelson ...
+Referees
+Joe Forte, Tony Brothers, Dan Crawford, Ron Olesiak, David Jones ...
+G League Stats
+Players, Teams, Seasons, Leaders, Awards ...
+International Basketball Stats
+Players, Teams, Seasons, Leaders, Awards ...
+WNBA
+Players, Teams, Seasons, Leaders, Awards, All-Star Games, Executives ...
+NBL
+Players, Teams, Seasons, Leaders, Awards ...
+About
+Glossary, Contact and Media Information, Frequently Asked Questions about the NBA, WNBA and Basketball ...
+Immaculate Grid
+Put your men's basketball knowledge to the test with our daily men's basketball trivia game. Can you complete the grid?
+Basketball-Reference.com Blog and Articles
+We're Social...for Statheads
+          
+Every Sports Reference Social Media Account
+
+Site Last Updated: Sunday, September 10, 7:57PM
+
+Question, Comment, Feedback, or Correction?
+
+Subscribe to our Free Email Newsletter
+
+Subscribe to Stathead Basketball: Get your first month FREE
+Your All-Access Ticket to the Basketball Reference Database
+
+Do you have a sports website? Or write about sports? We have tools and resources that can help you use sports data. Find out more.
+
+FAQs, Tip & Tricks
+Tips and Tricks from our Blog.
+Do you have a blog? Join our linker program.
+Watch our How-To Videos to Become a Stathead
+Subscribe to Stathead and get access to more data than you can imagine
+All logos are the trademark & property of their owners and not Sports Reference LLC. We present them here for purely educational purposes. Our reasoning for presenting offensive logos.
+
+Logos were compiled by the amazing SportsLogos.net.
+
+Data Provided BySportRadarthe official stats partner of the NBA, NHL and MLB.
+
+Copyright © 2000-2023 Sports Reference LLC. All rights reserved.
+
+The SPORTS REFERENCE and STATHEAD trademarks are owned exclusively by Sports Reference LLC. Use without license or authorization is expressly prohibited.
+
+ Sports Reference ® Baseball Football (college) Basketball (college) Hockey Futebol Blog Stathead ® Immaculate Grid
+About • Conditions & Terms of Service • Advertise With Us • Jobs at SR
+
+Sports Reference Purpose: We will be the trusted source of information and tools that inspire and empower users to enjoy, understand, and share the sports they love.
+
+Privacy Policy • Gambling Revenue Policy • Accessibility Policy • Use of Data
+
