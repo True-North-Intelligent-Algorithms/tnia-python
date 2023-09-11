@@ -1,0 +1,20 @@
+/* Style for the navigation links */ 
+.nav-links { 
+    text-align: center; 
+    margin: 20px 0; 
+} 
+
+/* Style for the previous link */ 
+.prev-link 
+{ 
+    margin-right: 20px; 
+    /* Add spacing between the links */ 
+    text-decoration: none; 
+    color: #007acc; /* Link color */ 
+} 
+
+/* Style for the next link */ 
+.next-link { 
+    text-decoration: none; 
+    color: #007acc; /* Link color */ 
+}
