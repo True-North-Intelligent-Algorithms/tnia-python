@@ -4,7 +4,6 @@ layout: basic
 
 # Assignment 1
 
-Assignment 1 is worth 14 marks.  The main purpose of the assignment is to have you   
 
 1.  Create instructions that can be used to start up the Anaconda prompt, navigate to the directory where you are keeping your course work, and start the jupyter notebooks you created on day one.  Also make sure you know how to create a new notebook and add it to the instructions.  
 
