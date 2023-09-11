@@ -6,11 +6,43 @@ layout: basic
 
 Assignment 1 is worth 14 marks.  The main purpose of the assignment is to have you   
 
-3. Install Annaconda.
-4. Join Github, Install GitHub Desktop. Get the ipython notebook examples from github and run them on your local machine. [See the Python/Annaconda/Github note for details on how to join Github and find the class repo](Python). 
-5. Run 'opencsv' examples in IPython. 
-6. Find a new CSV file online.  In the Visualization (Module 3) assignment you will be visualizing data relevant to a topic that interests you.  Consider this some preliminary work on that.  Consider topics that may interest you, and investigate whether it is easy or hard to find data on these topics.  In the end the csv file can be related to anything, the purpose is mainly to give you a first experience finding data, but use this part of the assignment as an opportunity to get a feel for how hard or easy it is to find data on topics that interest you.  
-8. Create a simple IPython notebook that opens the new csv file. 
+1.  Create instructions that can be used to start up the Anaconda prompt, navigate to the directory where you are keeping your course work, and start the jupyter notebooks you created on day one.  Also make sure you know how to create a new notebook and add it to the instructions.  
 
-[This Video](https://www.youtube.com/watch?v=9miEihigfGQ) may be helpful.  
+Note that the instructions will be different depending on whether you use Mac, Linux, or Windows.  On Mac and Linux the default terminal has access to the Anaconda tool.  On Windows you need to start a special Anaconda prompt. 
+
+2.  If you haven't already create a new bookmark folder on your web browser to store class material.  Archive any links from day 1 that may be useful.
+
+For example one link that may be useful, is the link the Python examples 
+
+https://github.com/True-North-Intelligent-Algorithms/tnia-python/blob/main/notebooks/courses/intro-to-data-analysis/module1/Python_Tutorial.ipynb
+
+3.  Review the Python examples in the link above.  Use it as a template to create your own Python tutorial which shows how to use, the Print statement, Math Operations, Logical Operators, Lists, Dictionaries, If/Else statements, For statements, the Import Statement and Functions.   
+
+4.  Review the work we did Saturday on trying to find the number of points scored, date of game, and opponent for a players high scoring game.  See https://github.com/True-North-Intelligent-Algorithms/tnia-python/blob/main/notebooks/courses/intro-to-data-analysis/module1/find_high_score_basketball.ipynb
+
+Copy the code cell by cell, and add some comments that explain what each part of the code is doing.  
+
+5.  In the directory with the notebooks there are some new basketball related CSV files
+
+https://github.com/True-North-Intelligent-Algorithms/tnia-python/blob/main/notebooks/courses/intro-to-data-analysis/module1/Jokic_2022_23.csv
+
+https://github.com/True-North-Intelligent-Algorithms/tnia-python/blob/main/notebooks/courses/intro-to-data-analysis/module1/Lebron_2018_19.csv
+
+https://github.com/True-North-Intelligent-Algorithms/tnia-python/blob/main/notebooks/courses/intro-to-data-analysis/module1/Scottie_Barnes_2022_23.csv
+
+Download these files.  These are game logs for Nikola Jokic, Lebron James, and Scottie Barnes.  Try to restructure the code used to find the high scoring game/opponent and date for Jalen Brunson and make into a function that can be called to find the high scoring game of any player.  For example your function could take the name of the file as input, then do all the operations needed to open the file, parse the data, and return the answer.  Then use your function to get the high scoring game date and opponent for Jokic, Lebron James and Barnes. 
+
+6.  In the directory with the notebooks there are now csv files with game logs for minor league baseball players Alan Roden, and Jackson Holliday.  Download the files.  
+
+Then write a Python notebook that opens each file and calculates the players batting average.  Batting average is calculated as follows
+
+'''
+batting average = sum of at bats (AB)/(sum of hits (H))
+'''
+
+Hint in the previous example we calculated the max of a column of a Dataframe.  In this example we need to calculate the sum
+
+Bonus Points:  Both players played games at different baseball levels (Lev).  Can you calculate their batting average at each level?
+
+
 
