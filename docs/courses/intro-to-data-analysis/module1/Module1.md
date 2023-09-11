@@ -2,6 +2,10 @@
 layout: basic
 ---
 
+<div class="nav-links"> 
+<a href=" {{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/WhatIsDataAnalysis " class="next-link">Next Page &rarr;</a> 
+</div>
+
 # Module 1
 
 ## Marks Checklist (20 marks)

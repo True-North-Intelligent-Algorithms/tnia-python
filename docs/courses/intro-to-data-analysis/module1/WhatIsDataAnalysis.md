@@ -2,6 +2,13 @@
 layout: basic
 ---
 
+<div class="nav-links"> 
+<a href="previous_page_url" class="prev-link">&larr; Previous Page</a> 
+<a href="next_page_url" class="next-link">Next Page &rarr;</a> 
+</div>
+
+[Previous Page](previous_page_url) | [Next Page](next_page_url)
+
 ## What is Data Analysis?
 
 * Data Analysis is all about numbers
