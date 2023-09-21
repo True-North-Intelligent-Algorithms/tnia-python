@@ -13,7 +13,7 @@ from skimage.io import imread
 import json
 from tnia.nd.ndutil import centercrop
 
-def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False, use_psfm=False):
+def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False, use_psfm=False, convert_to_32=True):
     """
        Generates a 3D PSF using the Gibson-Lanni model.  If use_psfm is True the psfmodels implementation will be used.  Otherwise, the sdeconv implementation will be used.
 
@@ -52,6 +52,8 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
     if use_psfm:
         import psfmodels as psfm
         psf = psfm.make_psf(z_size, xy_size, model='scalar', dxy=voxel_size_xy, dz=voxel_size_z, pz=pz, ni0=ni, ni=ni, ns=ns, NA=NA, wvl=wvl)
+        if convert_to_32:
+            psf = psf.astype('float32')
         return psf
     else:
         import sdeconv
