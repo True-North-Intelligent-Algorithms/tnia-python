@@ -137,6 +137,8 @@ dmypy.json
 _site/
 
 notebooks/Deconvolution/CZNIH/
+notebooks/ignorefornow/
+notebooks/deep_learning/models/
 
 # ignore .h5 files
 *.h5
