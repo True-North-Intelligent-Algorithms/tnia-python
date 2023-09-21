@@ -38,6 +38,27 @@ def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colorma
 
     return show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize, colormap, vmax, gamma)
 
+def show_xy_xz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None):
+    """ extracts xy, and xz slices at x, y, z of a 3D image and plots them
+
+    Args:
+        image_to_show (3d numpy array): image to plot
+        x (int): x position of slice
+        y (int): y position of slice
+        z (int): z position of slice
+        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
+        sz (float, optional): z pixel size of 3D. Defaults to 1.
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (colormap, optional): pyplot colormap to use . Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
+    """
+ 
+    slice_xz = image_to_show[:,y,:]
+    slice_xy = image_to_show[z,:,:]
+
+    return show_xy_xz(slice_xy, slice_xz, sxy, sz,figsize, colormap, vmax, gamma)
+
+
 def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=None, vmax=None, gamma=None):
     """ extracts xy, xz, and zy slices at center of a 3D image and plots them
 
@@ -193,7 +214,6 @@ def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gam
 
     Args:
         xy (2d numpy array): xy projection
-        xz (2d numpy array): xz projection
         zy (2d numpy array): zy projection
         sxy (float, optional): xy pixel size of 3D. Defaults to 1.
         sz (float, optional): z pixel size of 3D. Defaults to 1.
@@ -237,5 +257,55 @@ def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gam
         ax1.imshow(zy, colormap, norm=norm, extent = [0, zdim*sz, ydim*sxy,0])
         ax1.set_title('zy')
     
+    return fig
+
+
+def show_xy_xz(xy, xz, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None):
+    """ shows pre-computed xy, xz and zy of a 3D image in a plot
+
+    Args:
+        xy (2d numpy array): xy projection
+        xz (2d numpy array): xz projection
+        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
+        sz (float, optional): z pixel size of 3D. Defaults to 1.
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
+
+    Returns:
+        [type]: [description]
+    """
+    
+    fig=plt.figure(figsize=figsize)
+    
+    xdim = xy.shape[1]
+    ydim = xy.shape[0]
+    zdim = xz.shape[0]
+
+    z_xy_ratio=1
+
+    if sxy!=sz:
+        z_xy_ratio=sz/sxy
+
+    spec=gridspec.GridSpec(ncols=1, nrows=2, height_ratios=[ydim,zdim*z_xy_ratio], width_ratios=[xdim],hspace=.01)
+
+    ax0=fig.add_subplot(spec[0])
+    ax1=fig.add_subplot(spec[1])
+   
+    if z_xy_ratio!=1:
+        xz=resize(xz, (int(xz.shape[0]*z_xy_ratio), xz.shape[1]))
+
+    if gamma is None:
+        ax0.imshow(xy, colormap, vmax=vmax, extent=[0,xdim*sxy,ydim*sxy,0])
+        ax0.set_title('xy')
+        ax1.imshow(xz, colormap, vmax=vmax, extent=[0,xdim*sxy,zdim*sz,0])
+        ax1.set_title('xz')
+    else:
+        norm=PowerNorm(gamma=gamma, vmax=vmax)
+        ax0.imshow(xy, colormap, norm=norm, extent=[0,xdim*sxy,ydim*sxy,0])
+        ax0.set_title('xy')
+        ax1.imshow(xz, colormap, norm=norm, extent=[0,xdim*sxy,zdim*sz,0])
+        ax1.set_title('xz')
+      
     return fig
 

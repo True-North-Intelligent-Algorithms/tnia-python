@@ -10,10 +10,20 @@
 
         <li><a href="https://github.com/True-North-Intelligent-Algorithms/tnia-python">Github</a></li>
             
-            {% include section title="Courses Test" link="/" %}
+           {% include section title="Courses" link="/" %}
+              {% include section title="intro-to-data-analysis" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/introduction">Introduction</a></li>
-                <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/preparatio">Preparation</a></li>
+                <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/preparation">Preparation</a></li>
+                {% include section title="Module 1 Intro to Python" link="/" %}
+                  <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/Module1">Overview</a></li>
+                  <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/Discussion">Introductions</a></li>
+                  <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/Python">Python Eco-system</a></li>
+                  <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/CloneFromGitHub">Git and Github overview</a></li>
+                  <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/PythonReview">Python Notebook Practice</a></li>
+                {% include section-end %} 
+              {% include section-end %} 
             {% include section-end %} 
+
 
             {% include section title="Setting up machines" link="/" %}
               <li><a href="{{ site.baseurl }}/docs/machinesetup/deconvolution_dl_nvidia_windows">Decon DL Nvidia Windows</a></li>
