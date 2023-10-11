@@ -2,6 +2,12 @@
 layout: basic
 ---
 
+<div class="nav-links"> 
+<a href=" {{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/Discussion" class="prev-link">&larr; Previous Page</a> 
+<a href=" {{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/Python" class="next-link">Next Page &rarr;</a> 
+</div>
+
+
 ## Clone from GitHub
 
 First (if you don't already) create an account on [GitHub](https://github.com/) and install [GitHub desktop](https://desktop.github.com/). (If you are comfortable with the command line, you can interact with git from there... though many students prefer the desk top application)

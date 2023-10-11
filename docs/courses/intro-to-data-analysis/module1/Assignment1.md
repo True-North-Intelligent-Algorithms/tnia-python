@@ -2,6 +2,10 @@
 layout: basic
 ---
 
+<div class="nav-links"> 
+<a href=" {{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/CSV" class="prev-link">&larr; Previous Page</a> 
+</div>
+
 # Assignment 1
 
 

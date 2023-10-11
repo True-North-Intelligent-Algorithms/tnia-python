@@ -2,8 +2,16 @@
 .nav-links { 
     text-align: center; 
     margin: 20px 0; 
+    color: #007acc; /* Link color */ 
+
 } 
 
+.markdown-link { 
+    text-align: center; 
+    margin: 20px 0; 
+    color: #007acc; /* Link color */ 
+
+}
 /* Style for the previous link */ 
 .prev-link 
 { 

@@ -2,6 +2,12 @@
 layout: basic
 ---
 
+<div class="nav-links"> 
+<a href=" {{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/CloneFromGitHub" class="prev-link">&larr; Previous Page</a> 
+<a href=" {{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/PythonReview" class="next-link">Next Page &rarr;</a> 
+</div>
+
+
 ## Python via Anaconda
 
 

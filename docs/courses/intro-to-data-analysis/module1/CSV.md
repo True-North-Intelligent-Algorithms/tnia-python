@@ -2,6 +2,11 @@
 layout: basic
 ---
 
+<div class="nav-links"> 
+<a href=" {{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/PythonReview" class="prev-link">&larr; Previous Page</a> 
+<a href=" {{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/Assignment1" class="next-link">Next Page &rarr;</a> 
+</div>
+
 ### Open a CSV File in a Test Editor
 
 https://www.howtogeek.com/348960/what-is-a-csv-file-and-how-do-i-open-it/

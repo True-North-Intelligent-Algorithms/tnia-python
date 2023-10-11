@@ -21,6 +21,10 @@
                   <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/CloneFromGitHub">Git and Github overview</a></li>
                   <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/module1/PythonReview">Python Notebook Practice</a></li>
                 {% include section-end %} 
+
+                {% include section title="Module 2 Pandas" link="/" %}
+                  <li><a href="{{ site.baseurl }}/docs/courses/intro-to-data-analysis/module2/Module2">Overview</a></li>
+                {% include section-end %} 
               {% include section-end %} 
             {% include section-end %} 
 
