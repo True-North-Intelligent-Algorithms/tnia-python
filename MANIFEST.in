@@ -1,0 +1,11 @@
+recursive-include tnia *
+recursive-exclude _includes *
+recursive-exclude _layouts *
+recursive-exclude _site *
+recursive-exclude assets *
+recursive-exclude css *
+recursive-exclude notebooks *
+recursive-exclude notebooks_ *
+recursive-exclude presentations *
+recursive-exclude docs *
+recursive-exclude images *
