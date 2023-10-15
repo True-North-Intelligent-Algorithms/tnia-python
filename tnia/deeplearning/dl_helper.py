@@ -4,11 +4,17 @@ from tifffile import imread
 from skimage.measure import label
 import numpy as np
 import matplotlib.pyplot as plt
+from csbdeep.utils import normalize
+from skimage.transform import resize
+import json
+import skimage.io as io
+import os
+import json
+
 
 """ Note:
 Original source for much of this code is here https://github.com/stardist/stardist/tree/master/examples
 """
-
 def get_training_data(labeled_dir):
     """ loads images and masks that can be used for training data for an air
 
@@ -127,8 +133,6 @@ def augmenter(x, y):
     x = x + sig*np.random.normal(0,1,x.shape)
     return x, y
 
-import os
-import json
 
 def make_patch_directory(num_inputs, num_truths, parent_dir, sub_sample=1):
     """ makes a directory of patches from an image and its corresponding ground truth
@@ -185,8 +189,6 @@ def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
         numpy array, numpy array: the cropped image and ground truth of size crop_size/sub_sample
     
     """
-
-
     if (len(img.shape)==2):
 
         if (sub_sample_xy>1):
@@ -237,19 +239,16 @@ def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
 
     return img_crop, truth_crop, ind
 
-from csbdeep.utils import normalize
-from skimage.transform import resize
-import json
-import skimage.io as io
-
-def collect_training_data(data_path, sub_sample=1, downsample=False):
+def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=0.2, pmax=99, normalize_truth=False):
+    '''
     # open info.json
     with open(os.path.join(data_path, "info.json")) as json_file:
         info = json.load(json_file)
 
     num_inputs = info["num_inputs"]
     num_truths = info["num_truths"]
-
+    '''
+    
     X=[]
     Y=[]
 
@@ -279,17 +278,16 @@ def collect_training_data(data_path, sub_sample=1, downsample=False):
         #print('min/max', min_, max_)
 
         # Normalize the pixel values to [0, 1]
-        input_img = (input_img.astype('float32')-input_img.min()) / (input_img.max() - input_img.min())
+        input_img =  normalize(input_img, pmin, pmax)
+
+        if (normalize_truth):
+            ground_truth_img = normalize(ground_truth_img, pmin, pmax)
         
         # Append the preprocessed images to the training set
         X.append(input_img)
         Y.append(ground_truth_img)
     
     return X,Y
-
-
-
-        
 
 def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, pmin=1, pmax=99.8):
     """ applies stardist to an image
