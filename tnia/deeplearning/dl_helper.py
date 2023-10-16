@@ -239,13 +239,13 @@ def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
 
     return img_crop, truth_crop, ind
 
-def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=0.2, pmax=99, normalize_truth=False):
+def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=0.2, pmax=99, normalize_truth=False, training_multiple=1, patch_size=None):
     '''
     # open info.json
     with open(os.path.join(data_path, "info.json")) as json_file:
         info = json.load(json_file)
 
-    num_inputs = info["num_inputs"]
+    num_inputs = info["num_inputs"]     
     num_truths = info["num_truths"]
     '''
     
@@ -258,22 +258,25 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=0.2, pm
     truth_path = os.path.join(data_path, "ground truth" + str(i))
 
     input_files = os.listdir(input_path)[0::sub_sample]
-    truth_files = os.listdir(truth_path)[0::sub_sample]
+    truth_files = os.listdir(truth_path)[0::sub_sample]  
 
     for i in range(len(input_files)):
         # Load the corrupted image and ground truth image
         input_img = io.imread(os.path.join(input_path, input_files[i]), plugin='tifffile')
         ground_truth_img = io.imread(os.path.join(truth_path, truth_files[i]), plugin='tifffile')
 
+        if patch_size is not None:
+            input_img, ground_truth_img, ind = make_random_patch(input_img, ground_truth_img, patch_size, sub_sample_xy=1)
+        
         if downsample:
             input_img = input_img[:,::2,::2]
             ground_truth_img = ground_truth_img[:,::2,::2]
 
-        # Add a trivial channel dimension using np.newaxis (CARE/Stardist seem to expect his) 
+        # Add a trivial channel dimension using np.newaxis (CARE/Stardist seem to expect his)  
         input_img = input_img[..., np.newaxis]
 
         min_ = input_img.min()
-        max_ = input_img.max()
+        max_ = input_img.max()   
 
         #print('min/max', min_, max_)
 
@@ -282,6 +285,14 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=0.2, pm
 
         if (normalize_truth):
             ground_truth_img = normalize(ground_truth_img, pmin, pmax)
+
+        if (training_multiple>1):
+            new_z = training_multiple*(input_img.shape[0]//training_multiple)
+            new_y = training_multiple*(input_img.shape[1]//training_multiple)
+            new_x = training_multiple*(input_img.shape[2]//training_multiple)
+
+            input_img = input_img[:new_z, :new_y, :new_x]
+            ground_truth_img = ground_truth_img[:new_z, :new_y, :new_x]
         
         # Append the preprocessed images to the training set
         X.append(input_img)
@@ -326,3 +337,18 @@ def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, p
         labels = resize(labels, old_size, order=0, preserve_range=True, anti_aliasing=False) 
         
     return labels, details
+
+def shuffle(X, Y):
+    import random
+    # Combine X and Y into a single list of tuples
+    combined = list(zip(X, Y))
+
+    # Shuffle the combined list
+    random.shuffle(combined)
+
+    # Unzip the shuffled list back into X and Y
+    X, Y = zip(*combined)
+    X = list(X)
+    Y = list(Y)
+
+    return X, Y
