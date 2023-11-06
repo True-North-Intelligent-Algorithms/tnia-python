@@ -9,13 +9,19 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
     Note: Cupy FFT behavior is different than numpy.  Cupy FFT always returns real arrays of type float32 and complex of type complex64.
     So using 64 bit inputs for more precision will not work. 
 
+    Some background on the method used to handle edges: https://www.aanda.org/articles/aa/pdf/2005/25/aa2717-05.pdf
+
+    Note: Note the option to mask bad pixels is not simply a matter of masking bad pixels.  Instead the HTOnes array is multiplied by the mask.
+    This means bad pixels are handled the same way as edges.  Both edges and bad pixels are considered locations where data was not acquired. 
+    The strategy of masking pixels was developed by True North Intelligent Algorithms.  We believe this is likely not a novel
+    approach, but we have not found any references to it in the literature.  If you know of any references please let us know.
+
     Args:
         image [numpy float array]: the image to be deconvolved 
         psf [numpy float array]: the point spread function
         num_iters (int): the number of iterations to perform
         noncirc (bool, optional): If true use non-circulant edge handling. Defaults to False.
-        mask (numpy float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
-            'bad' pixels will be zeroed during the deconvolution and then replaced with the original value after the deconvolution.
+        mask (numpy float array, optional): If not None, use this mask to set invalid (saturated or other) image pixels to zero in the HTOnes array.
 
     Returns:
         [numpy float array]: the deconvolved image
