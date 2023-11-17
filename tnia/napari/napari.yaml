@@ -1,16 +1,10 @@
 name: tnia-python
 contributions:
   commands:
-    - id: tnia-python.say_hi
-      title: NPE2 title!
-      python_name: tnia.napari.napari_npe2:show_hello_message
-    - id: tnia-python.qtdesigner
-      title: NPE2 QTDesigner example
-      python_name: tnia.napari.napari_npe2_qtdesigner.hooks:threshold_widget
+    - id: tnia-python.restoration_deconvolution
+      title: Restoration and Deconvolution
+      python_name: tnia.napari.deconvolution.restoration_deconvolution:RestorationDeconvolutionPlugin
   widgets:
-    - command: tnia-python.say_hi  # note, same as command.id above
-      display_name: NPE2 display name
-      autogenerate: true
-    - command: tnia-python.qtdesigner  # note, same as command.id above
-      display_name: NPE2 QT Designer Example
+    - command: tnia-python.restoration_deconvolution # note, same as command.id above
+      display_name: Restoration and Deconvolution
       autogenerate: false

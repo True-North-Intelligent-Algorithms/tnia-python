@@ -1,1 +1,0 @@
-pyuic5 simple_threshold.ui -o simple_threshold.py
