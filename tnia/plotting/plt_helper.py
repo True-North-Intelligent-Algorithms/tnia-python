@@ -93,6 +93,31 @@ def plot_lines(lines, ax=None, coords=None, linestyles=None, linewidths=None, li
     ax.legend()
 
     return fig
+
+def plot_color_space(im, rgb_func, width=10, height=10, ax=None, title='color space', titles=None):
+    if (ax==None):
+        fig, ax = plt.subplots(1, 3, figsize=(width,height))
+    else:
+        fig=None
+
+    null = np.zeros_like(im[:, :, 0])
+    im_a = rgb_func(np.stack((im[:,:,0], null, null), axis=-1))
+    im_b = rgb_func(np.stack((null, im[:,:,1], null), axis=-1))
+    im_c = rgb_func(np.stack((null, null, im[:,:,2]), axis=-1))
+
+    ax[0].imshow(im_a)
+    if titles is not None:
+        ax[0].set_title(titles[0])
+    
+    ax[1].imshow(im_b)
+    if titles is not None:
+        ax[1].set_title(titles[1])
+
+    ax[2].imshow(im_c)
+    if titles is not None:
+        ax[2].set_title(titles[2])
+        
+    return fig
 '''
 def draw_bimodal_hist(data, thresh, params, ax=None, title='bimodal hist'):
     if (ax==None):
