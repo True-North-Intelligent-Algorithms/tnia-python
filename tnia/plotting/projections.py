@@ -150,7 +150,7 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, 
         [type]: [description]
     """
     
-    fig=plt.figure(figsize=figsize)
+    fig=plt.figure(figsize=figsize, layout='constrained')
     
     xdim = xy.shape[1]
     ydim = xy.shape[0]
@@ -161,7 +161,7 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, 
     if sxy!=sz:
         z_xy_ratio=sz/sxy
 
-    spec=gridspec.GridSpec(ncols=2, nrows=2, height_ratios=[ydim,zdim*z_xy_ratio], width_ratios=[xdim,zdim*z_xy_ratio],hspace=.01)
+    spec=gridspec.GridSpec(ncols=2, nrows=2, height_ratios=[ydim,zdim*z_xy_ratio], width_ratios=[xdim,zdim*z_xy_ratio],hspace=.01, figure = fig)
 
     ax0=fig.add_subplot(spec[0])
     ax1=fig.add_subplot(spec[1])
@@ -309,3 +309,53 @@ def show_xy_xz(xy, xz, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gam
       
     return fig
 
+
+### New function
+def show_xyz_max_slabs(image_to_show, x = [0,1], y = [0,1], z = [0,1], sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
+    """ plots max xy, xz, and zy projections of a 3D image SLABS (slice intervals)
+
+    Author: PanosOik https://github.com/PanosOik
+
+    Args:
+        image_to_show (3d numpy array): image to plot
+        x: slices for x in format [x_1, x_2] where values are integers, to be passed as slice(x_1, x_2, None)
+        y: slices for y in format [y_1, y_2] where values are integers
+        z: slices for z in format [z_1, z_2] where values are integers
+        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
+        sz (float, optional): z pixel size of 3D. Defaults to 1.
+        figsize (tuple, optional): figure size. Defaults to (10,10).
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
+    """
+    ### Coerce into integers for slices
+    x_ = [int(i) for i in x]
+    y_ = [int(i) for i in y]
+    z_ = [int(i) for i in z]
+
+    x_slices = slice(*x)
+    y_slices = slice(*y)
+    z_slices = slice(*z)
+
+    return show_xyz_projection_slabs(image_to_show, x_slices, y_slices, z_slices, sxy, sz, figsize, np.max, colormap, vmax)
+
+
+### New function
+def show_xyz_projection_slabs(image_to_show, x_slices, y_slices, z_slices, sxy=1, sz=1,figsize=(10,10), projector=np.max, colormap=None, vmax=None, gamma=None):
+    """ generates xy, xz, and zy max projections of a 3D image and plots them
+    
+    Author: PanosOik https://github.com/PanosOik
+
+    Args:
+        image_to_show (3d numpy array): image to plot
+        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
+        sz (float, optional): z pixel size of 3D. Defaults to 1.
+        figsize (tuple): size of figure to
+        projector: function to project with
+        colormap (_type_, optional): _description_. Defaults to None.
+        vmax (float, optional): maximum value for display range. Defaults to None.
+    """
+    projection_y = projector(image_to_show[:,y_slices,:],1)
+    projection_x = np.flip(np.rot90(projector(image_to_show[:,:,x_slices],2),1),0)
+    projection_z = projector(image_to_show[z_slices,:,:],0)
+
+    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap, vmax, gamma)
