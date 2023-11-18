@@ -9,6 +9,24 @@ import numpy as np
 import raster_geometry as rg
 from tnia.simulation.phantoms import add_small_to_large
 
+def polyhedron_to_ellipsoid_labels(points, distances, shape):
+    labels = np.zeros(shape, dtype=np.float32)
+    
+    label_num=1
+    for point in points:
+        print(label_num)    
+        dx = (distances[label_num-1, 0]+distances[label_num-1, 2])/2        
+        dy = (distances[label_num-1, 1]+distances[label_num-1, 3])/2        
+        dz = (distances[label_num-1, 4]+distances[label_num-1, 5])/2        
+         
+        size = [2*dz, 2*dy, 2*dx]
+        size = [int(2*dz), int(2*dy), int(2*dx)]
+        ellipsoid_ = rg.ellipsoid(size, [dz-0.5, dy-1, dx-1]).astype(np.float32)
+        add_small_to_large(labels, label_num*ellipsoid_, point[2], point[1], point[0])
+        label_num += 1
+
+    return labels.astype(np.int32)
+
 def polyhedron_to_sphere_labels(points, shape):
     labels = np.zeros(shape, dtype=np.float32)
     r = 50
