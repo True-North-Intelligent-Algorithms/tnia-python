@@ -44,7 +44,7 @@ def get_model_file(settings, json_data):
     settings : dict
         Dictionary of settings to match against the models in the json file.
     json_data : dict
-        json file which should contain an array models, with each model represented by a dictionary
+        json dictionary which should contain an array models, with each model represented by a dictionary
         which contains one or more of the keys in InstrumentModelKeys.  The file that represents the
         model is specified by the value of the key InstrumentModelKeys.FILE.  The file name can point to
         different types of files, for example a .tif file for a saved PSF, or the directory containing
@@ -68,7 +68,19 @@ def get_model_file(settings, json_data):
 
     return None  # No matching setting found
 
-def get_psf(path_, settings, json_data=None):    
+def get_psf(path_, settings, json_data=None):
+    """Get the PSF that matches the given settings.
+    
+    Parameters
+    ----------
+    path_ : str
+        Path to the directory containing the instrument_models.json file and the PSF file.
+    settings : dict
+        Dictionary of settings to match against the models in the json file.
+    json_data : dict
+        json dictionary which should contain an array models, with each model represented by a dictionary
+
+    """    
     if json_data is None:
         json_data = load_instrument_models_json(path_)
         if json_data is None:
@@ -80,6 +92,14 @@ def get_psf(path_, settings, json_data=None):
         return imread(os.path.join(path_, psf_name))
 
 def load_instrument_models_json(path_):
+    """Load the instrument_models.json file from the given path.
+    
+    Parameters
+    ----------
+    path_ : str
+        Path to the directory containing the instrument_models.json file.
+    
+    """
     # check if path exists
     if not os.path.exists(path_):
         print("Path does not exist")
@@ -96,6 +116,17 @@ def load_instrument_models_json(path_):
         return json_data
 
 def write_psf(path_, model, psf):
+    """Write the PSF to the given path.
+    
+    Parameters
+    ----------
+    path_ : str
+        Path to the directory to write the PSF to.
+    model : dict
+        Dictionary of settings the PSF was generated for, this will be appended to the json file.
+    psf : numpy.ndarray
+        The PSF to write to the file.
+    """
     
     # check if path exists
     if not os.path.exists(path_):
@@ -121,6 +152,18 @@ def write_psf(path_, model, psf):
         imsave(path_ + '/' + model['file'], psf)
 
 def get_unique_name(names, name):
+    """Get a unique name by appending a number to the given name.
+    This is used to make sure we don't have duplicate model names 
+    and potentially overwrite existing files.
+
+    Parameters
+    ----------
+    names : list
+        List of names to check against.
+    name : str
+        Name to make unique.
+    
+    """
     i=1
     unique = False
     new_name = name
@@ -135,6 +178,17 @@ def get_unique_name(names, name):
     return new_name
     
 def set_unique_model_name(instrument_models, model):
+    """Set the model name to a unique name.
+    This is used to make sure we don't have duplicate model names 
+    and potentially overwrite existing files.
+    
+    Parameters
+    ----------
+    instrument_models : list
+        List of instrument models to check against.
+    model : dict
+        Dictionary of settings the PSF was generated for, this will be appended to the json file.
+    """
     name = model.get(InstrumentModelKeys.MODEL_NAME.value, None)
 
     if name is None:
