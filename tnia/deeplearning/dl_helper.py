@@ -239,7 +239,7 @@ def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
 
     return img_crop, truth_crop, ind
 
-def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=0.2, pmax=99, normalize_truth=False, training_multiple=1, patch_size=None):
+def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_truth=False, training_multiple=1, patch_size=None):
     '''
     # open info.json
     with open(os.path.join(data_path, "info.json")) as json_file:
