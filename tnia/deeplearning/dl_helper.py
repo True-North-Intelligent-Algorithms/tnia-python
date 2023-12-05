@@ -10,6 +10,9 @@ import json
 import skimage.io as io
 import os
 import json
+from tnia.simulation.phantoms import add_small_to_large
+import math
+import raster_geometry as rg
 
 
 """ Note:
@@ -301,7 +304,7 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
     return X,Y
 
 def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, pmin=1, pmax=99.8):
-    """ applies stardist to an image
+    """ applies stardist to an image with an option down_sample step
 
     Args:
         img (numpy array): the image
@@ -352,3 +355,82 @@ def shuffle(X, Y):
     Y = list(Y)
 
     return X, Y
+
+def compute_centroid(vertices):
+    """
+    This function calculates the centroid (geometric center) of a set of vertices in 3D space.
+
+    Parameters:
+    vertices (list): A list of lists or tuples, where each inner list or tuple contains three numbers 
+                     representing the x, y, and z coordinates of a vertex.
+
+    Returns:
+    list: A list containing the x, y, and z coordinates of the centroid.
+    """
+    
+    sum_x = sum_y = sum_z = 0
+    for vertex in vertices:
+        sum_x += vertex[0]
+        sum_y += vertex[1]
+        sum_z += vertex[2]
+    num_vertices = len(vertices)
+    return [sum_x / num_vertices, sum_y / num_vertices, sum_z / num_vertices]
+
+
+def octo_to_ellipsoid_labels(points, distances, shape, up_sample=1, scale=[1,1,1]):
+    labels = np.zeros(shape, dtype=np.float32)
+    
+    label_num=1
+    for point in points:
+
+        dx1 = scale[2]*distances[label_num-1, 0]
+        dy1 = scale[1]*distances[label_num-1, 1]
+        dx2 = scale[2]*distances[label_num-1, 2]
+        dy2 = scale[1]*distances[label_num-1, 3]
+        dz1 = scale[0]*distances[label_num-1, 4]
+        dz2 = scale[0]*distances[label_num-1, 5]
+
+        dx = dx1+dx2
+        dy = dy1+dy2
+        dz = dz1+dz2
+
+        # collect the vertices of the polyhedron
+        v = []
+        v.append([point[0]-dz2, point[1], point[2]])
+        v.append([point[0]+dz1, point[1], point[2]])
+        v.append([point[0], point[1]-dy2, point[2]])
+        v.append([point[0], point[1]+dy1, point[2]])
+        v.append([point[0], point[1], point[2]-dx2])
+        v.append([point[0], point[1], point[2]+dx1])
+
+        # compute the centroid
+        centroid = compute_centroid(v)
+
+        # size of bounding box surrounding the ellipsoid
+        size = [math.ceil(dz),math.ceil(dy),math.ceil(dx)]
+
+        # compute the percentage offset of the centroid from the center of the bounding box
+        px = centroid[2]-point[2]
+        py = centroid[1]-point[1]
+        pz = centroid[0]-point[0]
+
+        px = 0.5 + px/size[2]
+        py = 0.5 + py/size[1]
+        pz = 0.5 + pz/size[0]
+
+        # draw ellipsoid in bounding box 'size', with radius [dz/2, dy/2, dx/2], add percentage offset [pz, py, px]
+        ellipsoid_ = rg.ellipsoid(size, [dz/2, dy/2, dx/2], [pz, py, px]).astype(np.float32)
+        add_small_to_large(labels, label_num*ellipsoid_, point[2], point[1], point[0])
+        
+        label_num += 1
+
+    if (up_sample>1):
+
+        new_size = [labels.shape[0], labels.shape[1]*up_sample, labels.shape[2]*up_sample]
+        # upsample the labels
+        labels = resize(labels, new_size, order=0, preserve_range=True, anti_aliasing=False) 
+    
+
+    return labels.astype(np.int32)
+
+
