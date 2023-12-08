@@ -278,11 +278,6 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
         # Add a trivial channel dimension using np.newaxis (CARE/Stardist seem to expect his)  
         input_img = input_img[..., np.newaxis]
 
-        min_ = input_img.min()
-        max_ = input_img.max()   
-
-        #print('min/max', min_, max_)
-
         # Normalize the pixel values to [0, 1]
         input_img =  normalize(input_img, pmin, pmax)
 
@@ -303,8 +298,8 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
     
     return X,Y
 
-def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, pmin=1, pmax=99.8):
-    """ applies stardist to an image with an option down_sample step
+def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, pmin=1, pmax=99.8, render_mode="default"):
+    """ applies stardist to an image with an option to downsample
 
     Args:
         img (numpy array): the image
@@ -312,6 +307,10 @@ def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, p
         prob_thresh (float, optional): probability threshold. Defaults to 0.5.
         nms_thresh (float, optional): nms threshold. Defaults to 0.3.
         down_sample (int, optional): downsampling factor. Defaults to 1.
+        pmin (float, optional): min percentile for normalization. Defaults to 1.
+        pmax (float, optional): max percentile for normalization. Defaults to 99.8.
+        render_mode (str, optional): render mode. If 'ellipsoid' ellipsoids will be rendered.  Defaults to default.  
+            If default model type will be checked and mode will be set to ellipsoid of model is Octohedron. 
 
     Returns:
         numpy array: the predicted labels
@@ -334,6 +333,14 @@ def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, p
     
     # apply the model
     labels, details = model.predict_instances(img, prob_thresh=prob_thresh, nms_thresh=nms_thresh)
+
+    #if render_mode is 
+    if render_mode=="default":
+        if model.config.rays_json['name']=='Rays_Octo':
+            render_mode="ellipsoid"
+
+    if render_mode=="ellipsoid":
+        labels = octo_to_ellipsoid_labels(details['points'], details['dist'], shape=img.shape, scale=[1, .9, .9])
     
     if (down_sample>1):
         # upsample the labels
@@ -420,7 +427,7 @@ def octo_to_ellipsoid_labels(points, distances, shape, up_sample=1, scale=[1,1,1
 
         # draw ellipsoid in bounding box 'size', with radius [dz/2, dy/2, dx/2], add percentage offset [pz, py, px]
         ellipsoid_ = rg.ellipsoid(size, [dz/2, dy/2, dx/2], [pz, py, px]).astype(np.float32)
-        add_small_to_large(labels, label_num*ellipsoid_, point[2], point[1], point[0])
+        add_small_to_large(labels, label_num*ellipsoid_, point[2], point[1], point[0], mode = 'replace_non_zero')
         
         label_num += 1
 
