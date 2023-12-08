@@ -57,7 +57,7 @@ def sphere_fits(large_arr, small_arr,x,y,z):
     
     return True
 
-def add_small_to_large(large_arr, small_arr,x,y,z, check_empty=False):
+def add_small_to_large(large_arr, small_arr,x,y,z, check_empty=False, mode='add'):
     """ Adds a small array to a larger array.
 
     Args:
@@ -97,8 +97,14 @@ def add_small_to_large(large_arr, small_arr,x,y,z, check_empty=False):
             return False
 
     # Add the small slice to the large array
-    large_arr[slice_z, slice_y, slice_x] += small_slice
-    
+    if mode=='add':
+        large_arr[slice_z, slice_y, slice_x] += small_slice
+    elif mode=='replace':
+        large_arr[slice_z, slice_y, slice_x] = small_slice
+    elif mode=='replace_non_zero':
+        indices = np.where(small_slice>0)
+        large_arr[slice_z, slice_y, slice_x][indices] = small_slice[indices]
+        #large_arr[slice_z, slice_y, slice_x][large_arr[slize_z, slize_y, slize_x]>0] = small_slice[small_slice>0]
     return True
 
 
