@@ -107,6 +107,53 @@ def add_small_to_large(large_arr, small_arr,x,y,z, check_empty=False, mode='add'
         #large_arr[slice_z, slice_y, slice_x][large_arr[slize_z, slize_y, slize_x]>0] = small_slice[small_slice>0]
     return True
 
+def add_small_to_large_2d(large_arr, small_arr, x, y, check_empty=False, mode='add'):
+    """ Adds a small array 2d to a larger array.
+
+    Notes:  This function is essentially the same as add_small_to_large but for 2D.  The code could be made more 'DRY' in the future.
+
+    Args:
+        large_arr (numpy.ndarray): The larger array.
+        small_arr (numpy.ndarray): The smaller array to add to the larger array.
+        x (int): The x coordinate of the center of the smaller array.
+        y (int): The y coordinate of the center of the smaller array.
+        check_empty (bool, optional): If True, the function will check if the overlapping slice is empty before adding the small array. Default is False.
+    Returns:
+        bool: True if the small array was added to the larger array, False otherwise.
+    """
+    # Get the dimensions of the arrays
+    h, w = large_arr.shape
+    sh, sw = small_arr.shape
+
+    # Calculate the start and end indices for the small array in each dimension
+    start_x = x - sw//2
+    end_x = start_x + sw
+    start_y = y - sh//2
+    end_y = start_y + sh
+
+    # Calculate the overlapping slice of the small array
+    slice_y = slice(max(start_y, 0), min(end_y, h))
+    slice_x = slice(max(start_x, 0), min(end_x, w))
+    small_slice_y = slice(max(-start_y, 0), min(sh - (end_y - h), sh))
+    small_slice_x = slice(max(-start_x, 0), min(sw - (end_x - w), sw))
+    small_slice = small_arr[small_slice_y, small_slice_x]
+
+    if check_empty:
+        # Check if the slice is empty
+        if np.any(np.logical_and(large_arr[slice_y, slice_x]>0,small_slice>0)):
+            return False
+
+    # Add the small slice to the large array
+    if mode=='add':
+        large_arr[slice_y, slice_x] += small_slice
+    elif mode=='replace':
+        large_arr[slice_y, slice_x] = small_slice
+    elif mode=='replace_non_zero':
+        indices = np.where(small_slice>0)
+        large_arr[slice_y, slice_x][indices] = small_slice[indices]
+    return True
+
+
 
 def mask_small_to_large(large_arr, small_arr,x,y,z):
     """
