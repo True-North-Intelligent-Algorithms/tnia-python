@@ -428,26 +428,50 @@ def generate_patch_names(image_path, mask_path, data_name):
 
 def compute_centroid(vertices):
     """
-    This function calculates the centroid (geometric center) of a set of vertices in 3D space.
+    This function calculates the centroid (geometric center) of a set of vertices in 2D or 3D space.
 
     Parameters:
-    vertices (list): A list of lists or tuples, where each inner list or tuple contains three numbers 
-                     representing the x, y, and z coordinates of a vertex.
+    vertices (list): A list of lists or tuples, where each inner list or tuple contains two or three numbers 
+                     representing the x, y, (and z) coordinates of a vertex.
 
     Returns:
-    list: A list containing the x, y, and z coordinates of the centroid.
+    list: A list containing the x, y, (and z) coordinates of the centroid.
     """
     
     sum_x = sum_y = sum_z = 0
     for vertex in vertices:
         sum_x += vertex[0]
         sum_y += vertex[1]
-        sum_z += vertex[2]
+        if len(vertex) == 3:
+            sum_z += vertex[2]
     num_vertices = len(vertices)
-    return [sum_x / num_vertices, sum_y / num_vertices, sum_z / num_vertices]
-
-
+    
+    if len(vertices[0]) == 3:
+        return [sum_x / num_vertices, sum_y / num_vertices, sum_z / num_vertices]
+    else:
+        return [sum_x / num_vertices, sum_y / num_vertices]
+    
 def octo_to_ellipsoid_labels(points, distances, shape, up_sample=1, scale=[1,1,1]):
+    """ Converts octohedron labels to ellipsoid labels
+
+    Note:  Only considers the first 6 Rays which are assumed to be parallel to the x, y, and z axes
+    in the order: -x, -y, x, y, -z, z
+
+    Args:
+        points (list): a list of centers of the octohedrons
+        distances (list): a list of distances from the center of the octohedron to the vertices
+        shape (int array): size of the image
+        up_sample (int, optional): Whether to upsample after creating the labels (this is useful if the octohedrons were derived in a downsampled space). Defaults to 1.
+        scale (list, optional): Used for similar purpose as up_sample, but in this case we scale the rays instead of up_sampling the labels at the end. Defaults to [1,1,1].
+
+        Todo:  Could probably eliminate the need for both up_sample and scale and reconcile to one consistent approach
+
+    Returns:
+        numpy array (int32): A new label image with ellipsoids instead of octohedrons
+
+    Limitations:
+        - Does not consider that the ellipsoid may not be symmetrical.
+    """
     labels = np.zeros(shape, dtype=np.float32)
     
     label_num=1
