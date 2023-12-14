@@ -527,4 +527,43 @@ def octo_to_ellipsoid_labels(points, distances, shape, up_sample=1, scale=[1,1,1
 
     return labels.astype(np.int32)
 
+def ray4_to_ellipsoid2d_labels(coords, shape):
+    """ Converts ray4 labels to 2d ellipsoid labels
 
+    Args:
+        coords (list): The coordinates of the rays
+        shape (int array): size of the image
+
+    Returns:
+        numpy array (int32): A new label image with ellipsoids instead of octohedrons
+    
+    Limitations:
+        - Does not consider that the ellipsoid may not be symmetrical.
+    """
+    labels = np.zeros(shape, dtype=np.float32)
+    
+    label_num=1
+    for coord in coords:
+        # collect the vertices of the polyhedron
+        v = []
+        v.append([coord[0][0], coord[1][0]])
+        v.append([coord[0][1], coord[1][1]])
+        v.append([coord[0][2], coord[1][2]])
+        v.append([coord[0][3], coord[1][3]])
+
+        # compute the centroid
+        centroid = compute_centroid(v)
+
+        # compute the size of the bounding box
+        dx = max(coord[0])-min(coord[0])
+        dy = max(coord[1])-min(coord[1])
+        size = [math.ceil(dy), math.ceil(dx)]
+
+        # draw ellipsoid in bounding box 'size', with radius [dz/2, dy/2, dx/2], add percentage offset [pz, py, px]
+        ellipsoid_ = rg.ellipse(size, [dy/2, dx/2]).astype(np.float32)
+        if centroid[0]<labels.shape[0] and centroid[1]<labels.shape[1]:
+            add_small_to_large_2d(labels, label_num*ellipsoid_, int(centroid[1]), int(centroid[0]), 0, mode = 'replace_non_zero')
+        
+        label_num += 1
+
+    return labels.astype(np.int32)
