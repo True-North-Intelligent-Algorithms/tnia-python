@@ -10,9 +10,10 @@ import json
 import skimage.io as io
 import os
 import json
-from tnia.simulation.phantoms import add_small_to_large
+from tnia.simulation.phantoms import add_small_to_large, add_small_to_large_2d
 import math
 import raster_geometry as rg
+import random
 
 
 """ Note:
@@ -297,6 +298,63 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
         Y.append(ground_truth_img)
     
     return X,Y
+
+def shuffle(X, Y):
+    """
+    Shuffles two lists (X and Y) together. This is useful when the two lists are related to each other 
+    (e.g., X is a list of inputs and Y is a list of corresponding outputs).
+
+    Args:
+        X (list): The first list to be shuffled.
+        Y (list): The second list to be shuffled. Must be the same length as X.
+
+    Returns:
+        tuple: A tuple containing two lists (X, Y), shuffled in unison.
+    """
+
+    combined = list(zip(X, Y))
+
+    # Shuffle the combined list
+    random.shuffle(combined)
+
+    # Unzip the shuffled list back into X and Y
+    X, Y = zip(*combined)
+    X = list(X)
+    Y = list(Y)
+
+    return X, Y
+
+def divide_training_data(X, Y, val_size=3, shuffle_data=True, to_numpy=True):
+    """
+    Divides a dataset into training and validation sets, with the option to shuffle the data and convert it to numpy arrays.
+
+    Args:
+        X (list): The list of inputs.
+        Y (list): The list of corresponding outputs. Must be the same length as X.
+        val_size (int, optional): The size of the validation set. Default is 3.
+        shuffle_data (bool, optional): Whether to shuffle the data before dividing it. Default is True.
+        to_numpy (bool, optional): Whether to convert the lists to numpy arrays. Default is True.
+
+    Returns:
+        tuple: A tuple containing four lists (or numpy arrays if to_numpy is True): 
+               the training inputs, the training outputs, the validation inputs, and the validation outputs.
+    """
+    if shuffle_data:
+        X, Y = shuffle(X, Y)
+
+    if to_numpy:
+        X = np.array(X)
+        Y = np.array(Y)
+
+        X = np.nan_to_num(X, nan=0)
+
+    # divide the training set into training and validation sets
+    X_train=X[val_size:]
+    Y_train=Y[val_size:]
+    X_val=X[:val_size]
+    Y_val=Y[:val_size]
+
+    return X_train, Y_train, X_val, Y_val
 
 def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, pmin=1, pmax=99.8, render_mode="default"):
     """ applies stardist to an image with an option to downsample
