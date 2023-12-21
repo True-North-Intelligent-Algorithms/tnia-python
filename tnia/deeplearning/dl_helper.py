@@ -243,7 +243,7 @@ def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
 
     return img_crop, truth_crop, ind
 
-def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_truth=False, training_multiple=1, patch_size=None):
+def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_truth=False, training_multiple=1, patch_size=None, add_trivial_channel=True):
     '''
     # open info.json
     with open(os.path.join(data_path, "info.json")) as json_file:
@@ -277,7 +277,8 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
             ground_truth_img = ground_truth_img[:,::2,::2]
 
         # Add a trivial channel dimension using np.newaxis (CARE/Stardist seem to expect his)  
-        input_img = input_img[..., np.newaxis]
+        if add_trivial_channel:
+            input_img = input_img[..., np.newaxis]
 
         # Normalize the pixel values to [0, 1]
         input_img =  normalize(input_img, pmin, pmax)
