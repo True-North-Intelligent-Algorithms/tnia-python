@@ -53,9 +53,9 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormaps=None, 
 
         if gamma is not None:
             norm = PowerNorm(gamma=gamma, vmin=vmin, vmax=vmax)
-            ax.imshow(im, colormap,norm=norm)
+            ax.imshow(im.squeeze(), colormap,norm=norm)
         else:
-            ax.imshow(im, colormap,vmin=vmin, vmax=vmax)
+            ax.imshow(im.squeeze(), colormap,vmin=vmin, vmax=vmax)
 
         ax.set_title(title)
 
