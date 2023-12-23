@@ -394,9 +394,9 @@ def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, p
     labels, details = model.predict_instances(img, prob_thresh=prob_thresh, nms_thresh=nms_thresh)
 
     #if render_mode is 
-    if render_mode=="default":
-        if model.config.rays_json['name']=='Rays_Octo':
-            render_mode="ellipsoid"
+    #if render_mode=="default":
+    #    if model.config.rays_json['name']=='Rays_Octo':
+    #        render_mode="ellipsoid"
 
     if render_mode=="ellipsoid":
         labels = octo_to_ellipsoid_labels(details['points'], details['dist'], shape=img.shape, scale=[1, .9, .9])
@@ -404,7 +404,7 @@ def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, p
     if (down_sample>1):
         # upsample the labels
         labels = resize(labels, old_size, order=0, preserve_range=True, anti_aliasing=False) 
-        
+
     return labels, details
 
 def generate_patch_names(image_path, mask_path, data_name):
