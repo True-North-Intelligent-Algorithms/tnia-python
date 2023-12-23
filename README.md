@@ -115,6 +115,8 @@ pip install raster-geometry
     conda install -c conda-forge fftw
 ```
 
+## Additional hints for Mac and Linux users
+
 Mac-users please also install this:
 
 ```
