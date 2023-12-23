@@ -36,18 +36,83 @@ pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python
 
 We tend not to install many of the dependencies via setup.py.  The dependencies are complex and not all are needed to run many examples.  Thus we leave it up to the user to install dependencies manually, allowing them to potentially install a minimum set of dependencies for the specific code they are interested in running.
 
+## Current recommended method to set up a bio-imaging environment for running tnia-python examples
+
+### Start with Mamba and devbio-napari
+
+(Credit to Robert Haase https://twitter.com/haesleinhuepf, for these instructions)
+
+Install mambaforge on your computer as explained in this [blog post](https://biapol.github.io/blog/mara_lampert/getting_started_with_mambaforge_and_python/readme.html).  Installing mambaforge will make installing other toolkits much faster.
+
+If you already have some conda or anaconda installation on your computer, ***please install mambaforge*** anyway as explained in the blog post linked above. 
+
+Devbio-napari is a bundle of napari plugins useful for 3D+t image processing and analysis.  It's a big installation but installs jupyter notebooks, napari, opencl and several useful plugins and libraries all at once.  
+
+Install [devbio-napari](https://github.com/haesleinhuepf/devbio-napari#installation) into a fresh conda environment, e.g. using this command:
+
 ```
-    conda create --name decon-napari python=3.9
-    conda activate decon-napari
-    conda install -c conda-forge jupyterlab
-    conda install -c conda-forge pyopencl==2021.2.6 hdbscan numba=0.55.1
-    pip install devbio-napari
+mamba create --name decon-dl-env python=3.9 devbio-napari pyqt -c conda-forge -c pytorch
+```
+
+When you are done, you can test your setup by executing these commands from the command line:
+```
+mamba activate decon-dl-env
+
+naparia
+```
+
+### Install tnia-python in editable mode
+
+```
+git clone https://github.com/True-North-Intelligent-Algorithms/tnia-python.git
+```
+
+Then navigate to the location where you cloned the code and run 
+
+```
+pip install -e .
+```
+
+## clij2-fft and psf-models
+
+The tnia-python library is used for projections and some helper functions, clij2-fft is used for deconvolution, and psfmodels is used for diffractions based PSFs. 
+
+```
+pip install tnia-python
+pip install clij2-fft
+pip install psfmodels
+```
+
+Optionally we can also install sdeconv as an alternative library for generating PSFs
+
+pip install napari-sdeconv
+
+## Stardist and CSB Deep 
+
+These libraries are used for deep learning and require Tensorflow.  For Windows we need to install tensorflow<2.11.  The tensorflow version (<2.11) is not required for Mac or Linux. 
+
+```
+pip install "tensorflow<2.11"
+```
+
+Then install stardist which should also install CSBDeep
+
+```
+pip install stardist
+```
+
+## raster-geometry
+
+Raster-Geometry is used to generate simulate images for deconvolution testing and deep learning training.
+
+```
+pip install raster-geometry
+```
+
+## Some older examples may use fftw
+
+```
     conda install -c conda-forge fftw
-    pip install napari-sdeconv
-    pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python
-    pip install --index-url https://test.pypi.org/simple/ --no-deps clij2-fft
-    pip install stardist
-    pip install raster-geometry
 ```
 
 Mac-users please also install this:
