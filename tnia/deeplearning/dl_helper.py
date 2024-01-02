@@ -213,7 +213,7 @@ def make_patch_source_divide2(source, axes, label_dir):
     return train, test
 
 
-def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
+def make_random_patch(img, truth, patch_size, axes, ind=None, sub_sample_xy=1):
     """ makes a random patch from an image and its corresponding ground truth
 
     Args:
@@ -227,7 +227,7 @@ def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
         numpy array, numpy array: the cropped image and ground truth of size crop_size/sub_sample
     
     """
-    if (len(img.shape)==2):
+    if axes == 'YX':
 
         if (sub_sample_xy>1):
             img = img[::sub_sample_xy, ::sub_sample_xy]
@@ -241,12 +241,30 @@ def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
             y = np.random.randint(0, img_size[0] - patch_size[0]+1)
             x = np.random.randint(0, img_size[1] - patch_size[1]+1)
             ind = np.s_[y:y+patch_size[0], x:x+patch_size[1]]
+            truth_ind = ind
 
         # crop the image and truth
         img_crop = img[ind]
         truth_crop = truth[ind]
+    elif axes == 'YXC':
+        if (sub_sample_xy>1):
+            img = img[::sub_sample_xy, ::sub_sample_xy, :]
+            truth = truth[::sub_sample_xy, ::sub_sample_xy]
 
-    elif len(img.shape)==3:
+        # get the size of the image
+        img_size = img.shape
+        
+        # get the random location of the patch
+        if ind is None:
+            y = np.random.randint(0, img_size[0] - patch_size[0]+1)
+            x = np.random.randint(0, img_size[1] - patch_size[1]+1)
+            ind = np.s_[y:y+patch_size[0], x:x+patch_size[1], :]
+            truth_ind = np.s_[y:y+patch_size[0], x:x+patch_size[1]]
+
+        # crop the image and truth
+        img_crop = img[ind]
+        truth_crop = truth[truth_ind]
+    elif axes == 'ZYX':
 
         if (sub_sample_xy>1):
             img = img[:,::sub_sample_xy, ::sub_sample_xy]
@@ -264,7 +282,7 @@ def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
             y = np.random.randint(0, img_size[1] - patch_size[1]+1)
             x = np.random.randint(0, img_size[2] - patch_size[2]+1)
             ind = np.s_[z:z+patch_size[0], y:y+patch_size[1], x:x+patch_size[2]]
-
+            truth_ind = ind
         if patch_size[0]>img.shape[0]:
             # pad the image in z
             pad = patch_size[0]-img.shape[0]
@@ -275,7 +293,7 @@ def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
         img_crop = img[ind]
         truth_crop = truth[ind]
 
-    return img_crop, truth_crop, ind
+    return img_crop, truth_crop, ind, truth_ind
 
 def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_truth=False, training_multiple=1, patch_size=None, add_trivial_channel=True):
     '''
@@ -602,3 +620,4 @@ def ray4_to_ellipsoid2d_labels(coords, shape):
         label_num += 1
 
     return labels.astype(np.int32)
+
