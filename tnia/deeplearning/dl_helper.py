@@ -1,6 +1,6 @@
 from glob import glob
 from tqdm import tqdm
-from tifffile import imread
+from tifffile import imread, imsave
 from skimage.measure import label
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,16 +9,17 @@ from skimage.transform import resize
 import json
 import skimage.io as io
 import os
-import json
 from tnia.simulation.phantoms import add_small_to_large, add_small_to_large_2d
 import math
 import raster_geometry as rg
 import random
+from pathlib import Path
 
 
 """ Note:
-Original source for much of this code is here https://github.com/stardist/stardist/tree/master/examples
+Original source for some of this code is here https://github.com/stardist/stardist/tree/master/examples
 """
+
 def get_training_data(labeled_dir):
     """ loads images and masks that can be used for training data for an air
 
@@ -177,6 +178,39 @@ def make_patch_directory(num_inputs, num_truths, parent_dir, sub_sample=1):
         json.dump(json_, outfile)
 
     return input_paths, truth_paths
+
+def make_patch_source_divide2(source, axes, label_dir):
+    """ 
+    This helper was motivated by a fairly common scenario when quickly evaluating DL on an image type. 
+    It is common that a single large will be provided, so this utility divides the image in 2 such that
+    some of the data remains 'unseen'.  The intention is that patches will be generated form one half 
+    (the train half) and testing can be done on the other half. 
+    
+    Args:
+        source (numpy array): the image
+        axes (str): the axes to divide the image in 2
+        label_dir (str): the location of the directory to save the source
+    
+    """
+    # divide image in 2 in each dimensions
+    if axes == 'YX':
+        # Divide image in 2 dimensions
+        train = source[:, :source.shape[1]//2]
+        test = source[:, source.shape[1]//2:]
+    elif axes == 'ZYX':
+        # Divide volume in 3 dimensions
+        train = source[:, :, :source.shape[2]//2]
+        test = source[:, :, source.shape[2]//2:]
+    elif axes == 'YXC':
+        train = source[:, :source.shape[1]//2, :]
+        test = source[:, source.shape[1]//2:, :]
+    else:
+        raise ValueError("Invalid axes. Only 'YX', 'ZYX' and 'YXC are supported.")
+    
+    imsave(os.path.join(label_dir,'train.tif'), train)
+    imsave(os.path.join(label_dir, 'test.tif'), test)
+    
+    return train, test
 
 
 def make_random_patch(img, truth, patch_size, ind=None, sub_sample_xy=1):
