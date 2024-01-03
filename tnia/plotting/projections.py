@@ -104,8 +104,8 @@ def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax
 
     Args:
         image_to_show (3d numpy array): image to plot
-        sxy (float, optional): xy pixel size of 3D. Defaults to 1.
-        sz (float, optional): z pixel size of 3D. Defaults to 1.
+        sxy (float, optional): xy pixel size. Defaults to 1.
+        sz (float, optional): z pixel size. Defaults to 1.
         figsize (tuple, optional): figure size. Defaults to (10,10).
         colormap (_type_, optional): _description_. Defaults to None.
         vmax (float, optional): maximum value for display range. Defaults to None.
