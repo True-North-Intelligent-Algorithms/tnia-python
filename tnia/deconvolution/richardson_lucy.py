@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.fft import fftn, ifftn, fftshift 
 import cupy as cp
-from tnia.deconvolution.pad import pad, unpad
+from tnia.deconvolution.pad import pad, unpad, get_next_smooth
 
 def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
     """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses cupy
@@ -43,6 +43,7 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
     if noncirc:
         # compute the extended size of the image and psf
         extended_size = [image.shape[i]+2*int(psf.shape[i]/2) for i in range(len(image.shape))]
+        extended_size = get_next_smooth(extended_size)
 
         # pad the image, psf and HTOnes array to the extended size computed above
         original_size = image.shape
@@ -62,18 +63,22 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
     else:
         estimate = image
 
+    delta = 1e-6
+
     HTones = cp.real(cp.fft.ifftn(cp.fft.fftn(HTones) * otf_))
-    HTones[HTones<1e-6] = 1
+    HTones[HTones<delta] = 1
 
     print()
     for i in range(num_iters):
         if i % 10 == 0:
+            #print('chckup estimate',i,estimate.min(), estimate.max(), estimate.mean())
             print(i, end =" ")
         
         reblurred = cp.real(cp.fft.ifftn(cp.fft.fftn(estimate) * otf))
 
-        ratio = image / (reblurred + 1e-12)
+        ratio = image / (reblurred + delta)
         correction=cp.real((cp.fft.ifftn(cp.fft.fftn(ratio) * otf_)))
+        correction[correction<0] = 0
         estimate = estimate * correction/HTones 
     print()        
     
