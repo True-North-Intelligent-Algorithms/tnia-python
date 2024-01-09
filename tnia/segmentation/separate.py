@@ -21,7 +21,7 @@ def separate_touching(segmented, min_distance, num_erosions):
         num_erosions (int): number of eroisions to perform at end of process, in order to increase separation between split objects. 
 
     Returns:
-        2d np array:  separated binary image
+        2d np array:  separated binary image, labels, distance map
     """
 
     #closed = closing(segmented, disk(1))
