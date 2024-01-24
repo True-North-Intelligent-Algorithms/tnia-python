@@ -13,12 +13,12 @@ from skimage.morphology import remove_small_holes
 from tnia.morphology.fill_holes import fill_holes_3d_slicer
 
 def separate_touching(segmented, min_distance, num_erosions):
-    """ separates touching objects using a watershed process
+    """ separates touching objects using a watershed process using strategy described here https://scikit-image.org/docs/stable/auto_examples/segmentation/plot_watershed.html
 
     Args:
         segmented (2d np array): pre-segmented image
         min_distance (int):  minimum distance between separated
-        num_erosions (int): number of eroisions to perform at end of process, in order to increase separation between split objects. 
+        num_erosions (int): number of erosions to perform at end of process, in order to increase separation between split objects. 
 
     Returns:
         2d np array:  separated binary image, labels, distance map
