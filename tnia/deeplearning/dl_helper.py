@@ -460,23 +460,16 @@ def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, p
     return labels, details
 
 def generate_patch_names(image_path, mask_path, data_name):
-    print('image path',image_path)
-    print('mask path',mask_path)
-    print('data name',data_name)
     
     index=0
     image_name=image_path+'/'+data_name+'_'+str(index)+'.tif'
     mask_name=mask_path+'/'+data_name+'_'+str(index)+'.tif'
 
     while (os.path.exists(image_name)==True):
-        print('image ',index,'exists')
         index=index+1
         image_name=image_path+'/'+data_name+'_'+str(index)+'.tif'
         mask_name=mask_path+'/'+data_name+'_'+str(index)+'.tif'
 
-    print(image_name)
-    print(mask_name)
-    
     return image_name, mask_name
 
 def compute_centroid(vertices):
