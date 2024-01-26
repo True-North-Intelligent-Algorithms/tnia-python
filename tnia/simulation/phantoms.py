@@ -250,7 +250,7 @@ def random_circles(im, num, min_r, max_r, min_intensity, max_intensity, seed_val
         cx=round(uniform(r,im.shape[1]-r))
         cy=round(uniform(r,im.shape[0]-r))
         intensity=round(uniform(min_intensity, max_intensity))
-        print(r,cx,cy,intensity)
+        #print(r,cx,cy,intensity)
         temp1=rg.circle([r*2,r*2],r)
         temp2=np.zeros_like(im)
         temp2[cy-r:cy+r,cx-r:cx+r]=temp1
