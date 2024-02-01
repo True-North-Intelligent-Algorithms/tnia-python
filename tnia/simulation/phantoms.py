@@ -2,6 +2,7 @@ import numpy as np
 import raster_geometry as rg
 from random import uniform, seed
 import math
+import random
 
 def sphere3d(size, radius, intensity=1, z_down_sample=1):
     """ Creates a 3D sphere.
@@ -279,3 +280,30 @@ def grid_of_circles(im, radius, space,border,intensity):
                 #print(cx,cy)
                 temp2[cy-radius:cy+radius,cx-radius:cx+radius]=temp1
                 im[temp2>0]=intensity
+
+def random_sphere_phantom(xdim, ydim, zdim, number_spheres, min_radius, max_radius, phantom):
+
+    if phantom is None:
+        phantom = np.zeros((zdim, ydim, xdim), dtype=np.float32)
+        
+    number_spheres_added = 0
+
+    for i in range(0,number_spheres):
+        x=random.randint(0,xdim)
+        y=random.randint(0,ydim)
+        z=random.randint(0,zdim)
+        intensity = random.randint(50,800) 
+
+        #print(i,x,y,z)
+
+        r=random.randint(min_radius,max_radius)
+
+        size = [2*r, 2*r, 2*r]
+        sphere = rg.sphere(size, r).astype(np.float32)
+        sphere = sphere*intensity
+        #add_sphere3d(phantom, 20, x, y, z, intensity, 2)
+        if add_small_to_large(phantom, sphere, x, y, z, True) == True:
+            number_spheres_added += 1
+
+    return phantom
+
