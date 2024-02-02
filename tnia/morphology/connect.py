@@ -5,15 +5,18 @@ from skimage import measure
 from scipy import spatial
 from skimage.segmentation import relabel_sequential
 
-def connect_2d_in_3d(labeled, threshold):
+from tqdm import tqdm
+
+def connect_2d_in_3d(labeled, threshold, use_tqdm=False):
     """ Given a stack of 2D labels connect nearest neighbors in adjacent planes 
     Args:
         labeled (3d integer np array): the labels
         threshold (float): max 2d distance to consider objects connected
+        use_tqdm (bool): whether to use tqdm to display a progress bar
     """
     relabeled=[labeled[0,:,:]]
-    for i in range(1,labeled.shape[0]):
-        print(i,end=' ')
+    range_func = tqdm(range(1, labeled.shape[0])) if use_tqdm else range(1, labeled.shape[0])
+    for i in range_func:
         previous=relabeled[i-1]
         current=labeled[i,:,:]
         relabeled.append(connect_labels(previous, current, threshold))
