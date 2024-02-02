@@ -13,8 +13,7 @@ from tnia.simulation.phantoms import add_small_to_large, add_small_to_large_2d
 import math
 import raster_geometry as rg
 import random
-from pathlib import Path
-
+from tqdm import tqdm
 
 """ Note:
 Original source for some of this code is here https://github.com/stardist/stardist/tree/master/examples
@@ -138,11 +137,8 @@ def augmenter(x, y):
     x = x + sig*np.random.normal(0,1,x.shape)
     return x, y
 
-
-def make_patch_directory(num_inputs, num_truths, parent_dir, sub_sample=1):
-    """ makes a directory of patches from an image and its corresponding ground truth
-
-    Note: the input crop_size is with respect to the image, the final size of the patch will be crop_size/sub_sample
+def make_patch_directory(num_inputs, num_truths, parent_dir):
+    """ makes a directory to put patches from an image and its corresponding ground truth
 
     Args:
         img (numpy array): the image
@@ -178,6 +174,24 @@ def make_patch_directory(num_inputs, num_truths, parent_dir, sub_sample=1):
         json.dump(json_, outfile)
 
     return input_paths, truth_paths
+
+def make_label_directory(num_inputs, num_truths, parent_dir):
+    """ makes a directory to put labeks from an image and its corresponding ground truth
+
+    Note1: Labels are subtly different than patches.  Labels can be the entire image, and labels in the same directory can be different sizes.
+    Patches are always the same size and are always cropped from the image.
+
+    Note2:  Right now naming scheme for labels and patches are the same so this function is not really necessary.  However, it is included for completeness.
+    
+    Args:
+        img (numpy array): the image
+        truth (numpy array): the ground truth
+        parent_dir (str): the location of the directory to save the patches
+        crop_size (int): the size of the crop with respect to the image
+        sub_sample (int): the subsampling rate to apply to the patch in lateral xy direction
+    """
+    make_patch_directory(num_inputs, num_truths, parent_dir)
+
 
 def make_patch_source_divide2(source, axes, label_dir):
     """ 
@@ -614,3 +628,18 @@ def ray4_to_ellipsoid2d_labels(coords, shape):
 
     return labels.astype(np.int32)
 
+
+def stardist_2d_slicewise(im, model, nmin=2, nmax=98, prob_thresh=0.3, nms_thresh=0.3, perform_normalization=True, use_tqdm=False):
+    label_list=[]
+
+    range_func = tqdm(range(im.shape[0])) if use_tqdm else range(im.shape[0])
+    for i in range_func:
+        if perform_normalization:    
+            im_n = normalize(im[i],nmin,nmax)
+        else:
+            im_n = im[i]
+        
+        labels, details = model.predict_instances(im_n, prob_thresh=prob_thresh, nms_thresh=nms_thresh)
+        label_list.append(labels)
+
+    return np.stack(label_list,0)
