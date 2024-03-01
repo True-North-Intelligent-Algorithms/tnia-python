@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 from matplotlib import gridspec
 import numpy as np
 from skimage.transform import resize
@@ -78,7 +79,7 @@ def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=
 
     return show_xyz_slice(image_to_show, xc, yc, zc, sxy, sz,figsize, colormap, vmax, gamma)
 
-def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
+def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None, use_plt=True):
     """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
 
     Args:
@@ -97,7 +98,7 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap
     slice_xz = image_to_show[:,y,:]
     slice_xy = image_to_show[z,:,:]
 
-    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap, vmax, gamma)
+    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap, vmax, gamma, use_plt)
 
 def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
     """ plots max xy, xz, and zy projections of a 3D image
@@ -134,7 +135,7 @@ def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np
 
     return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap, vmax, gamma)
 
-def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
+def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None, use_plt=True):
     """ shows pre-computed xy, xz and zy of a 3D image in a plot
 
     Args:
@@ -150,7 +151,11 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, 
         [type]: [description]
     """
     
-    fig=plt.figure(figsize=figsize, layout='constrained')
+    if use_plt:
+        fig=plt.figure(figsize=figsize, layout='constrained')
+    else:
+        fig = Figure(figsize=figsize, constrained_layout=True)
+    
     
     xdim = xy.shape[1]
     ydim = xy.shape[0]
