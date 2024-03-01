@@ -309,7 +309,7 @@ def make_random_patch(img, truth, patch_size, axes, ind=None, sub_sample_xy=1):
 
     return img_crop, truth_crop, ind, truth_ind
 
-def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_truth=False, training_multiple=1, patch_size=None, add_trivial_channel=True):
+def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_input=True, normalize_truth=False, training_multiple=1, patch_size=None, add_trivial_channel=True):
     '''
     # open info.json
     with open(os.path.join(data_path, "info.json")) as json_file:
@@ -346,8 +346,9 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
         if add_trivial_channel:
             input_img = input_img[..., np.newaxis]
 
-        # Normalize the pixel values to [0, 1]
-        input_img =  normalize(input_img, pmin, pmax)
+        if normalize_input:
+            # Normalize the pixel values to [0, 1]
+            input_img =  normalize(input_img, pmin, pmax)
 
         if (normalize_truth):
             ground_truth_img = normalize(ground_truth_img, pmin, pmax)
