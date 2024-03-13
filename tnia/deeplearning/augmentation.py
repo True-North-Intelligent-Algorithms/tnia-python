@@ -1,5 +1,9 @@
 import numpy as np
 from skimage import transform
+from random import randint
+from skimage.io import imsave
+from tnia.deeplearning.dl_helper import generate_patch_names, make_patch_directory
+import json
 
 """
 Note:  There are lots of augmentation libraries out there.  This either provides convenient wrappers for some, or 
@@ -112,3 +116,98 @@ def random_shift_slices_in_stack(img, shift_range=2):
         shifted_images[i] = cropped
 
     return shifted_images
+
+def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, do_random_gamma=False):
+    """
+    This function performs a series of image augmentations on the input image and mask.
+
+    Args:
+        im (np.array): The input image to be augmented.
+        mask (np.array): The corresponding mask to be augmented.
+        patch_path (str): The path to the patches to be extracted from the augmented images.
+        patch_size (tuple): The size of the patches to be extracted from the augmented images.
+        num_patches (int): The number of patches to be extracted.
+        do_vertical_flip (bool, optional): Whether to perform vertical flip. Defaults to True.
+        do_horizontal_flip (bool, optional): Whether to perform horizontal flip. Defaults to True.
+        do_random_rotate90 (bool, optional): Whether to perform random 90 degree rotations. Defaults to True.
+        do_random_sized_crop (bool, optional): Whether to perform random crops of varying sizes. Defaults to True.
+        do_random_brightness_contrast (bool, optional): Whether to perform random brightness and contrast adjustments. Defaults to True.
+        do_random_gamma (bool, optional): Whether to perform random gamma adjustments. Defaults to False.
+
+    Returns:
+        np.array: The augmented image patches.
+        np.array: The augmented mask patches.
+    """
+    
+    import albumentations as A
+    import os
+
+    image_patch_path =  os.path.join(patch_path, 'input0')
+    label_patch_path =  os.path.join(patch_path, 'ground truth0')
+    
+    make_patch_directory(1, 1, patch_path)
+    
+    # Load the existing JSON data which is created when making the patch directory and append addition information to it
+    json_file = patch_path / "info.json"
+
+    with open(json_file, 'r') as infile:
+        data = json.load(infile)
+
+    # add the sub_sample information to the JSON file
+    # TODO: Make these parameters
+    data['sub_sample'] = 1
+    data['axes'] = 'YX'
+
+    # Write the modified data back to the JSON file
+    with open(json_file, 'w') as outfile:
+        json.dump(data, outfile)
+
+
+    if not os.path.exists(image_patch_path):
+        os.mkdir(image_patch_path)
+    if not os.path.exists(label_patch_path):
+        os.mkdir(label_patch_path)
+
+
+    for i in range(num_patches):
+        x=randint(0,im.shape[1]-patch_size-1)
+        y=randint(0,im.shape[0]-patch_size-1)
+
+        ind = np.s_[y:y+patch_size, x:x+patch_size]
+
+        # Create a list of augmentations
+        augmentations = []
+
+        if do_vertical_flip:
+            augmentations.append(A.VerticalFlip(p=0.5))
+
+        if do_horizontal_flip:
+            augmentations.append(A.HorizontalFlip(p=0.5))
+
+        if do_random_rotate90:
+            augmentations.append(A.RandomRotate90(p=0.5))
+
+        if do_random_sized_crop:
+            augmentations.append(A.RandomSizedCrop(min_max_height=(patch_size//2, patch_size), height=patch_size, width=patch_size, p=0.5))
+
+        if do_random_brightness_contrast:
+            augmentations.append(A.RandomBrightnessContrast(p=0.8))
+
+        if do_random_gamma:
+            augmentations.append(A.RandomGamma(p=0.8))
+
+        # Create the augmenter
+        aug = A.Compose(augmentations)
+        
+        augmented = aug(image=im[ind], mask=mask[ind])
+
+        im_aug = augmented['image']
+        label_aug = augmented['mask']
+
+        print(im_aug.shape, label_aug.shape)
+
+        image_name, patch_name = generate_patch_names(str(image_patch_path), str(label_patch_path), patch_base_name)
+        print(image_name, patch_name)
+        imsave(image_name, im_aug)
+        imsave(patch_name, label_aug)
+
