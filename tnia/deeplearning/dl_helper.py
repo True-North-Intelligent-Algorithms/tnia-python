@@ -638,3 +638,32 @@ def stardist_2d_slicewise(im, model, nmin=2, nmax=98, prob_thresh=0.3, nms_thres
         label_list.append(labels)
 
     return np.stack(label_list,0)
+
+def normalize_(img, low, high, eps=1.e-20, clip=True):
+    # we have to add a small eps to handle the case where both quantiles are equal
+    # to avoid dividing by zero
+    scaled = (img - low) / (high - low + eps)
+
+    if clip:
+        scaled = np.clip(scaled, 0, 1)
+
+    return scaled
+
+
+def quantile_normalization(img, quantile_low=0.01, quantile_high=0.998, eps=1.e-20, clip=True):
+    """
+    Copying this from PolBias GPU course....  it is an easy piece of code that is also in stardist.  
+
+    But... sometimes Stardist isn't installed, sometimes it is, sometimes PyTorch is there sometimes it isn't.  So I'm copying it here.
+
+    First scales the data so that values below quantile_low are smaller
+    than 0 and values larger than quantile_high are larger than one.
+    Then optionally clips to (0, 1) range.
+    """
+
+    qlow = np.quantile(img, quantile_low)
+    qhigh = np.quantile(img, quantile_high)
+
+    scaled = normalize_(img, low=qlow, high=qhigh, eps=eps, clip=clip)
+    return scaled
+
