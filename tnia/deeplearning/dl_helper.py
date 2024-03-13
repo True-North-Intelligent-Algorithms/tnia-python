@@ -454,19 +454,12 @@ def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, p
     
     # normalize the image
     img = normalize(img, pmin, pmax)
-    #img = img.astype('float32')
-    #img = (img-img.min()) / (img.max() - img.min())
     
     # apply the model
     labels, details = model.predict_instances(img, prob_thresh=prob_thresh, nms_thresh=nms_thresh)
 
-    #if render_mode is 
-    #if render_mode=="default":
-    #    if model.config.rays_json['name']=='Rays_Octo':
-    #        render_mode="ellipsoid"
-
     if render_mode=="ellipsoid":
-        labels = octo_to_ellipsoid_labels(details['points'], details['dist'], shape=img.shape, scale=[1, .9, .9])
+        labels = octo_to_ellipsoid_labels(details['points'], details['dist'], shape=img.shape)
     
     if (down_sample>1):
         # upsample the labels
@@ -549,33 +542,34 @@ def octo_to_ellipsoid_labels(points, distances, shape, up_sample=1, scale=[1,1,1
         dy = dy1+dy2
         dz = dz1+dz2
 
-        # collect the vertices of the polyhedron
-        v = []
-        v.append([point[0]-dz2, point[1], point[2]])
-        v.append([point[0]+dz1, point[1], point[2]])
-        v.append([point[0], point[1]-dy2, point[2]])
-        v.append([point[0], point[1]+dy1, point[2]])
-        v.append([point[0], point[1], point[2]-dx2])
-        v.append([point[0], point[1], point[2]+dx1])
-
-        # compute the centroid
-        centroid = compute_centroid(v)
+        # compute the centroid of the octohedron
+        centroid = [0,0,0]
+        centroid[2]=(point[2]-dx2+point[2]+dx1)/2
+        centroid[1]=(point[1]-dy2+point[1]+dy1)/2
+        centroid[0]=(point[0]-dz2+point[0]+dz1)/2
 
         # size of bounding box surrounding the ellipsoid
         size = [math.ceil(dz),math.ceil(dy),math.ceil(dx)]
 
-        # compute the percentage offset of the centroid from the center of the bounding box
-        px = centroid[2]-point[2]
-        py = centroid[1]-point[1]
-        pz = centroid[0]-point[0]
+        # when we add the ellipsoid to the label image, we need an integer location for the centroid
+        ceil_centroid = [math.ceil(centroid[0]), math.ceil(centroid[1]), math.ceil(centroid[2])]
+        
+        # compute the percentage offset of the centroid from the integer centroid
+        px = centroid[2]-ceil_centroid[2]
+        py = centroid[1]-ceil_centroid[1]
+        pz = centroid[0]-ceil_centroid[0]
 
+        # the centroid that is passed to the ellipsoid function should be in the range 0 to 1
+        # in this case we adjust it very slightly to compensate for the difference between the centroid and the integer centroid
         px = 0.5 + px/size[2]
         py = 0.5 + py/size[1]
         pz = 0.5 + pz/size[0]
 
         # draw ellipsoid in bounding box 'size', with radius [dz/2, dy/2, dx/2], add percentage offset [pz, py, px]
         ellipsoid_ = rg.ellipsoid(size, [dz/2, dy/2, dx/2], [pz, py, px]).astype(np.float32)
-        add_small_to_large(labels, label_num*ellipsoid_, point[2], point[1], point[0], mode = 'replace_non_zero')
+        
+        # add the ellipsoid to the label image 
+        add_small_to_large(labels, label_num*ellipsoid_, ceil_centroid[2], ceil_centroid[1], ceil_centroid[0], mode = 'replace_non_zero')
         
         label_num += 1
 
