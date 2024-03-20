@@ -117,7 +117,7 @@ def random_shift_slices_in_stack(img, shift_range=2):
 
     return shifted_images
 
-def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, do_random_gamma=False):
+def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False):
     """
     This function performs a series of image augmentations on the input image and mask.
 
@@ -156,8 +156,13 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
     # add the sub_sample information to the JSON file
     # TODO: Make these parameters
     data['sub_sample'] = 1
-    data['axes'] = 'YX'
 
+    # TODO: make logic to detect axis more complex
+    if len(im.shape) == 3:
+        data['axes'] = 'YXC'
+    else:
+        data['axes'] = 'YX'
+        
     # Write the modified data back to the JSON file
     with open(json_file, 'w') as outfile:
         json.dump(data, outfile)
@@ -170,8 +175,8 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
 
 
     for i in range(num_patches):
-        x=randint(0,im.shape[1]-patch_size-1)
-        y=randint(0,im.shape[0]-patch_size-1)
+        x=randint(0,im.shape[1]-patch_size)
+        y=randint(0,im.shape[0]-patch_size)
 
         ind = np.s_[y:y+patch_size, x:x+patch_size]
 
@@ -188,6 +193,7 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
             augmentations.append(A.RandomRotate90(p=0.5))
 
         if do_random_sized_crop:
+            # TODO: make more flexibility for resize
             augmentations.append(A.RandomSizedCrop(min_max_height=(patch_size//2, patch_size), height=patch_size, width=patch_size, p=0.5))
 
         if do_random_brightness_contrast:
@@ -196,6 +202,14 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         if do_random_gamma:
             augmentations.append(A.RandomGamma(p=0.8))
 
+        if do_color_jitter:
+            # color jitter light
+            augmentations.append(A.ColorJitter(hue=0, brightness=0.5, saturation=0.1, p=0.5))
+            # color jitter heavy
+            augmentations.append(A.ColorJitter(hue=0.5, brightness=0.5, saturation=0.5, p=0.6))
+
+        if do_elastic_transform:
+            augmentations.append(A.ElasticTransform (alpha=1, sigma=50, alpha_affine=50, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, approximate=False, same_dxdy=False, p=0.5))
         # Create the augmenter
         aug = A.Compose(augmentations)
         
@@ -204,10 +218,12 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         im_aug = augmented['image']
         label_aug = augmented['mask']
 
-        print(im_aug.shape, label_aug.shape)
+        is_anynan = np.isnan(im_aug).any() or np.isnan(label_aug).any()
+
+        if is_anynan:
+            continue
 
         image_name, patch_name = generate_patch_names(str(image_patch_path), str(label_patch_path), patch_base_name)
-        print(image_name, patch_name)
         imsave(image_name, im_aug)
         imsave(patch_name, label_aug)
 
