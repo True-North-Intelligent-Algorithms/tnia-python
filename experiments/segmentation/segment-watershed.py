@@ -13,7 +13,11 @@ from skimage.morphology import label
 import napari.viewer
 import numpy as np
 
-parent_dir = "/home/bnorthan/elephasbio/data/2021-05-14 Day 3 VD2 EMT-6 fragments/fragments-001/";
+# linux path on bnorthan machine
+#parent_dir = "/home/bnorthan/elephasbio/data/2021-05-14 Day 3 VD2 EMT-6 fragments/fragments-001/"
+# windows path on bnorthan machine
+parent_dir = "D:/elephasbio/2021-05-14 Day 3 VD2 EMT-6 fragments/fragments-001/"
+
 file_name = "cropped.tif"
 
 im=imread(parent_dir+file_name)
@@ -21,7 +25,6 @@ im=imread(parent_dir+file_name)
 # initialize GPU
 cle.select_device("RTX")
 print("Used GPU: " + cle.get_device().name)
-
 
 # push image to GPU memory
 input = cle.push(im)
