@@ -144,3 +144,5 @@ notebooks/deep_learning/models/
 *.h5
 **/sam_b.pt
 **/runs
+
+**/models
