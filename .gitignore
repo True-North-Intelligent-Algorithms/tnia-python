@@ -142,7 +142,7 @@ notebooks/deep_learning/models/
 
 # ignore .h5 files
 *.h5
-**/sam_b.pt
+*.pt
 **/runs
 
 **/models
