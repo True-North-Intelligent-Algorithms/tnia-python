@@ -4,9 +4,8 @@ from tnia.simulation.phantoms import add_small_to_large_2d
 from random import seed, uniform
 import matplotlib.pyplot as plt
 import math
-from tnia.deeplearning.augmentation import uber_augmenter_im
 
-def test_augmentation():
+def test_add_small_to_large():
     width = 512
     height = 512
 
@@ -26,24 +25,30 @@ def test_augmentation():
     assert truth.sum() == 16355.0
 
     print(truth.sum())
-
-    im = truth.copy()
-
-    im_aug, truth_aug = uber_augmenter_im(im, truth, 256)
-
-    print(im_aug.sum())
-
-    #assert im_aug.sum() == 6049.3467
-    assert math.isclose(im_aug.sum(), 6049.3467, rel_tol=1e-5)
-
-    #plt.imshow(im)
-    #plt.imshow(im_aug)
+    #plt.imshow(truth)
     #plt.show()
     #stop = 5
 
+def test_add_small_square_to_large():
+    width = 512
+    height = 512
+
+    large = np.zeros([height, width], dtype=np.float32)
+
+    x = 256
+    y = 256
+    small = np.ones([height//4+1,width//4+1], dtype=np.uint16)
+    
+    add_small_to_large_2d(large, small, x, y, mode='replace_non_zero', center=False)
+
+    print(small.sum(), large.sum())
+    #plt.imshow(truth)
+    #plt.show()
+    stop = 5
+
 # make main
 if __name__ == "__main__":
-    test_augmentation()
+    test_add_small_square_to_large()
     
 
 
