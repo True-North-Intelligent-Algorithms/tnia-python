@@ -5,6 +5,11 @@ from skimage.io import imsave
 from tnia.deeplearning.dl_helper import generate_patch_names, make_patch_directory
 import json
 
+try:
+    import albumentations as A
+except ImportError:
+    print("Albumentations is not installed. Please install it using pip install albumentations.")
+
 """
 Note:  There are lots of augmentation libraries out there.  This either provides convenient wrappers for some, or 
 implements niche augmentations that are not available in other libraries.  
@@ -117,9 +122,11 @@ def random_shift_slices_in_stack(img, shift_range=2):
 
     return shifted_images
 
-def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False):
+def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, 
+                   do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
+                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False):
     """
-    This function performs a series of image augmentations on the input image and mask.
+    This function performs a series of image augmentations on the input image and mask and saves the resulting patches to disk.
 
     Args:
         im (np.array): The input image to be augmented.
@@ -133,13 +140,14 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         do_random_sized_crop (bool, optional): Whether to perform random crops of varying sizes. Defaults to True.
         do_random_brightness_contrast (bool, optional): Whether to perform random brightness and contrast adjustments. Defaults to True.
         do_random_gamma (bool, optional): Whether to perform random gamma adjustments. Defaults to False.
+        do_color_jitter (bool, optional): Whether to perform color jitter. Defaults to False.
+        do_elastic_transform (bool, optional): Whether to perform elastic transformations. Defaults to False.
 
     Returns:
         np.array: The augmented image patches.
         np.array: The augmented mask patches.
     """
     
-    import albumentations as A
     import os
 
     image_patch_path =  os.path.join(patch_path, 'input0')
@@ -175,55 +183,84 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
 
 
     for i in range(num_patches):
-        x=randint(0,im.shape[1]-patch_size)
-        y=randint(0,im.shape[0]-patch_size)
-
-        ind = np.s_[y:y+patch_size, x:x+patch_size]
-
-        # Create a list of augmentations
-        augmentations = []
-
-        if do_vertical_flip:
-            augmentations.append(A.VerticalFlip(p=0.5))
-
-        if do_horizontal_flip:
-            augmentations.append(A.HorizontalFlip(p=0.5))
-
-        if do_random_rotate90:
-            augmentations.append(A.RandomRotate90(p=0.5))
-
-        if do_random_sized_crop:
-            # TODO: make more flexibility for resize
-            augmentations.append(A.RandomSizedCrop(min_max_height=(patch_size//2, patch_size), height=patch_size, width=patch_size, p=0.5))
-
-        if do_random_brightness_contrast:
-            augmentations.append(A.RandomBrightnessContrast(p=0.8))
-
-        if do_random_gamma:
-            augmentations.append(A.RandomGamma(p=0.8))
-
-        if do_color_jitter:
-            # color jitter light
-            augmentations.append(A.ColorJitter(hue=0, brightness=0.5, saturation=0.1, p=0.5))
-            # color jitter heavy
-            augmentations.append(A.ColorJitter(hue=0.5, brightness=0.5, saturation=0.5, p=0.6))
-
-        if do_elastic_transform:
-            augmentations.append(A.ElasticTransform (alpha=1, sigma=50, alpha_affine=50, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, approximate=False, same_dxdy=False, p=0.5))
-        # Create the augmenter
-        aug = A.Compose(augmentations)
-        
-        augmented = aug(image=im[ind], mask=mask[ind])
-
-        im_aug = augmented['image']
-        label_aug = augmented['mask']
+        im_aug, label_aug = uber_augmenter_im(im, mask, patch_size, do_vertical_flip, do_horizontal_flip,
+                                        do_random_rotate90, do_random_sized_crop, do_random_brightness_contrast,
+                                        do_random_gamma, do_color_jitter, do_elastic_transform)
 
         is_anynan = np.isnan(im_aug).any() or np.isnan(label_aug).any()
 
         if is_anynan:
             continue
 
+
         image_name, patch_name = generate_patch_names(str(image_patch_path), str(label_patch_path), patch_base_name)
         imsave(image_name, im_aug)
         imsave(patch_name, label_aug)
+
+def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal_flip=True, 
+                     do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
+                     do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False):
+    """ single application of uber augmenter to label and image
+
+    Args:
+        im (_type_): _description_
+        mask (_type_): _description_
+        patch_size (_type_): _description_
+        do_vertical_flip (bool, optional): _description_. Defaults to True.
+        do_horizontal_flip (bool, optional): _description_. Defaults to True.
+        do_random_rotate90 (bool, optional): _description_. Defaults to True.
+        do_random_sized_crop (bool, optional): _description_. Defaults to True.
+        do_random_brightness_contrast (bool, optional): _description_. Defaults to True.
+        do_random_gamma (bool, optional): _description_. Defaults to False.
+        do_color_jitter (bool, optional): _description_. Defaults to False.
+        do_elastic_transform (bool, optional): _description_. Defaults to False.
+
+    Returns:
+        im_aug, label_aug: augmented image and label
+    """
+    
+    x=randint(0,im.shape[1]-patch_size)
+    y=randint(0,im.shape[0]-patch_size)
+
+    ind = np.s_[y:y+patch_size, x:x+patch_size]
+
+    # Create a list of augmentations
+    augmentations = []
+
+    if do_vertical_flip:
+        augmentations.append(A.VerticalFlip(p=0.5))
+
+    if do_horizontal_flip:
+        augmentations.append(A.HorizontalFlip(p=0.5))
+
+    if do_random_rotate90:
+        augmentations.append(A.RandomRotate90(p=0.5))
+
+    if do_random_sized_crop:
+        # TODO: make more flexibility for resize
+        augmentations.append(A.RandomSizedCrop(min_max_height=(3*patch_size//4, patch_size), height=patch_size, width=patch_size, p=0.5))
+
+    if do_random_brightness_contrast:
+        augmentations.append(A.RandomBrightnessContrast(p=0.8))
+
+    if do_random_gamma:
+        augmentations.append(A.RandomGamma(p=0.8))
+
+    if do_color_jitter:
+        # color jitter light
+        augmentations.append(A.ColorJitter(hue=0, brightness=0.5, saturation=0.1, p=0.5))
+        # color jitter heavy
+        augmentations.append(A.ColorJitter(hue=0.5, brightness=0.5, saturation=0.5, p=0.6))
+
+    if do_elastic_transform:
+        augmentations.append(A.ElasticTransform (alpha=.1, sigma=5, alpha_affine=5, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, approximate=False, same_dxdy=False, p=0.5))
+    # Create the augmenter
+    aug = A.Compose(augmentations)
+    
+    augmented = aug(image=im[ind], mask=mask[ind])
+
+    im_aug = augmented['image']
+    label_aug = augmented['mask']
+
+    return im_aug, label_aug
 
