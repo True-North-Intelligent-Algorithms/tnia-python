@@ -4,7 +4,10 @@ from tifffile import imread, imsave
 from skimage.measure import label
 import numpy as np
 import matplotlib.pyplot as plt
-from csbdeep.utils import normalize
+try:
+    from csbdeep.utils import normalize
+except ImportError:
+    "csbdeep normalize did not import.  We will continue without it."
 from skimage.transform import resize
 import json
 import skimage.io as io
