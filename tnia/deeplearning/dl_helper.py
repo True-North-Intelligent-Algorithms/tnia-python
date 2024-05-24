@@ -140,6 +140,72 @@ def augmenter(x, y):
     x = x + sig*np.random.normal(0,1,x.shape)
     return x, y
 
+def get_patch_directory(num_inputs, num_truths, parent_dir):
+    """ gets the directory to put patches from an image and its corresponding ground truth
+
+    Args:
+        img (numpy array): the image
+        truth (numpy array): the ground truth
+        parent_dir (str): the location of the directory to save the patches
+    """
+    
+    input_paths = []
+    truth_paths = []
+
+    for i in range(num_inputs):
+        input_path = os.path.join(parent_dir, "input" + str(i))
+        input_paths.append(input_path)
+
+    for i in range(num_truths):
+        truth_path = os.path.join(parent_dir, "ground truth" + str(i))
+        truth_paths.append(truth_path)
+
+    return input_paths, truth_paths
+
+def get_label_directory(num_inputs, num_truths, parent_dir):
+    """ gets the directory to put labeks from an image and its corresponding ground truth
+
+    Note1: Labels are subtly different than patches.  Labels can be the entire image, and labels in the same directory can be different sizes.
+    Patches are always the same size and are always cropped from the image.
+
+    Note2:  Right now naming scheme for labels and patches are the same so this function is not really necessary.  However, it is included for completeness.
+    
+    Args:
+        img (numpy array): the image
+        truth (numpy array): the ground truth
+        parent_dir (str): the location of the directory to save the patches
+    """
+    return get_patch_directory(num_inputs, num_truths, parent_dir)
+
+from pathlib import Path
+
+def get_label_paths(num_inputs, num_truths, parent_dir):
+    """ gets the paths to put labeks from an image and its corresponding ground truth
+
+    Note1: Labels are subtly different than patches.  Labels can be the entire image, and labels in the same directory can be different sizes.
+    Patches are always the same size and are always cropped from the image.
+
+    Note2:  Right now naming scheme for labels and patches are the same so this function is not really necessary.  However, it is included for completeness.
+    
+    Args:
+        img (numpy array): the image
+        truth (numpy array): the ground truth
+        parent_dir (str): the location of the directory to save the patches
+    """
+    image_dirs, label_dirs = get_patch_directory(num_inputs, num_truths, parent_dir)
+
+    image_paths = []
+    for p in image_dirs:
+        as_path = Path(p)
+        image_paths.append(as_path)
+
+    label_paths=[]
+    for p in label_dirs:
+        as_path = Path(p)
+        label_paths.append(as_path)
+    
+    return image_paths, label_paths
+
 def make_patch_directory(num_inputs, num_truths, parent_dir):
     """ makes a directory to put patches from an image and its corresponding ground truth
 
@@ -193,7 +259,7 @@ def make_label_directory(num_inputs, num_truths, parent_dir):
         crop_size (int): the size of the crop with respect to the image
         sub_sample (int): the subsampling rate to apply to the patch in lateral xy direction
     """
-    make_patch_directory(num_inputs, num_truths, parent_dir)
+    return make_patch_directory(num_inputs, num_truths, parent_dir)
 
 
 def make_patch_source_divide2(source, axes, label_dir):
@@ -482,6 +548,26 @@ def generate_patch_names(image_path, mask_path, data_name):
         mask_name=mask_path+'/'+data_name+'_'+str(index)+'.tif'
 
     return image_name, mask_name
+
+def generate_label_names(image_path, mask_path, data_name):
+    return generate_patch_names(image_path, mask_path, data_name)
+
+def generate_next_patch_name(image_path, name):
+    
+    index=0
+    image_name=image_path+'/'+name+'_'+str(index)+'.tif'
+
+    while (os.path.exists(image_name)==True):
+        index=index+1
+        image_name=image_path+'/'+name+'_'+str(index)+'.tif'
+
+    base_name = os.path.basename(image_name)
+    base_name = os.path.splitext(base_name)[0]
+    
+    return base_name
+
+def generate_next_label_name(image_path, name):
+    return generate_next_patch_name(image_path, name)
 
 def compute_centroid(vertices):
     """

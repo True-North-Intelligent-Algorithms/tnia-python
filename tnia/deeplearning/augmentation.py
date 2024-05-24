@@ -1,8 +1,9 @@
+from cv2 import add
 import numpy as np
 from skimage import transform
 from random import randint
 from skimage.io import imsave
-from tnia.deeplearning.dl_helper import generate_patch_names, make_patch_directory
+from tnia.deeplearning.dl_helper import generate_patch_names, make_patch_directory, generate_next_patch_name
 import json
 
 try:
@@ -151,9 +152,14 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
     import os
 
     image_patch_path =  os.path.join(patch_path, 'input0')
-    label_patch_path =  os.path.join(patch_path, 'ground truth0')
     
-    make_patch_directory(1, 1, patch_path)
+    if isinstance(mask, list):
+        label_patch_path =  [os.path.join(patch_path, 'ground truth'+str(i)) for i in range(len(mask))]
+        num_truths = len(mask)
+    else:
+        label_patch_path =  os.path.join(patch_path, 'ground truth0')
+        num_truths = 1
+    make_patch_directory(1, num_truths, patch_path)
     
     # Load the existing JSON data which is created when making the patch directory and append addition information to it
     json_file = patch_path / "info.json"
@@ -178,8 +184,14 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
 
     if not os.path.exists(image_patch_path):
         os.mkdir(image_patch_path)
-    if not os.path.exists(label_patch_path):
-        os.mkdir(label_patch_path)
+    
+    if isinstance(mask, list):
+        for i in range(len(mask)):
+            if not os.path.exists(label_patch_path[i]):
+                os.mkdir(label_patch_path[i])
+    else:
+        if not os.path.exists(label_patch_path):
+            os.mkdir(label_patch_path)
 
 
     for i in range(num_patches):
@@ -193,9 +205,20 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
             continue
 
 
-        image_name, patch_name = generate_patch_names(str(image_patch_path), str(label_patch_path), patch_base_name)
+        #image_name, patch_name = generate_patch_names(str(image_patch_path), str(label_patch_path), patch_base_name)
+        next_patch_name = generate_next_patch_name(str(image_patch_path), patch_base_name)
+        
+        image_name = os.path.join(image_patch_path , next_patch_name+'.tif')
+        
         imsave(image_name, im_aug)
-        imsave(patch_name, label_aug)
+        
+        if isinstance(mask, list):
+            for j in range(len(mask)):
+                label_name = os.path.join(label_patch_path[j], next_patch_name+'.tif')
+                imsave(label_name, label_aug[j])
+        else:
+            label_name = os.path.join(label_patch_path, next_patch_name+'.tif')
+            imsave(label_name, label_aug)
 
 def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal_flip=True, 
                      do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
@@ -255,12 +278,31 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
     if do_elastic_transform:
         augmentations.append(A.ElasticTransform (alpha=.1, sigma=5, alpha_affine=5, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, approximate=False, same_dxdy=False, p=0.5))
     # Create the augmenter
-    aug = A.Compose(augmentations)
-    
-    augmented = aug(image=im[ind], mask=mask[ind])
 
-    im_aug = augmented['image']
-    label_aug = augmented['mask']
+    if isinstance(mask, list):
+        
+        additional_targets = {}
+        n=0
+        for m in mask:
+            additional_targets['mask'+str(n)] = 'mask'
+            n+=1
+        aug = A.Compose(augmentations, additional_targets=additional_targets)
+
+        # create a dictionary with keys 'mask0', 'mask1', etc
+        mask_dict = {'mask'+str(i): mask[i][ind] for i in range(len(mask))}
+
+        # Call the function with argument unpacking
+        augmented = aug(image=im[ind], **mask_dict)
+
+        im_aug = augmented['image']        
+        label_aug = [augmented['mask'+str(i)] for i in range(len(mask))]
+    
+    else:
+        aug = A.Compose(augmentations)
+        augmented = aug(image=im[ind], mask=mask[ind])
+
+        im_aug = augmented['image']
+        label_aug = augmented['mask']
 
     return im_aug, label_aug
 
