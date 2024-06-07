@@ -108,7 +108,7 @@ def add_small_to_large(large_arr, small_arr,x,y,z, check_empty=False, mode='add'
         #large_arr[slice_z, slice_y, slice_x][large_arr[slize_z, slize_y, slize_x]>0] = small_slice[small_slice>0]
     return True
 
-def add_small_to_large_2d(large_arr, small_arr, x, y, check_empty=False, mode='add'):
+def add_small_to_large_2d(large_arr, small_arr, x, y, check_empty=False, mode='add', center = True):
     """ Adds a small array 2d to a larger array.
 
     Notes:  This function is essentially the same as add_small_to_large but for 2D.  The code could be made more 'DRY' in the future.
@@ -126,11 +126,17 @@ def add_small_to_large_2d(large_arr, small_arr, x, y, check_empty=False, mode='a
     h, w = large_arr.shape
     sh, sw = small_arr.shape
 
-    # Calculate the start and end indices for the small array in each dimension
-    start_x = x - sw//2
-    end_x = start_x + sw
-    start_y = y - sh//2
-    end_y = start_y + sh
+    if center:
+        # Calculate the start and end indices for the small array in each dimension
+        start_x = x - sw//2
+        end_x = start_x + sw
+        start_y = y - sh//2
+        end_y = start_y + sh
+    else:
+        start_x = x
+        end_x = x + sw
+        start_y = y
+        end_y = y + sh
 
     # Calculate the overlapping slice of the small array
     slice_y = slice(max(start_y, 0), min(end_y, h))
