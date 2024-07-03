@@ -14,7 +14,10 @@ import skimage.io as io
 import os
 from tnia.simulation.phantoms import add_small_to_large, add_small_to_large_2d
 import math
-import raster_geometry as rg
+try:
+    import raster_geometry as rg
+except ImportError:
+    print("raster_geometry not imported.  This is only needed for the ellipsoid rendering in apply_stardist")
 import random
 from tqdm import tqdm
 
