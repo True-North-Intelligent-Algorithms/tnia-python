@@ -27,7 +27,7 @@ def imshow2d(im, width=8, height=6, colormap=None, vmin=None, vmax=None):
     ax.imshow(im, colormap, vmin=vmin, vmax=vmax)
     return fig
 
-def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormaps=None, vmin=None, vmax=None, gamma=None, plottypes=None):
+def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormaps=None, vmin=None, vmax=None, gamma=None, plottypes=None, xlabels = None, ylabels = None):
     """ a little helper to show a grid of images of differnt sizes using pyplot.  Just makes calls to imshow more readable. 
 
     Args:
@@ -49,7 +49,13 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormaps=None, 
     if plottypes is None:
         plottypes = ['imshow']*len(ims)
 
-    for im,ax,title,colormap,plottype in zip(ims,np.ndarray.flatten(axes),titles,colormaps,plottypes):
+    if xlabels is None:
+        xlabels = [None]*len(ims)
+    
+    if ylabels is None:
+        ylabels = [None]*len(ims)
+
+    for im,ax,title,colormap,plottype,xlabel,ylabel in zip(ims,np.ndarray.flatten(axes),titles,colormaps,plottypes,xlabels,ylabels):
         #print('types')
         #print(type(im), type(ax), type(title))
         #print()
@@ -60,6 +66,12 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormaps=None, 
                 ax.imshow(im.squeeze(), colormap,norm=norm)
             else:
                 ax.imshow(im.squeeze(), colormap,vmin=vmin, vmax=vmax)
+
+            if xlabel is not None:
+                ax.set_xlabel(xlabel)
+
+            if ylabel is not None:
+                ax.set_ylabel(ylabel)
         elif plottype == 'hist':
             ax.hist(im.flatten(), bins=100)
         
