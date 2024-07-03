@@ -1,10 +1,12 @@
 from cv2 import add
+from exceptiongroup import catch
 import numpy as np
 from skimage import transform
 from random import randint
 from skimage.io import imsave
 from tnia.deeplearning.dl_helper import generate_patch_names, make_patch_directory, generate_next_patch_name
 import json
+import os
 
 try:
     import albumentations as A
@@ -144,13 +146,8 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         do_color_jitter (bool, optional): Whether to perform color jitter. Defaults to False.
         do_elastic_transform (bool, optional): Whether to perform elastic transformations. Defaults to False.
 
-    Returns:
-        np.array: The augmented image patches.
-        np.array: The augmented mask patches.
     """
     
-    import os
-
     image_patch_path =  os.path.join(patch_path, 'input0')
     
     if isinstance(mask, list):
@@ -219,6 +216,96 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         else:
             label_name = os.path.join(label_patch_path, next_patch_name+'.tif')
             imsave(label_name, label_aug)
+
+
+def uber_augmenter_bb(im, bbs, classes, patch_path, patch_base_name, num_patches, do_vertical_flip=True, 
+                   do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
+                   do_random_gamma=False, do_color_jitter=False):
+    """
+    This function performs a series of image augmentations on the input image and bounding boxes and saves the resulting 
+    augmented images and bounding boxes to disk.
+
+    Args:
+        im (np.array): The input image to be augmented.
+        bbs (list):  The bounding boxes in YOLO format to be augmented.
+        patch_path (str): The path to the patches to be extracted from the augmented images.
+        patch_size (tuple): The size of the patches to be extracted from the augmented images.
+        num_patches (int): The number of patches to be extracted.
+        do_vertical_flip (bool, optional): Whether to perform vertical flip. Defaults to True.
+        do_horizontal_flip (bool, optional): Whether to perform horizontal flip. Defaults to True.
+        do_random_rotate90 (bool, optional): Whether to perform random 90 degree rotations. Defaults to True.
+        do_random_sized_crop (bool, optional): Whether to perform random crops of varying sizes. Defaults to True.
+        do_random_brightness_contrast (bool, optional): Whether to perform random brightness and contrast adjustments. Defaults to True.
+        do_random_gamma (bool, optional): Whether to perform random gamma adjustments. Defaults to False.
+        do_color_jitter (bool, optional): Whether to perform color jitter. Defaults to False.
+
+    """
+
+    image_patch_path =  os.path.join(patch_path, 'images')
+    label_patch_path =  os.path.join(patch_path, 'labels')
+
+    if not os.path.exists(image_patch_path):
+        os.mkdir(image_patch_path)
+    if not os.path.exists(label_patch_path):
+        os.mkdir(label_patch_path)
+    
+    num_truths = 1
+    
+    # Load the existing JSON data which is created when making the patch directory and append addition information to it
+    json_file = patch_path / "info.json"
+
+    try:
+        with open(json_file, 'r') as infile:
+            data = json.load(infile)
+    except:
+        data = {}
+
+    # add the sub_sample information to the JSON file
+    # TODO: Make these parameters
+    data['sub_sample'] = 1
+
+    # TODO: make logic to detect axis more complex
+    if len(im.shape) == 3:
+        data['axes'] = 'YXC'
+    else:
+        data['axes'] = 'YX'
+        
+    # Write the modified data back to the JSON file
+    with open(json_file, 'w') as outfile:
+        json.dump(data, outfile)
+
+    if not os.path.exists(image_patch_path):
+        os.mkdir(image_patch_path)
+    
+    if not os.path.exists(label_patch_path):
+        os.mkdir(label_patch_path)
+
+
+    for i in range(num_patches):
+        im_aug, boxes_aug = uber_augmenter_im_bb(im, bbs, do_vertical_flip, do_horizontal_flip,
+                                        do_random_rotate90, do_random_sized_crop, do_random_brightness_contrast,
+                                        do_random_gamma, do_color_jitter)
+        
+        if im_aug is None or boxes_aug is None:
+            continue
+
+        is_anynan = np.isnan(im_aug).any() 
+
+        if is_anynan:
+            continue
+        
+        next_patch_name = generate_next_patch_name(str(image_patch_path), patch_base_name)
+        
+        image_name = os.path.join(image_patch_path , next_patch_name+'.tif')
+        
+        imsave(image_name, im_aug)
+        
+        boxes_name = os.path.join(label_patch_path, next_patch_name+'.txt')
+        with open(boxes_name, 'w') as f:
+            for box, class_ in zip(boxes_aug, classes):
+                f.write(f"{class_} {box[0]} {box[1]} {box[2]} {box[3]}\n")
+
+
 
 def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal_flip=True, 
                      do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
@@ -305,4 +392,69 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
         label_aug = augmented['mask']
 
     return im_aug, label_aug
+
+def uber_augmenter_im_bb(im, bbs, do_vertical_flip=True, do_horizontal_flip=True, 
+                     do_random_rotate90=True, do_random_scale=True, do_random_brightness_contrast=True, 
+                     do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False):
+    """ single application of uber augmenter for bounding boxes to boxes and image
+
+    Args:
+        im (_type_): _description_
+        mask (_type_): _description_
+        patch_size (_type_): _description_
+        do_vertical_flip (bool, optional): _description_. Defaults to True.
+        do_horizontal_flip (bool, optional): _description_. Defaults to True.
+        do_random_rotate90 (bool, optional): _description_. Defaults to True.
+        do_random_sized_crop (bool, optional): _description_. Defaults to True.
+        do_random_brightness_contrast (bool, optional): _description_. Defaults to True.
+        do_random_gamma (bool, optional): _description_. Defaults to False.
+        do_color_jitter (bool, optional): _description_. Defaults to False.
+        do_elastic_transform (bool, optional): _description_. Defaults to False.
+
+    Returns:
+        im_aug, label_aug: augmented image and label
+    """
+
+    im_size = (im.shape[0]+im.shape[1])//2
+
+    # Create a list of augmentations
+    augmentations = []
+
+    if do_vertical_flip:
+        augmentations.append(A.VerticalFlip(p=0.5))
+
+    if do_horizontal_flip:
+        augmentations.append(A.HorizontalFlip(p=0.5))
+
+    if do_random_rotate90:
+        augmentations.append(A.RandomRotate90(p=0.5))
+
+    if do_random_scale:
+        augmentations.append(A.RandomScale(scale_limit=(-0.3,0.3), p=0.5))
+
+    if do_random_brightness_contrast:
+        augmentations.append(A.RandomBrightnessContrast(p=0.8))
+
+    if do_random_gamma:
+        augmentations.append(A.RandomGamma(p=0.8))
+
+    if do_color_jitter:
+        # color jitter light
+        augmentations.append(A.ColorJitter(hue=0, brightness=0.5, saturation=0.1, p=0.5))
+        # color jitter heavy
+        augmentations.append(A.ColorJitter(hue=0.5, brightness=0.5, saturation=0.5, p=0.6))
+
+    # Create the augmenter
+
+    aug = A.Compose(augmentations, bbox_params=A.BboxParams(format='yolo'))
+    try:    
+        augmented = aug(image=im, bboxes=bbs) 
+    except Exception as e:
+        print(e)
+        return None, None
+    
+    im_aug = augmented['image']
+    boxes_aug = augmented['bboxes']
+
+    return im_aug, boxes_aug 
 
