@@ -381,16 +381,35 @@ def make_random_patch(img, truth, patch_size, axes, ind=None, sub_sample_xy=1):
 
     return img_crop, truth_crop, ind, truth_ind
 
-def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_input=True, normalize_truth=False, training_multiple=1, patch_size=None, add_trivial_channel=True):
-    '''
-    # open info.json
-    with open(os.path.join(data_path, "info.json")) as json_file:
-        info = json.load(json_file)
+def collect_training_data(data_path, sub_sample_image_collection=1, downsample=False,pmin=3, pmax=99.8, normalize_input=True, normalize_truth=False, training_multiple=1, patch_size=None, add_trivial_channel=True):
+    """
+    Collect training data for image processing models.
 
-    num_inputs = info["num_inputs"]     
-    num_truths = info["num_truths"]
-    '''
-    
+    Parameters:
+    data_path (str): Path to the directory containing input and ground truth data.
+    sub_sample_image_collection (int, optional): Wether to subsample the images in the collection. Defaults to 1.  
+        for example if sumbsample is 2, every other image will be used. 
+    downsample (bool, optional): If True, downsample the images by a factor of 2. Defaults to False.
+    pmin (float, optional): Minimum percentile for normalization. Defaults to 3.
+    pmax (float, optional): Maximum percentile for normalization. Defaults to 99.8.
+    normalize_input (bool, optional): If True, normalize the input images. Defaults to True.
+    normalize_truth (bool, optional): If True, normalize the ground truth images. Defaults to False.
+    training_multiple (int, optional): Ensures that the dimensions of the training data are multiples of this value. Defaults to 1.
+        This is needed because some networks require that the dimensions of the training data are multiples of a certain value 
+        (for example 16 or 32 works well because we can downsample the image by a factor of 2 multiple times).
+    patch_size (tuple, optional): If provided, the function will extract random patches of this size from the images. Defaults to None.
+    add_trivial_channel (bool, optional): If True, add a trivial channel dimension to the input images. Defaults to True.
+        This is needed because some networks expect the input images to have a channel dimension.
+
+    Returns:
+    tuple: A tuple containing two lists:
+        X (list): List of input images.
+        Y (list): List of ground truth images.
+
+    Example:
+    >>> X, Y = collect_training_data('/path/to/data', sub_sample=2, downsample=True)
+    """ 
+
     X=[]
     Y=[]
 
@@ -399,8 +418,8 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
     input_path = os.path.join(data_path, "input" + str(i))
     truth_path = os.path.join(data_path, "ground truth" + str(i))
 
-    input_files = os.listdir(input_path)[0::sub_sample]
-    truth_files = os.listdir(truth_path)[0::sub_sample]  
+    input_files = os.listdir(input_path)[0::sub_sample_image_collection]
+    truth_files = os.listdir(truth_path)[0::sub_sample_image_collection]  
 
     for i in range(len(input_files)):
         # Load the corrupted image and ground truth image
