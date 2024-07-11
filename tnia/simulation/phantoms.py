@@ -288,7 +288,7 @@ def grid_of_circles(im, radius, space,border,intensity):
                 temp2[cy-radius:cy+radius,cx-radius:cx+radius]=temp1
                 im[temp2>0]=intensity
 
-def random_sphere_phantom(xdim, ydim, zdim, number_spheres, min_radius, max_radius, phantom):
+def random_sphere_phantom(xdim, ydim, zdim, number_spheres, min_radius, max_radius, phantom=None, min_intensity=50, max_intensity=800):
 
     if phantom is None:
         phantom = np.zeros((zdim, ydim, xdim), dtype=np.float32)
@@ -299,7 +299,7 @@ def random_sphere_phantom(xdim, ydim, zdim, number_spheres, min_radius, max_radi
         x=random.randint(0,xdim)
         y=random.randint(0,ydim)
         z=random.randint(0,zdim)
-        intensity = random.randint(50,800) 
+        intensity = random.randint(min_intensity, max_intensity) 
 
         #print(i,x,y,z)
 
