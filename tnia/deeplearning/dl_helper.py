@@ -381,7 +381,7 @@ def make_random_patch(img, truth, patch_size, axes, ind=None, sub_sample_xy=1):
 
     return img_crop, truth_crop, ind, truth_ind
 
-def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_input=True, normalize_truth=False, training_multiple=1, patch_size=None, add_trivial_channel=True):
+def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_input=True, normalize_truth=False, training_multiple=1, patch_size=None, add_trivial_channel=True, relabel=False):
     """
     Collect training data for image processing models.
 
@@ -454,6 +454,10 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
         
         # Append the preprocessed images to the training set
         X.append(input_img)
+
+        if relabel:
+            ground_truth_img = label(ground_truth_img)
+            
         Y.append(ground_truth_img)
     
     return X,Y
