@@ -32,6 +32,17 @@ Go to the directory with setup.py in it and run
 ```
 python -m build
 ```
+## uploading to real pip
+
+```
+python -m twine upload --skip-existing dist/*
+```
+
+It will prompt you for username (which is __token__ for some reason) and the password is the API token.
+
+API tokens are something like ```pypi-alksdfjlkasdfjklajsdlkfjklasjfdlkas```, they begin with pypi so when you copy the token from your secret secure file make sure you copy the pypi part. 
+
+--skip-existing is needed when upgrading package.  Only upload after testing thoroughly, it seems you can't overwrite existing versions.
 
 ## uploading to test server
 
