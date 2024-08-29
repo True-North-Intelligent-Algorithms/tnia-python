@@ -356,7 +356,7 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
 
     if do_color_jitter:
         # color jitter light
-        augmentations.append(A.ColorJitter(hue=0, brightness=0.5, saturation=0.1, p=0.5))
+        # augmentations.append(A.ColorJitter(hue=0, brightness=0.5, saturation=0.1, p=0.5))
         # color jitter heavy
         augmentations.append(A.ColorJitter(hue=0.5, brightness=0.5, saturation=0.5, p=0.6))
 
