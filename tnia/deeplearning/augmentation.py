@@ -125,7 +125,7 @@ def random_shift_slices_in_stack(img, shift_range=2):
 
 def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, 
                    do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
-                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False):
+                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, sub_sample_xy=1):
     """
     This function performs a series of image augmentations on the input image and mask and saves the resulting patches to disk.
 
@@ -164,13 +164,24 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
 
     # add the sub_sample information to the JSON file
     # TODO: Make these parameters
-    data['sub_sample'] = 1
+    data['sub_sample'] = sub_sample_xy
 
     # TODO: make logic to detect axis more complex
     if len(im.shape) == 3:
         data['axes'] = 'YXC'
     else:
         data['axes'] = 'YX'
+        
+    if data['axes'] == 'YX':
+        if (sub_sample_xy>1):
+            im = im[::sub_sample_xy, ::sub_sample_xy]
+            for i in range(len(mask)):
+                mask[i] = mask[i][::sub_sample_xy, ::sub_sample_xy]
+    elif data['axes'] == 'YXC':
+        if (sub_sample_xy>1):
+            im = im[::sub_sample_xy, ::sub_sample_xy, :]
+            for i in range(len(mask)):
+                mask[i] = mask[i][::sub_sample_xy, ::sub_sample_xy]
         
     # Write the modified data back to the JSON file
     with open(json_file, 'w') as outfile:
