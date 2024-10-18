@@ -418,8 +418,8 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
     input_path = os.path.join(data_path, "input" + str(i))
     truth_path = os.path.join(data_path, "ground truth" + str(i))
 
-    input_files = os.listdir(input_path)[0::sub_sample]
-    truth_files = os.listdir(truth_path)[0::sub_sample]  
+    input_files = [f for f in os.listdir(input_path)[0::sub_sample] if f.endswith('.tif')]
+    truth_files = [f for f in os.listdir(truth_path)[0::sub_sample] if f.endswith('.tif')]
 
     for i in range(len(input_files)):
         # Load the corrupted image and ground truth image
