@@ -201,6 +201,9 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
 
 
     for i in range(num_patches):
+        if any(dim < patch_size for dim in mask[0].shape):
+            continue
+        
         im_aug, label_aug = uber_augmenter_im(im, mask, patch_size, do_vertical_flip, do_horizontal_flip,
                                         do_random_rotate90, do_random_sized_crop, do_random_brightness_contrast,
                                         do_random_gamma, do_color_jitter, do_elastic_transform)
