@@ -765,7 +765,7 @@ def normalize_(img, low, high, eps=1.e-20, clip=True):
     return scaled
 
 
-def quantile_normalization(img, quantile_low=0.01, quantile_high=0.998, eps=1.e-20, clip=True):
+def quantile_normalization(img, quantile_low=0.01, quantile_high=0.998, eps=1.e-20, clip=True, channels = False):
     """
     Copying this from PolBias GPU course....  it is an easy piece of code that is also in stardist.  
 
@@ -776,9 +776,17 @@ def quantile_normalization(img, quantile_low=0.01, quantile_high=0.998, eps=1.e-
     Then optionally clips to (0, 1) range.
     """
 
-    qlow = np.quantile(img, quantile_low)
-    qhigh = np.quantile(img, quantile_high)
+    if channels == False:
+        qlow = np.quantile(img, quantile_low)
+        qhigh = np.quantile(img, quantile_high)
 
-    scaled = normalize_(img, low=qlow, high=qhigh, eps=eps, clip=clip)
-    return scaled
-
+        scaled = normalize_(img, low=qlow, high=qhigh, eps=eps, clip=clip)
+        return scaled
+    else:
+        num_channels = img.shape[-1]
+        scaled = np.zeros(img.shape, dtype=np.float32)
+        for i in range(num_channels):
+            qlow = np.quantile(img[...,i], quantile_low)
+            qhigh = np.quantile(img[...,i], quantile_high)
+            scaled[...,i] = normalize_(img[...,i], low=qlow, high=qhigh, eps=eps, clip=clip)
+        return scaled
