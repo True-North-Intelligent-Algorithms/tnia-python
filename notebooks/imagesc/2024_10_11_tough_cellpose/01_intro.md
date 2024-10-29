@@ -2,7 +2,7 @@
 
 This sequence of notebooks is an attempt to improve segmentation for [this Question](https://forum.image.sc/t/challenging-segmentation-with-cellpose-need-help/103618).
  
-[Arkajyoti Sarkar)[https://www.linkedin.com/in/arkaj/?originalSubdomain=in] and his group have kindly shared many images with the community which you can find a copy of [here](https://www.dropbox.com/scl/fo/y1a9y80mi843xslhsqn73/AIiUn9oGqVjnDzew2shu66U?rlkey=j64363njxo6vvo2azvkl32dau&st=yvp1wp64&dl=0).  
+[Arkajyoti Sarkar](https://www.linkedin.com/in/arkaj/?originalSubdomain=in) and his group have kindly shared many images with the community which you can find a copy of [here](https://www.dropbox.com/scl/fo/y1a9y80mi843xslhsqn73/AIiUn9oGqVjnDzew2shu66U?rlkey=j64363njxo6vvo2azvkl32dau&st=yvp1wp64&dl=0).  
 
 The images in question are large Cells with long thin protrusions.  Cellpose in default training mode resizes images, so it is possible that the downsizing may distort thin features.  However there are confounding complications.  For example the long thin protrusions are difficult to see and trace sometimes, so some of the labels may be missing protrusions.   I attempted to training a Cellpose model for these images, and had some success detecting more protrusions. 
 
