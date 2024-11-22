@@ -58,7 +58,8 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
     otf = cp.fft.fftn(cp.fft.ifftshift(psf))
     otf_ = cp.conjugate(otf)
 
-    if noncirc:
+    if noncirc or mask is not None:
+        print('using flat sheet')
         estimate = cp.ones_like(image)*cp.mean(image)
     else:
         estimate = image
@@ -88,7 +89,8 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
         estimate = unpad(estimate, original_size)
 
     if (mask is not None):
-        estimate = estimate*mask + mask_values
+        estimate = estimate*mask
+        estimate[ (1-mask) == 1] = estimate.max() #estimate*mask + mask_values
     
     return estimate
 
