@@ -50,7 +50,7 @@ def rl_mem_footprint(img, psf, depth=(0, 0, 0)):
     total_size = np.prod(img_size + psf_size / 2 + depth_size)
 
     img_bytes = total_size * 4  # float32 needs 4 bytes
-    img_bytes = img_bytes * 9  # the RL deconv algo needs 9 copies
+    img_bytes = img_bytes * 11  # the RL deconv algo needs 9 copies but we use 11 for a factor of safety
     return np.ceil(img_bytes)
 
 def chunk_factor(img, psf, depth, mem_to_use=-1):
@@ -131,32 +131,45 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
     if debug:
         print('gpu mem is ', gpu_mem_)
 
-    rl_mem_ = rl_mem_footprint(img, psf, depth=(0, overlap, overlap))/bytes_per_gb
+    if len(img.shape) == 3:
+        depth = (0, overlap, overlap)
+    else:
+        depth = (overlap, overlap)
+
+    rl_mem_ = rl_mem_footprint(img, psf, depth=depth)/bytes_per_gb
     
     if debug:
         print('rl mem is ', rl_mem_)
 
-    k = chunk_factor(img, psf, depth=(0, overlap, overlap), mem_to_use=mem_to_use)
+    k = chunk_factor(img, psf, depth=depth, mem_to_use=mem_to_use)
     
     if debug:
         print('chunk factor is ', k)
 
-    if img.shape[1] % k != 0:
-        y_chunk_size = img.shape[1] // k + 1
+    if img.shape[-2] % k != 0:
+        y_chunk_size = img.shape[-2] // k + 1
     else:
-        y_chunk_size = img.shape[1] // k
+        y_chunk_size = img.shape[-2] // k
 
-    if img.shape[2] % k != 0:
-        x_chunk_size = img.shape[2] // k + 1
+    if img.shape[-1] % k != 0:
+        x_chunk_size = img.shape[-1] // k + 1
     else:
-        x_chunk_size = img.shape[2] // k
+        x_chunk_size = img.shape[-1] // k
 
-    chunk_size = (img.shape[0], y_chunk_size, x_chunk_size)
-    
-    if debug:
-        print('chunk size is',chunk_size)
+    if len(img.shape) == 3:
+        chunk_size = (img.shape[0], y_chunk_size, x_chunk_size)
+        
+        if debug:
+            print('chunk size is',chunk_size)
 
-    dimg = da.from_array(img,chunks=(img.shape[0], y_chunk_size, x_chunk_size))
+        dimg = da.from_array(img,chunks=(img.shape[0], y_chunk_size, x_chunk_size))
+    else:
+        chunk_size = (y_chunk_size, x_chunk_size)
+        
+        if debug:
+            print('chunk size is',chunk_size)
+
+        dimg = da.from_array(img,chunks=(y_chunk_size, x_chunk_size))
 
     queue = Queue()
 
@@ -166,9 +179,12 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
     import traceback
 
     def rl_dask_task(img, psf, numiterations, block_info=None, block_id=None, thread_id=None):
+
+        print('start dask task')
         
         try:
             # check if any image dimension is 0 for arbitraryh length array
+            print('check dimensions')
             
             if np.any(np.array(img.shape) == 0):
                 print('image dimension is 0')
@@ -184,8 +200,9 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
                 print('gpu num is', device_num)
                 print('block id is', block_id)
                 print('block info is', block_info)
-                cp.cuda.Device(device_num).use()
-                result=richardson_lucy_cp(img, psf, numiterations, non_circulant)
+            
+            cp.cuda.Device(device_num).use()
+            result=richardson_lucy_cp(img, psf, numiterations, non_circulant)
             
             return result
         except Exception as e:
@@ -202,7 +219,13 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
     import time
 
     start_time = time.time()
-    out = dimg.map_overlap(rl_dask_task, depth={0:0, 1:overlap, 2:overlap}, dtype=np.float32, psf=psf, numiterations=numiterations)
+
+    if len(img.shape) == 3:
+        depth = {0:0, 1:overlap, 2:overlap}
+    else:
+        depth = {0:overlap, 1:overlap}
+
+    out = dimg.map_overlap(rl_dask_task, depth=depth, dtype=np.float32, psf=psf, numiterations=numiterations)
     out_img = out.compute(num_workers=num_devices)
     end_time = time.time()
     execution_time = end_time - start_time
