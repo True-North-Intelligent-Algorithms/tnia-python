@@ -15,13 +15,15 @@ def gaussian_3d(xy_dim, z_dim, xy_sigma, z_sigma):
     """
     muu = 0.0
     gauss = np.empty([z_dim,xy_dim,xy_dim])
+    
+    # Note: could not get meshgrid to work right with z, y, x order... TODO: revisit
     x_, y_, z_ = np.meshgrid(np.linspace(-(xy_dim//2),xy_dim//2,xy_dim), np.linspace(-(xy_dim//2),xy_dim//2,xy_dim), np.linspace(-(z_dim//2),z_dim//2,z_dim))
     for x in range(xy_dim):
         for y in range(xy_dim):
             for z in range(z_dim):
-                tx=x_[z,y,x]
-                ty=y_[z,y,x]
-                tz=z_[z,y,x]
+                tx=x_[x,y,z]
+                ty=y_[x,y,z]
+                tz=z_[x,y,z]
             
                 gauss[z,y,x]=np.exp(-( (tx-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )*np.exp(-( (ty-muu)**2 / ( 2.0 * xy_sigma**2 ) ) )*np.exp(-( (tz-muu)**2 / ( 2.0 * z_sigma**2 ) ) )
 
