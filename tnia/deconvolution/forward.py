@@ -5,6 +5,8 @@ from tnia.deconvolution.pad import pad, unpad, get_next_smooth
 def forward(field, psf, background_level, add_poisson=True, gpu=False):
     '''
     Perform forward imaging on an input field using a point spread function (PSF).
+    
+    This function is partly inspired by code from https://github.com/jdmanton/rl_positivity_sim by James Manton.
 
     Parameters:
     -----------
@@ -26,7 +28,6 @@ def forward(field, psf, background_level, add_poisson=True, gpu=False):
 
     Notes:
     ------
-    This function is partly inspired by code from https://github.com/jdmanton/rl_positivity_sim by James Manton.
     '''
 
     # compute the extended size of the image and psf
