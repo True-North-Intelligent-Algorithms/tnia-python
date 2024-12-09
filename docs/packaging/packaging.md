@@ -5,6 +5,32 @@ layout: basic
 # Packaging 
 
 A good overview of packaging is [here](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+(may be out of date)
+
+# Versioning
+
+Can be a bit confusing in newer projects with ```pyproject.toml``` files.
+
+For example if you see 
+
+```
+dynamic = ["version"]
+```
+
+In a TOML file it means version is dynamically determined by another method.  Need to search for more ```version``` info. 
+
+For exmaple
+
+```
+[tool.setuptools.dynamic]
+version = {attr = "napari_easy_augment_batch_dl.__init__.__version__"}
+```
+
+Indicates the version is determined with an attribute in the ```napari_easy_augment_batch_dl```, ```__init__``` file.   And if we open that file we should see
+
+```
+__version__ = "0.0.4"
+```
 
 # Packaging .dlls and libraries
 
