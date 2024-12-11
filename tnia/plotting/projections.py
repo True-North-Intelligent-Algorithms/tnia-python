@@ -19,7 +19,7 @@ def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmax
 
     return show_xy_zy_slice(im, int(im.shape[2]/2), int(im.shape[1]/2), int(im.shape[0]/2), sxy, sz, figsize, colormap, vmax, gamma)
 
-def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None):
+def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None, show_cross_hairs=True):
     """ extracts xy, and zy slices at x, y, z of a 3D image and plots them
 
     Args:
@@ -37,9 +37,18 @@ def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colorma
     slice_zy = np.flip(np.rot90(image_to_show[:,:,x],1),0)
     slice_xy = image_to_show[z,:,:]
 
-    return show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize, colormap, vmax, gamma)
+    fig =  show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize, colormap, vmax, gamma)
 
-def show_xy_xz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None):
+    if show_cross_hairs:
+        fig.axes[0].axvline(x*sxy+0.5, color='r')
+        fig.axes[0].axhline(y*sxy+0.5, color='r')
+        fig.axes[1].axvline(z*sz+0.5*sz, color='r')
+        fig.axes[1].axhline(y*sxy+0.5, color='r')    
+
+    return fig
+
+
+def show_xy_xz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None, show_cross_hairs=True):
     """ extracts xy, and xz slices at x, y, z of a 3D image and plots them
 
     Args:
@@ -57,10 +66,17 @@ def show_xy_xz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colorma
     slice_xz = image_to_show[:,y,:]
     slice_xy = image_to_show[z,:,:]
 
-    return show_xy_xz(slice_xy, slice_xz, sxy, sz,figsize, colormap, vmax, gamma)
+    fig = show_xy_xz(slice_xy, slice_xz, sxy, sz,figsize, colormap, vmax, gamma)
 
+    if show_cross_hairs:
+        fig.axes[0].axvline(x*sxy+0.5, color='r')
+        fig.axes[0].axhline(y*sxy+0.5, color='r')
+        fig.axes[1].axvline(x*sxy+0.5, color='r')
+        fig.axes[1].axhline(z*sz+0.5*sz, color='r')
 
-def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=None, vmax=None, gamma=None):
+    return fig
+
+def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=None, vmax=None, gamma=None, show_cross_hairs=False):
     """ extracts xy, xz, and zy slices at center of a 3D image and plots them
 
     Args:
@@ -77,9 +93,9 @@ def show_xyz_slice_center(image_to_show, sxy=1, sz=1, figsize=(10,10), colormap=
     yc=int(image_to_show.shape[1]/2)
     zc=int(image_to_show.shape[0]/2)
 
-    return show_xyz_slice(image_to_show, xc, yc, zc, sxy, sz,figsize, colormap, vmax, gamma)
+    return show_xyz_slice(image_to_show, xc, yc, zc, sxy, sz,figsize, colormap, vmax, gamma, show_cross_hairs=show_cross_hairs)
 
-def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None, use_plt=True):
+def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None, use_plt=True, show_cross_hairs=True):
     """ extracts xy, xz, and zy slices at x, y, z of a 3D image and plots them
 
     Args:
@@ -98,7 +114,17 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap
     slice_xz = image_to_show[:,y,:]
     slice_xy = image_to_show[z,:,:]
 
-    return show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap, vmax, gamma, use_plt)
+    fig = show_xyz(slice_xy, slice_xz, slice_zy, sxy, sz, figsize, colormap, vmax, gamma, use_plt)
+    
+    if show_cross_hairs:
+        fig.axes[0].axvline(x*sxy+0.5, color='r')
+        fig.axes[0].axhline(y*sxy+0.5, color='r')
+        fig.axes[1].axvline(z*sz+0.5*sz, color='r')
+        fig.axes[1].axhline(y*sxy+0.5, color='r')
+        fig.axes[2].axvline(x*sxy+0.5, color='r')
+        fig.axes[2].axhline(z*sz+0.5*sz, color='r')
+
+    return fig
 
 def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
     """ plots max xy, xz, and zy projections of a 3D image
@@ -194,8 +220,6 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, 
 
     return fig
 
-
-# Copyright tnia 2021 - BSD License
 def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None ):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
 
@@ -212,8 +236,6 @@ def show_xy_zy_max(image_to_show, sxy=1, sz=1,figsize=(10,3), colormap=None, vma
 
     return show_xy_zy(projection_z, projection_x, sxy, sz, figsize, colormap, vmax, gamma)
 
-
-# Copyright tnia 2021 - BSD License
 def show_xy_zy(xy, zy, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gamma=None):
     """ shows pre-computed xy, xz and zy of a 3D image in a plot
 
@@ -314,8 +336,6 @@ def show_xy_xz(xy, xz, sxy=1, sz=1,figsize=(10,3), colormap=None, vmax=None, gam
       
     return fig
 
-
-### New function
 def show_xyz_max_slabs(image_to_show, x = [0,1], y = [0,1], z = [0,1], sxy=1, sz=1,figsize=(10,10), colormap=None, vmax=None, gamma=None):
     """ plots max xy, xz, and zy projections of a 3D image SLABS (slice intervals)
 
@@ -343,8 +363,6 @@ def show_xyz_max_slabs(image_to_show, x = [0,1], y = [0,1], z = [0,1], sxy=1, sz
 
     return show_xyz_projection_slabs(image_to_show, x_slices, y_slices, z_slices, sxy, sz, figsize, np.max, colormap, vmax)
 
-
-### New function
 def show_xyz_projection_slabs(image_to_show, x_slices, y_slices, z_slices, sxy=1, sz=1,figsize=(10,10), projector=np.max, colormap=None, vmax=None, gamma=None):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
     
