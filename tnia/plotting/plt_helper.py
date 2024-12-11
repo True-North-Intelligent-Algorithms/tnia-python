@@ -1,9 +1,34 @@
+from operator import is_
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import PowerNorm
+from matplotlib.colors import PowerNorm, to_rgb, CSS4_COLORS
 import colorsys
+from skimage import color
+
+
+
+color_dictionary = {
+    "Cy5": [1, 0, 0],        # Red
+    "DAPI": [0, 0, 1],       # Blue
+    "FITC": [0, 1, 0],       # Green
+    "Texa": [1, 0.5, 0],     # Orange
+    "AF594":[1,0.2,0],       # Red
+    "Cy2": [0, 1, 0],
+}
 
 def random_label_cmap(n=2**16, h = (0,1), l = (.4,1), s =(.2,.8)):
+    """
+    Create a random colormap for labels
+    
+    Args:
+        n (int, optional): number of labels. Defaults to 2**16.
+        h (tuple, optional): hue range. Defaults to (0,1).
+        l (tuple, optional): lightness range. Defaults to (.4,1).
+        s (tuple, optional): saturation range. Defaults to (.2,.8).
+        
+        Returns:
+        matplotlib.colors.ListedColormap: colormap for labels
+    """
     import matplotlib
     import colorsys
     # cols = np.random.rand(n,3)
@@ -20,6 +45,9 @@ def imshow2d(im, width=8, height=6, colormap=None, vmin=None, vmax=None):
         im ([type]): input image
         width (int, optional): Width of plot. Defaults to 8.
         height (int, optional): Height of plot. Defaults to 6.
+        colormap ([type], optional): colormap for image. Defaults to None.
+        vmin ([type], optional): min value for colormap. Defaults to None.
+        vmax ([type], optional): max value for colormap. Defaults to None.
 
     Returns:
         [type]: returns the figure
@@ -38,6 +66,13 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormaps=None, 
         cols: number of collumns of images (not rows*cols needs to equal number of images) 
         width (int, optional): Width of plot. Defaults to 8.
         height (int, optional): Height of plot. Defaults to 6.
+        colormaps (list of colormaps, optional): list of colormaps for each image. Defaults to None.
+        vmin (float, optional): min value for colormap. Defaults to None.
+        vmax (float, optional): max value for colormap. Defaults to None.
+        gamma (float, optional): gamma value for colormap. Defaults to None.
+        plottypes (list of strings, optional): list of plot types. Defaults to None.
+        xlabels (list of strings, optional): list of xlabels. Defaults to None.
+        ylabels (list of strings, optional): list of ylabels. Defaults to None.
 
     Returns:
         [type]: returns the figure
@@ -116,7 +151,19 @@ def plot_lines(lines, ax=None, coords=None, linestyles=None, linewidths=None, li
 
     return fig
 
-def plot_color_space(im, rgb_func, width=10, height=10, ax=None, title='color space', titles=None):
+def plot_color_space(im, rgb_func, width=10, height=10, ax=None, titles=None):
+    """
+    plot a color space image with 3 channels
+    
+    
+    Args:
+        im (np.array): input image
+        rgb_func (function): function to convert from rgb to desired color space
+        width (int, optional): width of plot. Defaults to 10.
+        height (int, optional): height of plot. Defaults to 10.
+        ax (matplotlib axis, optional): axis to plot on. Defaults to None.
+        titles (list of strings, optional): list of titles for each channel. Defaults to None.
+        """
     if (ax==None):
         fig, ax = plt.subplots(1, 3, figsize=(width,height))
     else:
@@ -140,16 +187,17 @@ def plot_color_space(im, rgb_func, width=10, height=10, ax=None, title='color sp
         ax[2].set_title(titles[2])
         
     return fig
-'''
-def draw_bimodal_hist(data, thresh, params, ax=None, title='bimodal hist'):
-    if (ax==None):
-        fig, ax = plt.subplots()
-    else:
-        fig=None
-'''
 
 
 def hsv_to_rgb(arr):
+    """Convert an array of HSV values to RGB values.
+
+     Args:
+        arr (np.array): Array of HSV values.
+
+    Returns:
+        np.array: Array of RGB values.
+    """
     hsv_to_rgb_channels = np.vectorize(colorsys.hsv_to_rgb)
     h, s, v = np.rollaxis(arr, axis=-1)
     r, g, b = hsv_to_rgb_channels(h, s, v)
@@ -192,3 +240,161 @@ def mask_overlay(img, masks, colors=None):
         HSV[ipix[0], ipix[1], 1] = 1.0
     RGB = (hsv_to_rgb(HSV) * 255).astype(np.uint8)
     return RGB
+
+def create_rgb(ims, color_names=None, color_dictionary_=None, channel_pos=-1, vmin=None, vmax=None, gamma=1):
+    """create an RGB color image by mixing multiple images, a list of wavelengths and a color dictionary
+
+    Author: Panos Oikonomou https://github.com/eigenP and Brian Northan
+    
+    Args:
+        ims (either list of np arrays each representing a channel or a single np array): 
+            if a list of images each entry in the list represents a channel
+            if a nd numpy array the channel_pos parameter is used to determine the channel
+            if the channel pos is -1 the smallest dimension is assumed to be the channel
+        color_names (list of strings): list of color names
+            if None the color dictionary is used in order
+            if the color name strings are stain names (ie DAPI, FITC, Cy5) the color dictionary is used
+            if the color name names are CSS4 color names (ie 'red', 'blue', 'green') the to_rgb function is used to convert to rgb
+        color_dictionary_ (dict, optional): dictionary of colors. Defaults to None.
+            Color dictionary is used to convert stain names to rgb values.
+
+            It is only used if the waves parameter represent stain names
+
+            If None the global color dictionary is used
+            
+            color_dictionary_ should be in format
+            {
+                'wave1': [r,g,b],
+                'wave2': [r,g,b],
+                ...
+            }
+            ie 
+            color_dictionary = {
+                "Cy5": [1, 0, 0],        # Red
+                "DAPI": [0, 0, 1],       # Blue
+                "FITC": [0, 1, 0],       # Green
+                "Texa": [1, 0.5, 0],     # Orange
+                "AF594":[1,0.2,0],       # Red
+                "Cy2": [0, 1, 0],
+            }
+        channel_pos (int, optional): channel position. Defaults to -1. Only needed if ims is a numpy array (not a list of numpy arrays)
+        vmim (list of floats, optional): min values for each channel. Defaults to None.
+        vmax (list of floats, optional): max values for each channel. Defaults to None.
+        gamma (list of floats, optional): gamma values for each channel. Defaults to 1.
+
+    Returns:
+        np.array: rgb image
+
+    """
+    # if no color dictionary is provided use the global scope one    
+    if color_dictionary_ is None:
+        color_dictionary_ =  color_dictionary
+
+    # check if ims is list, if not convert to list
+    if not isinstance(ims, list):
+
+        if channel_pos == -1:
+            # guess channel index as smallest dim
+            channel_pos = np.argmin(ims.shape)
+
+        ims_temp = []
+        for i in range(ims.shape[channel_pos]):
+            slice_at_pos = np.take(ims, i, axis=channel_pos)
+            ims_temp.append(slice_at_pos)
+        ims = ims_temp
+
+    # create empty rgb image 
+    rgb_im = np.zeros((np.append(ims[0].shape, 3)), dtype=np.float32)
+
+    color_list = []
+
+    # if no color names are provided use the color dictionary in order 
+    if color_names is None:
+        for im_, color_values in zip(ims, color_dictionary_.values()):
+            color_list.append(color_values)
+    # else if color names are named colors ('red', 'blue', 'green', etc) convert the name to rgb
+    elif is_named_color_list(color_names):
+        for color_str in color_names:
+            color_list.append(to_rgb(color_str))    
+    # else if color names are stain names (DAPI, FITC, Cy5, etc) use the color dictionary to look up the color
+    else:    
+        # loop over images and maps and add to color image
+        for wave, im_ in zip(color_names, ims ):
+            color_values = np.array(color_dictionary_[wave])
+            color_list.append(color_values)
+
+    # loop over images and colors and add to color image
+    for idx_i, (im_, color_values) in enumerate(zip(ims, color_list)): 
+            temp = color.gray2rgb(im_) * color_values
+            temp = temp/temp.max()
+
+            if any([vmin, vmax]):
+                norm = PowerNorm(gamma=gamma[idx_i], vmin=vmin[idx_i], vmax=vmax[idx_i])
+                temp = norm(temp)
+
+            rgb_im+=temp
+    return rgb_im
+
+def is_named_color_list(color_list):
+    """
+    Check if all elements in the list are valid Matplotlib named colors.
+    
+    Parameters:
+        color_list (list of str): List of color names to check.
+    
+    Returns:
+        bool: True if all elements are valid named colors, False otherwise.
+    """
+    return all(color in CSS4_COLORS for color in color_list)
+
+def get_color(i):
+    """
+    Get color from a list of colors
+    
+    Args:
+        i (int): index of color to get
+    """
+    if i == 0:
+        return [1, 0, 0]
+    elif i == 1:
+        return [0, 0, 1]
+    elif i == 2:
+        return [0, 1, 0]
+    elif i == 3:
+        return [1, 1, 0]
+    elif i == 4:
+        return [1, 0, 1]
+    elif i == 5:
+        return [0, 1, 1]
+    else:
+        return [.5, 1, 1]
+
+def create_linear_napari_color_map(name, color_values):
+    """
+    Create a napari color map as a linear interpolation of a color (ie a list of rgb values)
+    
+    Args:
+        name (str): name of color map
+        color_values (list): list of rgb values, [r,g,b] for example [1,0,0] for red
+
+    Returns:
+        napari format color map (dict): dictionary with keys 'colors', 'name', 'interpolation' that can be used in napari
+    """
+    map_end = np.array(color_values)
+    map_end = np.append(map_end, 1)
+
+    map_start = np.zeros_like(map_end)
+    map_start[3]=1
+
+    color = np.linspace(
+        start=map_start,
+        stop=map_end,
+        num=10,
+        endpoint=True
+    )
+    
+    return {
+        'colors': color,
+        'name': name,
+        'interpolation': 'linear'
+    }
