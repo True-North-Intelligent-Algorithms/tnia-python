@@ -2,7 +2,16 @@
 
 You will need an environment with numpy, skimage, and pyplot plus the tnia-python library.  
 
-### Get code from github and install interactively 
+For the interactive examples you will need
+
+```
+pip install ipywidgets
+pip install ipympl
+```
+
+## Installing tnia-python
+
+### Get tnia-python from github and install interactively 
 
 Grab it from github, navigate to the directory it was downloaded to and install interactively
 
