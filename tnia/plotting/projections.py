@@ -5,7 +5,7 @@ import numpy as np
 from skimage.transform import resize
 from matplotlib.colors import PowerNorm
 
-def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmin=None, vmax=None, gamma=None):
+def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmin=None, vmax=None, gamma=None, show_crosshairs=False):
     """ extracts xy, and zy center slices of a 3D image and plots them
 
     Args:
@@ -23,7 +23,7 @@ def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmin
 
     """
 
-    return show_xy_zy_slice(im, int(im.shape[2]/2), int(im.shape[1]/2), int(im.shape[0]/2), sxy, sz, figsize, colormap, vmin, vmax, gamma)
+    return show_xy_zy_slice(im, int(im.shape[2]/2), int(im.shape[1]/2), int(im.shape[0]/2), sxy, sz, figsize, colormap, vmin, vmax, gamma, show_cross_hairs=show_crosshairs)
 
 def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colormap=None, vmin=None, vmax=None, gamma=None, show_cross_hairs=True):
     """ extracts xy, and zy slices at x, y, z of a 3D image and plots them
