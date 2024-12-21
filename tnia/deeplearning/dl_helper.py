@@ -776,6 +776,10 @@ def quantile_normalization(img, quantile_low=0.01, quantile_high=0.998, eps=1.e-
     Then optionally clips to (0, 1) range.
     """
 
+    # if the image is 2D set channels to False
+    if len(img.shape) == 2:
+        channels = False
+
     if channels == False:
         qlow = np.quantile(img, quantile_low)
         qhigh = np.quantile(img, quantile_high)

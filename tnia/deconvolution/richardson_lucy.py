@@ -1,9 +1,9 @@
 import numpy as np
-from numpy.fft import fftn, ifftn, fftshift 
 import cupy as cp
 from tnia.deconvolution.pad import pad, unpad, get_next_smooth
+from tnia.metrics.errors import RMSE
 
-def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
+def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=None):
     """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses cupy
     
     Note: Cupy FFT behavior is different than numpy.  Cupy FFT always returns real arrays of type float32 and complex of type complex64.
@@ -26,6 +26,10 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
     Returns:
         [numpy float array]: the deconvolved image
     """
+
+    # if thruth is not none we will be calculating the RMSE at each iteration
+    if truth is not None:
+        stats = {'rmse':[]}
     
     # if noncirc==False and (image.shape != psf.shape) then pad the psf
     if noncirc==False and (image.shape != psf.shape):
@@ -50,10 +54,20 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
         image,_=pad(image, extended_size, 'constant')
         HTones,_=pad(HTones, extended_size, 'constant')
         psf,_=pad(psf, extended_size, 'constant')
-    
+
+        if truth is not None:
+            truth,_=pad(truth, extended_size, 'constant')   
+      
+    image = image.astype(np.float32)
     image = cp.array(image)
+
+    psf = psf.astype(np.float32)
     psf = cp.array(psf)
+
     HTones = cp.array(HTones)
+
+    if truth is not None:
+        truth = cp.array(truth)
 
     otf = cp.fft.fftn(cp.fft.ifftshift(psf))
     otf_ = cp.conjugate(otf)
@@ -65,6 +79,12 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
         estimate = image
 
     delta = 1e-6
+
+    if truth is not None:
+        # if truth is not None we will be calculating the RMSE at each iteration
+        # we need to keep track of the invalid pixels so make a copy of HTones (which is the invalid pixel mask at this point)
+        # before it is correlated with the OTF
+        mask_extended = HTones.copy()
 
     HTones = cp.real(cp.fft.ifftn(cp.fft.fftn(HTones) * otf_))
     HTones[HTones<delta] = 1
@@ -81,6 +101,10 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
         correction=cp.real((cp.fft.ifftn(cp.fft.fftn(ratio) * otf_)))
         correction[correction<0] = 0
         estimate = estimate * correction/HTones 
+
+        if truth is not None:
+            rmse = RMSE(truth, estimate, mask_extended, cp)
+            stats['rmse'].append(rmse)
     print()        
     
     estimate = cp.asnumpy(estimate)
@@ -89,11 +113,15 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None):
         estimate = unpad(estimate, original_size)
 
     if (mask is not None):
+        mask = cp.asnumpy(mask)
         estimate = estimate*mask
         estimate[ (1-mask) == 1] = estimate.max() #estimate*mask + mask_values
     
-    return estimate
-
+    if truth is not None:
+        stats['rmse'] = [s.get() for s in stats['rmse']]
+        return estimate, stats
+    else:
+        return estimate
 
 # WIP - version of RL that uses real FFT.  Seems to work and uses less memory, but is slower than the above version
 def richardson_lucy_cp_rfft(image, psf, num_iters, noncirc=False, mask=None):

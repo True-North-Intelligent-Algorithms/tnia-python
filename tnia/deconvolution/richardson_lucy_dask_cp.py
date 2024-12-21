@@ -50,7 +50,7 @@ def rl_mem_footprint(img, psf, depth=(0, 0, 0)):
     total_size = np.prod(img_size + psf_size / 2 + depth_size)
 
     img_bytes = total_size * 4  # float32 needs 4 bytes
-    img_bytes = img_bytes * 11  # the RL deconv algo needs 9 copies but we use 11 for a factor of safety
+    img_bytes = img_bytes * 12  # the RL deconv algo needs 9 copies but we use 11 for a factor of safety
     return np.ceil(img_bytes)
 
 def chunk_factor(img, psf, depth, mem_to_use=-1):
@@ -188,9 +188,9 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
             
             if np.any(np.array(img.shape) == 0):
                 print('image dimension is 0')
-                return None
+                return img 
             if block_id is None or block_id == []:
-                return None
+                return img 
             
             print()
             device_num=queue.get()
@@ -210,6 +210,7 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
             if debug:
                 print()
                 print("EXCEPTION",e)
+            return img
             pass
         finally:
             if debug:
