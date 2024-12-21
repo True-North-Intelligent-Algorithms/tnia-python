@@ -47,6 +47,7 @@ class ImageBatch(QWidget):
         self.treeWidget.dragEnterEvent = self.drag_enter_event
         self.treeWidget.dragMoveEvent = self.dragMoveEvent
         self.treeWidget.dropEvent = self.dropEvent
+        self.treeWidget.itemDoubleClicked.connect(self.on_item_double_clicked)
 
         # connect the buttons to handlers
         self.add_active_image_button.clicked.connect(self.add_active_image_clicked)
@@ -98,7 +99,7 @@ class ImageBatch(QWidget):
         for i in range(self.treeWidget.topLevelItemCount()):
             print('input is ',self.treeWidget.topLevelItem(i).image, 'type is ', type(self.treeWidget.topLevelItem(i).image))
             self.i = i
-            self.op.run(self.treeWidget.topLevelItem(i).image, self.update_progress)
+            self.treeWidget.topLevelItem(i).output = self.op.run(self.treeWidget.topLevelItem(i).image, self.update_progress)
             #for j in range(100):
             #    self.treeWidget.topLevelItem(i).update_progress(j)
             #    # pause 10 milliseconds
@@ -108,3 +109,17 @@ class ImageBatch(QWidget):
     def update_progress(self, progress):
         self.treeWidget.topLevelItem(self.i).update_progress(progress)
 
+    def on_item_double_clicked(self, item, column):
+        # Ensure the item is of type TreeImageItem
+        if isinstance(item, TreeImageItem):
+            print(f"Item '{item.text(1)}' was double-clicked!")
+            # Add any additional response logic here
+            print(f"full path: {item.full_path}")
+            from skimage.io import imread
+            image = imread(item.full_path)
+            self.viewer.add_image(image, name=item.text(1))
+
+            if item.output is not None:
+                if isinstance(item.output, str):
+                    image = imread(item.output)
+                    self.viewer.add_image(image, name=item.text(1) + "_out")

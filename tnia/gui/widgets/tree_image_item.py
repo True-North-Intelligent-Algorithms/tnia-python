@@ -9,6 +9,8 @@ class TreeImageItem(QTreeWidgetItem):
         super().__init__(parent)
 
         self.image = image
+        self.full_path = image
+        self.output = None
 
         # column 0 is the checkbox 
         self.setCheckState(0, Qt.Unchecked)
@@ -23,4 +25,7 @@ class TreeImageItem(QTreeWidgetItem):
         
     def update_progress(self, progress):
         self.progress.update_progress(progress)
+
+    def set_out_path(self, out_path):
+        self.out_path = out_path
 
