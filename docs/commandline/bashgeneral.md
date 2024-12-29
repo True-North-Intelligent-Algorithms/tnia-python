@@ -1,6 +1,13 @@
 ---
 layout: basic
 ---
+## Find files recursively
+
+For example to find environment.yml recursively
+
+```
+find . -name "*.yml"
+```
 
 ## Remove directories of the same name recursively
 
