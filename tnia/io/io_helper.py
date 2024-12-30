@@ -2,6 +2,7 @@ import os
 from glob import glob
 import numpy as np
 from skimage.io import imread
+from pathlib import Path
 
 def get_file_names_from_dir(dir, extension):
     """ gets all file names with extension from directory
@@ -62,5 +63,45 @@ def open_zero_padded_numbered_stack(directory, extension, filter=None, splitter=
         images.append(image)    
 
     images = np.array(images)
+
+    return images
+
+def collect_all_image_names(image_path, extensions = ['jpg', 'jpeg', 'tif', 'tiff', 'png']):
+    """
+    Collects all image names
+
+    Args:
+        image_path (Path): directory to look for files
+        extensions (list): list of extensions to look for
+
+    Returns:
+        list: list of image file names 
+    """
+
+    image_path = Path(image_path)
+
+    image_file_list = []
+
+    for extension in extensions:
+        image_file_list = image_file_list + list(image_path.glob('*.'+extension))
+    
+    return image_file_list
+
+def collect_all_images(image_path, extensions = ['jpg', 'jpeg', 'tif', 'tiff', 'png']):
+    """
+    Collects all images from a directory
+
+    Args:
+        image_path (Path): directory to look for files
+        extensions (list): list of extensions to look for
+    """
+
+    image_names = collect_all_image_names(image_path, extensions)
+
+    images = []
+
+    for image_name in image_names:
+        image = imread(image_name)
+        images.append(image)
 
     return images
