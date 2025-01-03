@@ -5,7 +5,9 @@ from matplotlib.colors import PowerNorm, to_rgb, CSS4_COLORS
 import colorsys
 from skimage import color
 
-
+from matplotlib import rcParams
+# Set the global interpolation to 'none'
+rcParams['image.interpolation'] = 'none'
 
 color_dictionary = {
     "Cy5": [1, 0, 0],        # Red

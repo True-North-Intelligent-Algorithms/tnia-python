@@ -5,6 +5,10 @@ import numpy as np
 from skimage.transform import resize
 from matplotlib.colors import PowerNorm
 
+from matplotlib import rcParams
+# Set the global interpolation to 'none'
+rcParams['image.interpolation'] = 'none'
+
 def show_xy_zy_slice_center(im,  sxy=1, sz=1,figsize=(10,3), colormap=None, vmin=None, vmax=None, gamma=None, show_crosshairs=False):
     """ extracts xy, and zy center slices of a 3D image and plots them
 
