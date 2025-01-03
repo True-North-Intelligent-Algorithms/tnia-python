@@ -90,7 +90,7 @@ class RestorationDeconvolutionPlugin(QWidget):
    
         self.setAcceptDrops(True)
         from tnia.gui.widgets.image_batch_test_op import ImageBatchTestOp
-        self.main_layout.addWidget(ImageBatch(self, ImageBatchTestOp(), self.viewer))        
+        self.main_layout.addWidget(ImageBatch(self, ImageBatchTestOp(self.viewer), self.viewer))        
           
     def open_instrument_models_folder_clicked(self):
         options = QFileDialog.Options()
@@ -156,6 +156,7 @@ class RestorationDeconvolutionPlugin(QWidget):
                 self.viewer.add_image(self.psf, name="Extracted PSF")
                 meta_data[InstrumentModelKeys.MODEL_NAME.value] = "Extracted PSF"
                 write_psf(self.instrument_models_path, meta_data, self.psf)
+
     
 
 
