@@ -4,7 +4,8 @@ from functools import partial
 
 default_feature_params = {
         "sigma_min": 1,
-        "sigma_max": 5,
+        "sigma_max": 15,
+        "num_sigma": 3,
         "intensity": True,
         "edges": True,
         "texture": True,
@@ -28,6 +29,7 @@ def extract_features(image, feature_params=default_feature_params):
         texture=feature_params["texture"],
         sigma_min=feature_params["sigma_min"],
         sigma_max=feature_params["sigma_max"],
+        num_sigma = feature_params["num_sigma"],
         channel_axis=None,
     )
     # print(f"image shape {image.shape} feature params {feature_params}")
@@ -79,7 +81,7 @@ def extract_features_sequence(images, labels, features):
             print(f"labels {i} has sum {label.sum()}")
 
             # use sum of first feature to check if features have been extracted 
-            if features[i,:,:,0].sum() == 0:
+            if True:#features[i,:,:,0].sum() == 0:
                 print(f"extracting features for image {i}")
                 features[i,:,:,:] = extract_features(image, default_feature_params)
             else:
