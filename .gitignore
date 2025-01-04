@@ -148,3 +148,4 @@ notebooks/deep_learning/models/
 **/models
 
 tensorboard_logs/
+logs/
