@@ -33,15 +33,19 @@ def extract_features(image, feature_params=default_feature_params):
         channel_axis=None,
     )
     # print(f"image shape {image.shape} feature params {feature_params}")
+
+    if len(image.shape) == 2:
+        features = features_func(image)
+    else:
     
-    for c in range(image.shape[-1]):
+        for c in range(image.shape[-1]):
+            
+            features_temp = features_func(np.squeeze(image[..., c]))
+            if c == 0:
+                features = features_temp
+            else:
+                features = np.concatenate((features, features_temp), axis=2)
         
-        features_temp = features_func(np.squeeze(image[..., c]))
-        if c == 0:
-            features = features_temp
-        else:
-            features = np.concatenate((features, features_temp), axis=2)
-    
     return features
 
 def extract_features_sequence(images, labels, features):
