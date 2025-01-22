@@ -150,3 +150,5 @@ notebooks/deep_learning/models/
 tensorboard_logs/
 logs/
 zarr/
+
+backup_notcheckedin/
