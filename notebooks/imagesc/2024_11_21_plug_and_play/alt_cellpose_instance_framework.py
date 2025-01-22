@@ -1,4 +1,4 @@
-from napari_easy_augment_batch_dl.base_model import BaseModel, LoadMode
+from napari_easy_augment_batch_dl.frameworks.base_framework import BaseFramework, LoadMode
 import numpy as np
 from tnia.deeplearning.dl_helper import collect_training_data
 from cellpose import models, io
@@ -7,7 +7,7 @@ from tnia.deeplearning.dl_helper import quantile_normalization
 import os
 
 @dataclass
-class AltCellPoseInstanceModel(BaseModel):
+class AltCellPoseInstanceFramework(BaseFramework):
     
     # below are the parameters that are harvested for automatic GUI generation
 
@@ -27,8 +27,8 @@ class AltCellPoseInstanceModel(BaseModel):
 
 
 
-    def __init__(self, patch_path: str, model_path: str,  num_classes: int, start_model: str = None):
-        super().__init__(patch_path, model_path, num_classes)
+    def __init__(self, parent_path,  num_classes: int, start_model: str = None):
+        super().__init__(parent_path, num_classes)
 
         # start logger (to see training across epochs)
         logger = io.logger_setup()
@@ -145,3 +145,5 @@ class AltCellPoseInstanceModel(BaseModel):
 
     def set_optimizer(self, optimizer):
         self.sgd = optimizer == 'sgd'
+
+BaseFramework.register_framework('alt cellpose', AltCellPoseInstanceFramework)
