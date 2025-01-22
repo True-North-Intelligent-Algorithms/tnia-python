@@ -19,7 +19,6 @@ try:
 except ImportError:
     print("raster_geometry not imported.  This is only needed for the ellipsoid rendering in apply_stardist")
 import random
-from tqdm import tqdm
 
 """ Note:
 Original source for some of this code is here https://github.com/stardist/stardist/tree/master/examples
@@ -421,7 +420,7 @@ def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax
     input_files = [f for f in os.listdir(input_path)[0::sub_sample] if f.endswith('.tif')]
     truth_files = [f for f in os.listdir(truth_path)[0::sub_sample] if f.endswith('.tif')]
 
-    for i in range(len(input_files)):
+    for i in tqdm(range(len(input_files))):
         # Load the corrupted image and ground truth image
         input_img = io.imread(os.path.join(input_path, input_files[i]), plugin='tifffile')
         ground_truth_img = io.imread(os.path.join(truth_path, truth_files[i]), plugin='tifffile')
