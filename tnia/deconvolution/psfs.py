@@ -13,6 +13,15 @@ from skimage.io import imread
 import json
 from tnia.nd.ndutil import centercrop
 
+wave_dictionary = {
+    "Cy5": [649, 670],    # Excitation: 649 nm, Emission: 670 nm (Far-red/NIR)
+    "DAPI": [358, 461],   # Excitation: 358 nm, Emission: 461 nm (Blue)
+    "FITC": [495, 519],   # Excitation: 495 nm, Emission: 519 nm (Green)
+    "Texa": [561, 610],   # Excitation: 561 nm, Emission: 610 nm (Orange-Red)
+    "AF594": [590, 617],  # Excitation: 590 nm, Emission: 617 nm (Red)
+    "Cy2": [489, 506],    # Excitation: 489 nm, Emission: 506 nm (Green)
+}
+
 def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, confocal = False, use_psfm=False, convert_to_32=True):
     """
        Generates a 3D PSF using the Gibson-Lanni model.  If use_psfm is True the psfmodels implementation will be used.  Otherwise, the sdeconv implementation will be used.
@@ -54,7 +63,6 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
         psf = psfm.make_psf(z_size, xy_size, model='scalar', dxy=voxel_size_xy, dz=voxel_size_z, pz=pz, ni0=ni, ni=ni, ns=ns, NA=NA, wvl=wvl)
         if convert_to_32:
             psf = psf.astype('float32')
-        return psf
     else:
         import sdeconv
         version_list=sdeconv.__version__.split('.')
@@ -72,12 +80,12 @@ def gibson_lanni_3D(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz
             psf=gl()
             psf_=psf.cpu()
             psf= psf_.numpy()
-        
-        psf = psf.astype('float32')
-        if (confocal):
-            psf=psf*psf
-        psf = psf/psf.sum()
-        return psf
+            psf = psf.astype('float32')
+
+    if (confocal):
+        psf=psf*psf
+    psf = psf/psf.sum()
+    return psf
 
 def gibson_lanni_3D_partial_confocal(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size, pz, wvl, use_psfm=False, confocal_factor=1):
     """
