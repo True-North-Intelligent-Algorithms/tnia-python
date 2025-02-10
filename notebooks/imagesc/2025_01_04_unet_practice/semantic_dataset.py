@@ -38,7 +38,7 @@ class SemanticDataset(Dataset):
         
         # if training, run augmentations
         #if self.split == 'train':
-        raw, mask = self.augment_data(raw, mask)
+        #raw, mask = self.augment_data(raw, mask)
        
         #mask = (fg != 0).astype(np.float32)
 
