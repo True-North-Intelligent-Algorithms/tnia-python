@@ -190,6 +190,9 @@ def train3(train_loader, val_loader, net, loss_fn, optimizer, dtype, num_epochs,
         # Compute the average loss over all steps
         average_loss = total_loss / total_steps
             
+        #print(f'training loss at epoch {step} is {average_loss}')
+        pbar.write(f'training loss at epoch {epoch} is {average_loss}')
+        
         epoch += 1
         
         # Todo: work more on eval step
