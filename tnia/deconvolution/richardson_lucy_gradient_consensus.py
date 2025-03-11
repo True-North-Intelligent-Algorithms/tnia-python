@@ -85,17 +85,18 @@ def rlgc(image, psf, total_iters, auto_stop=True, mask=None, print_details=False
     In addition I've added the following
     
     1.  Make HTones array a map of regions where good pixels were aquired.  This approach handles both 
-    bad pixels and edges by essentially treating the forward model as having 0 pixels in these locations. 
+    bad pixels and edges by essentially treating the forward model as having pixels with 0 intensity in these locations. 
     Saturated pixels need to be indicated by passing in a mask.  Edge pixels are handled by extending the 
     image by zeros essentially making the reconstructed space larger than the image window.
 
-    2.  Adding the optiont to over-ride the stop criteria and run for an exact number of iterations. 
+    2.  Adding the option to over-ride the stop criteria and run for an exact number of iterations. 
 
-    3.  Return some statistics about the iterations.
+    3.  Return some statistics of error at each iteration (if simulation and a ground truth is provided).
 
-    4. The 'should not update' calculate (HRatio[shouldNotUpdate] = 1) is done with a cuda kernel to improve speed.  
+    4. The 'should not update' calculation (HRatio[shouldNotUpdate] = 1) is done with a cuda kernel to improve speed.  
 
-    5.  Make seed a parameter to allow for testing both reproducibility and repeatability
+    5.  Make seed a parameter to allow for testing both reproducibility (how similar results are with different seeds) and 
+    repeatability (whether the same seed gives the same result).
 
     """
 
