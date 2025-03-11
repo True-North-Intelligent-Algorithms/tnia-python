@@ -125,7 +125,7 @@ def random_shift_slices_in_stack(img, shift_range=2):
 
 def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, 
                    do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
-                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, sub_sample_xy=1):
+                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, sub_sample_xy=1, size_factor = 2.0):
     """
     This function performs a series of image augmentations on the input image and mask and saves the resulting patches to disk.
 
@@ -206,7 +206,7 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         
         im_aug, label_aug = uber_augmenter_im(im, mask, patch_size, do_vertical_flip, do_horizontal_flip,
                                         do_random_rotate90, do_random_sized_crop, do_random_brightness_contrast,
-                                        do_random_gamma, do_color_jitter, do_elastic_transform)
+                                        do_random_gamma, do_color_jitter, do_elastic_transform, size_factor)
 
         is_anynan = np.isnan(im_aug).any() or np.isnan(label_aug).any()
 
@@ -321,21 +321,23 @@ def uber_augmenter_bb(im, bbs, classes, patch_path, patch_base_name, num_patches
 
 def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal_flip=True, 
                      do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
-                     do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False):
+                     do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False,
+                     size_factor=0.5):
     """ single application of uber augmenter to label and image
 
     Args:
         im (_type_): _description_
         mask (_type_): _description_
         patch_size (_type_): _description_
-        do_vertical_flip (bool, optional): _description_. Defaults to True.
-        do_horizontal_flip (bool, optional): _description_. Defaults to True.
-        do_random_rotate90 (bool, optional): _description_. Defaults to True.
-        do_random_sized_crop (bool, optional): _description_. Defaults to True.
-        do_random_brightness_contrast (bool, optional): _description_. Defaults to True.
-        do_random_gamma (bool, optional): _description_. Defaults to False.
-        do_color_jitter (bool, optional): _description_. Defaults to False.
-        do_elastic_transform (bool, optional): _description_. Defaults to False.
+        do_vertical_flip (bool, optional):  Defaults to True.
+        do_horizontal_flip (bool, optional):  Defaults to True.
+        do_random_rotate90 (bool, optional):  Defaults to True.
+        do_random_sized_crop (bool, optional):  Defaults to True.
+        do_random_brightness_contrast (bool, optional):  Defaults to True.
+        do_random_gamma (bool, optional):  Defaults to False.
+        do_color_jitter (bool, optional):  Defaults to False.
+        do_elastic_transform (bool, optional):  Defaults to False.
+        size_factor (float, optional): . Max factor to apply in size transformation.  Higher value leads to more rescaling.  Defaults to 2.
 
     Returns:
         im_aug, label_aug: augmented image and label
@@ -360,7 +362,10 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
 
     if do_random_sized_crop:
         # TODO: make more flexibility for resize
-        augmentations.append(A.RandomSizedCrop(min_max_height=(3*patch_size//4, patch_size), height=patch_size, width=patch_size, p=0.5))
+        # need to invert the size factor because it controls the crop size which is then resized to the patch size. 
+        # So a smaller factor will lead to a larger resize. 
+        inverse_size_factor = 1/size_factor
+        augmentations.append(A.RandomSizedCrop(min_max_height=(inverse_size_factor*patch_size//4, patch_size), height=patch_size, width=patch_size, p=0.5))
 
     if do_random_brightness_contrast:
         augmentations.append(A.RandomBrightnessContrast(p=0.8))
@@ -375,7 +380,7 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
         augmentations.append(A.ColorJitter(hue=0.5, brightness=0.5, saturation=0.5, p=0.6))
 
     if do_elastic_transform:
-        augmentations.append(A.ElasticTransform (alpha=.1, sigma=5, alpha_affine=5, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, approximate=False, same_dxdy=False, p=0.5))
+        augmentations.append(A.ElasticTransform (alpha=1, sigma=50, alpha_affine=50, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, approximate=False, same_dxdy=False, p=0.5))
     # Create the augmenter
 
     if isinstance(mask, list):
