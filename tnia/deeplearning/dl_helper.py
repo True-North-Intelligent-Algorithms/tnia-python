@@ -1,6 +1,5 @@
 from glob import glob
 from tqdm import tqdm
-from tifffile import imread, imsave
 from skimage.measure import label
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,37 +22,6 @@ import random
 """ Note:
 Original source for some of this code is here https://github.com/stardist/stardist/tree/master/examples
 """
-
-def get_training_data(labeled_dir):
-    """ loads images and masks that can be used for training data for an air
-
-    Original source for much of this code is here https://github.com/stardist/stardist/tree/master/examples
-
-    The data must exist under the directory 'labeled_dir' and be organized as follows to
-        - images in a sub-directory called 'images'
-        - labeled masks in a sub-directory called 'masks' with each mask having the same name as the corresponding image.
-
-    Args:
-        labeled_dir (_type_): loacation of the image and mask data
-
-    Returns:
-        likst(numpy array), list(numpy array): Two lists of numpy arrays containing the images and masks 
-    """
-
-    X_ = sorted(glob(labeled_dir+'images/*.tif'))
-    Y_ = sorted(glob(labeled_dir+'masks/*.tif'))
-
-    X = list(map(imread,X_))
-    Y = list(map(imread,Y_))
-
-    # relabel the data just to make sure the objects are indexed
-    labeled=[]
-    for y in Y:
-        labeled.append(label(y))
-    
-    Y=labeled
-
-    return X, Y
 
 def split_training_data(X, Y):
     """ splits data into a training and validation set
