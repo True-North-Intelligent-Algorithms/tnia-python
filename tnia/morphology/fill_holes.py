@@ -1,6 +1,28 @@
 from skimage.morphology import remove_small_holes
 import numpy as np
 
+def fill_holes(labels, area_threshold=500):
+    """
+    Fill holes in an instance segmentation mask.
+    
+    Parameters:
+        labels (ndarray): A 2D array where each unique integer represents an instance label.
+    
+    Returns:
+        ndarray: A 2D array with holes filled.
+    """
+    filled_labels = np.zeros_like(labels, dtype=labels.dtype)
+    unique_labels = np.unique(labels)
+    
+    for label in unique_labels:
+        if label == 0:  # Ignore background
+            continue
+        mask = labels == label
+        filled_mask = remove_small_holes(mask, area_threshold)
+        filled_labels[filled_mask] = label
+    
+    return filled_labels
+
 def fill_holes_3d_slicer_labels(labels, area_threshold=1000, num_iterations=1):
     """ calls fill_holes_3d_slicer on each label separately
 
