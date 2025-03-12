@@ -125,7 +125,7 @@ def random_shift_slices_in_stack(img, shift_range=2):
 
 def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, 
                    do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
-                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, sub_sample_xy=1, size_factor = 2.0):
+                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, sub_sample_xy=1, **kwargs):
     """
     This function performs a series of image augmentations on the input image and mask and saves the resulting patches to disk.
 
@@ -206,7 +206,7 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         
         im_aug, label_aug = uber_augmenter_im(im, mask, patch_size, do_vertical_flip, do_horizontal_flip,
                                         do_random_rotate90, do_random_sized_crop, do_random_brightness_contrast,
-                                        do_random_gamma, do_color_jitter, do_elastic_transform, size_factor)
+                                        do_random_gamma, do_color_jitter, do_elastic_transform, kwargs)
 
         is_anynan = np.isnan(im_aug).any() or np.isnan(label_aug).any()
 
@@ -321,8 +321,7 @@ def uber_augmenter_bb(im, bbs, classes, patch_path, patch_base_name, num_patches
 
 def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal_flip=True, 
                      do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
-                     do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False,
-                     size_factor=0.5):
+                     do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, **kwargs):
     """ single application of uber augmenter to label and image
 
     Args:
@@ -342,6 +341,14 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
     Returns:
         im_aug, label_aug: augmented image and label
     """
+
+    size_factor = kwargs.get('size_factor', 1.25)
+    hue = kwargs.get('hue', 0.5)
+    brightness = kwargs.get('brightness', 0.5)
+    saturation = kwargs.get('saturation', 0.5)
+    alpha = kwargs.get('alpha', 0.1)
+    sigma = kwargs.get('sigma', 5)
+    alpha_affine = kwargs.get('alpha_affine', 5)
     
     x=randint(0,im.shape[1]-patch_size)
     y=randint(0,im.shape[0]-patch_size)
@@ -377,10 +384,10 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
         # color jitter light
         # augmentations.append(A.ColorJitter(hue=0, brightness=0.5, saturation=0.1, p=0.5))
         # color jitter heavy
-        augmentations.append(A.ColorJitter(hue=0.5, brightness=0.5, saturation=0.5, p=0.6))
+        augmentations.append(A.ColorJitter(hue=hue, brightness=brightness, saturation=saturation, p=0.6))
 
     if do_elastic_transform:
-        augmentations.append(A.ElasticTransform (alpha=1, sigma=50, alpha_affine=50, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, approximate=False, same_dxdy=False, p=0.5))
+        augmentations.append(A.ElasticTransform (alpha=alpha, sigma=sigma, alpha_affine=alpha_affine, interpolation=1, border_mode=4, value=None, mask_value=None, always_apply=False, approximate=False, same_dxdy=False, p=0.5))
     # Create the augmenter
 
     if isinstance(mask, list):
