@@ -206,7 +206,7 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         
         im_aug, label_aug = uber_augmenter_im(im, mask, patch_size, do_vertical_flip, do_horizontal_flip,
                                         do_random_rotate90, do_random_sized_crop, do_random_brightness_contrast,
-                                        do_random_gamma, do_color_jitter, do_elastic_transform, kwargs)
+                                        do_random_gamma, do_color_jitter, do_elastic_transform, **kwargs)
 
         is_anynan = np.isnan(im_aug).any() or np.isnan(label_aug).any()
 
@@ -371,8 +371,8 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
         # TODO: make more flexibility for resize
         # need to invert the size factor because it controls the crop size which is then resized to the patch size. 
         # So a smaller factor will lead to a larger resize. 
-        inverse_size_factor = 1/size_factor
-        augmentations.append(A.RandomSizedCrop(min_max_height=(inverse_size_factor*patch_size//4, patch_size), height=patch_size, width=patch_size, p=0.5))
+        inverse_size_factor = .99/size_factor
+        augmentations.append(A.RandomSizedCrop(min_max_height=(inverse_size_factor*patch_size, patch_size), height=patch_size, width=patch_size, p=0.5))
 
     if do_random_brightness_contrast:
         augmentations.append(A.RandomBrightnessContrast(p=0.8))
