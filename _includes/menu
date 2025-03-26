@@ -33,6 +33,10 @@
               <li><a href="{{ site.baseurl }}/docs/machinesetup/deconvolution_dl_nvidia_linux">Decon DL Nvidia Linux</a></li>
             {% include section-end %} 
 
+          {% include section title="Documentation" link="/" %}
+              <li><a href="{{ site.baseurl }}/docs/documentation/mkdocs">Mcdocs</a></li>
+            {% include section-end %} 
+
           {% include section title="Command Line" link="/" %}
               <li><a href="{{ site.baseurl }}/docs/commandline/grep">Grep Hints</a></li>
               <li><a href="{{ site.baseurl }}/docs/commandline/bashgeneral">General Bash Hints</a></li>
