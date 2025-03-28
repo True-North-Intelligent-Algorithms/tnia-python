@@ -6,7 +6,7 @@ For this example you need Napari, several pytorch related dependencies, tnia-pyt
 
 Please post on image.sc if setting up the dependencies is not working for you. 
 
-Note: Exact version of Cuda is probably not important.  cu118 is simply what I've been testing with lately.  
+Note: Exact version of Cuda is probably not important.  cu124 is simply what I've been testing with lately.  
 
 ## Linux
 
