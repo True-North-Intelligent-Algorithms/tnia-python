@@ -372,7 +372,10 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
         # need to invert the size factor because it controls the crop size which is then resized to the patch size. 
         # So a smaller factor will lead to a larger resize. 
         inverse_size_factor = .99/size_factor
-        augmentations.append(A.RandomSizedCrop(min_max_height=(inverse_size_factor*patch_size, patch_size), height=patch_size, width=patch_size, p=0.5))
+        min_max_height = int(inverse_size_factor*patch_size), patch_size
+        #augmentations.append(A.RandomSizedCrop(min_max_height=min_max_height, height=patch_size, width=patch_size, p=0.5))
+        augmentations.append(A.RandomSizedCrop(min_max_height=min_max_height, size=(patch_size, patch_size), p=0.5))
+
 
     if do_random_brightness_contrast:
         augmentations.append(A.RandomBrightnessContrast(p=0.8))
