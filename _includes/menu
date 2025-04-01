@@ -58,7 +58,7 @@
             {% include section title="Python Packaging" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/packaging/packaging">Packaging Notes</a></li>
                 <li><a href="{{ site.baseurl }}/docs/packaging/conda">Conda Notes</a></li>
-                <li><a href="{{ site.baseurl }}/docs/packaging/pip_conda_export_env.md">PIP/Conda repeatable environments</a></li>
+                <li><a href="{{ site.baseurl }}/docs/packaging/pip_conda_export_env">PIP/Conda repeatable environments</a></li>
             {% include section-end %} 
  
             {% include section title="Example Tests" link="/" %}
