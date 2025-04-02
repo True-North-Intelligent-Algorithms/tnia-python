@@ -6,59 +6,52 @@ For this example you need Napari, several pytorch related dependencies, tnia-pyt
 
 Please post on image.sc if setting up the dependencies is not working for you. 
 
-Note: Exact version of Cuda is probably not important.  cu124 is simply what I've been testing with lately.  
+Note 1: Exact version of Cuda is probably not important.  cu124 is simply what I've been testing with lately.  
 
-## Linux
+Note 2: We use Python 3.11 because at the moment it plays nicer with Cellpose. 
+
+## 1.  Create and activate a new environment
+```
+    conda create -n vessels_lightsheet python=3.11
+    conda activate vessels_lightsheet
+```
+
+## 2.  Install Pytorch-GPU
+
+The [conda-forge version](https://anaconda.org/conda-forge/pytorch) version seems to be smart enough to install the right cuda version on Windows/Linux and the CPU version on MAC
 
 ```
-    conda create -n vessels_lightsheet python=3.13
-    conda activate vessels_lightsheet
-    pip install "napari[all]" # requires quotation marks to parse the square brackets on Linux, not sure if generalizes
-    pip install albumentations
-    pip install matplotlib
-    pip install "tensorflow[and-cuda]" # as above, requires quotation marks
+    conda install conda-forge::pytorch
+```
+
+Alternatively you can use the [pytorch pip](https://pytorch.org/get-started/locally/) version which requires slightly different instruction for Windows/Mac/Linux
+
+Windows/Linux
+
+```
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-    pip install pytorch-lightning
-    pip install git+https://github.com/Project-MONAI/MONAI 
-    pip install scipy
-    pip install tifffile
-    pip install czifile
-    pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python.git 
-    pip install git+https://github.com/True-North-Intelligent-Algorithms/napari-easy-augment-batch-dl.git
 ```
 
-## Mac M1
+Mac
 
 ```
-    conda create -n vessels_lightsheet python=3.13
-    conda activate vessels_lightsheet
-    pip install "napari[all]" # also requires quotes on Mac
-    pip install albumentations
-    pip install matplotlib
-    pip install torch torchvision torchaudio # remove the index flag url
-    pip install pytorch-lightning
-    pip install git+https://github.com/Project-MONAI/MONAI 
-    pip install scipy
-    pip install tifffile
-    pip install czifile
-    pip install git+https://github.com/True-North-Intelligent-Algorithms/napari-easy-augment-batch-dl.git
-    pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python.git 
+    pip3 install torch torchvision torchaudio
 ```
 
-## Windows 
+## 3.  Install remaining dependencies
 
 ```
-    conda create -n vessels_lightsheet python=3.13
-    conda activate vessels_lightsheet 
-    pip install "napari[all]"
-    pip install albumentations
-    pip install matplotlib
-    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-    pip install pytorch-lightning
-    pip install git+https://github.com/Project-MONAI/MONAI 
-    pip install scipy
-    pip install tifffile
-    pip install czifile
-    pip install git+https://github.com/True-North-Intelligent-Algorithms/napari-easy-augment-batch-dl.git
-    pip install git+https://github.com/True-North-Intelligent-Algorithms/tnia-python.git
+    pip install "napari[all]" # seems to roll back numpy to 2.1.3
+    pip install albumentations matplotlib scipy tifffile czifile 
+    pip install --upgrade git+https://github.com/Project-MONAI/MONAI 
+    pip install --upgrade git+https://github.com/True-North-Intelligent-Algorithms/tnia-python.git
+    pip install --upgrade git+https://github.com/True-North-Intelligent-Algorithms/napari-easy-augment-batch-dl.git
+```
+
+### 4. (Optional) Install Cellpose 
+
+Cellpose is not needed for this example, however if you have setup the GPU version of Pytorch properly you should be able to add Cellpose to the environment to complete a useful DL environment. 
+
+```
+    pip install cellpose
 ```
