@@ -4,9 +4,15 @@ layout: basic
 
 # Creating repeatable environment with conda, pip, and pip-tools 
 
-We need to create an ```environment.yml``` file and use ```pip-compile``` to collect the transitive dependencies.  
+We need to create an **environment.yml** file and use **pip-compile** to collect the transitive dependencies.
 
-For example for a stardist/napari environment you can first make an ```environment.yml``` which contains the conda dependencies and the pip dependencies.  In this case we will be compiling the pip dependencies into a ```requirements.txt``` file.  The ```environment.yml``` will be similar to below. 
+You can make **environment.yml** manually, or with the following command
+
+```
+conda env export --no-builds > environment.yml
+```
+
+For example for a stardist/napari environment you can first make an **environment.yml** which contains the conda dependencies and the pip dependencies.  In this case we will be compiling the pip dependencies into a **requirements.txt** file.  The **environment.yml** will be similar to below. 
 
 ```
 name: stardist_napari_windows
@@ -21,7 +27,12 @@ dependencies:
     - -r requirements.txt
 ```
 
-then ```pip install pip-tools``` and make the following ```requirement.in```
+then there are two options
+
+1.  Use **pip freeze > requirements.txt**
+
+
+2.  Install **pip install pip-tools** and make a **requirement.in**.  For example...
 
 ```
 numpy==1.26
@@ -32,11 +43,10 @@ gputools==0.2.15
 edt
 ```
 
-Then ```pip-compile requirement.in```, which creates a massive ```requirements.txt``` [see example here](https://github.com/True-North-Intelligent-Algorithms/notebooks-and-napari-widgets-for-dl/blob/7e5d6e2c5b62970af98706f81d2b0ccd06cfe423/dependencies/windows_stardist/requirements.txt).  
+Then **pip-compile requirement.in**, which creates a massive **requirements.txt** [see example here](https://github.com/True-North-Intelligent-Algorithms/notebooks-and-napari-widgets-for-dl/blob/7e5d6e2c5b62970af98706f81d2b0ccd06cfe423/dependencies/windows_stardist/requirements.txt).  
 
-End user just needs to get the ```environment.yml``` and ```requirements.txt``` and run
+End user just needs to get the **environment.yml** and **requirements.txt** and run
 
 ```
 conda env create -f environment.yml
-
-````
+```
