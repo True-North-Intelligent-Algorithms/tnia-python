@@ -529,38 +529,41 @@ def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, p
 
     return labels, details
 
-def generate_patch_names(image_path, mask_path, data_name):
+def generate_patch_names(image_path, mask_path, data_name, ext='.tif'):
     
     index=0
-    image_name=image_path+'/'+data_name+'_'+str(index)+'.tif'
-    mask_name=mask_path+'/'+data_name+'_'+str(index)+'.tif'
+    image_name=image_path+'/'+data_name+'_'+str(index)+ext
+    mask_name=mask_path+'/'+data_name+'_'+str(index)+ext
 
     while (os.path.exists(image_name)==True):
         index=index+1
-        image_name=image_path+'/'+data_name+'_'+str(index)+'.tif'
-        mask_name=mask_path+'/'+data_name+'_'+str(index)+'.tif'
+        image_name=image_path+'/'+data_name+'_'+str(index)+ext
+        mask_name=mask_path+'/'+data_name+'_'+str(index)+ext
 
     return image_name, mask_name
 
 def generate_label_names(image_path, mask_path, data_name):
     return generate_patch_names(image_path, mask_path, data_name)
 
-def generate_next_patch_name(image_path, name):
+def generate_next_name(image_path, name, ext='.tif'):
     
     index=0
-    image_name=image_path+'/'+name+'_'+str(index)+'.tif'
+    image_name=image_path+'/'+name+'_'+str(index)+ext
 
     while (os.path.exists(image_name)==True):
         index=index+1
-        image_name=image_path+'/'+name+'_'+str(index)+'.tif'
+        image_name=image_path+'/'+name+'_'+str(index)+ext
 
     base_name = os.path.basename(image_name)
     base_name = os.path.splitext(base_name)[0]
     
     return base_name
 
+def generate_next_patch_name(image_path, name):
+    return generate_next_name(image_path, name)
+
 def generate_next_label_name(image_path, name):
-    return generate_next_patch_name(image_path, name)
+    return generate_next_name(image_path, name)
 
 def compute_centroid(vertices):
     """
