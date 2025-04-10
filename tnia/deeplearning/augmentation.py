@@ -2,9 +2,10 @@ import numpy as np
 from skimage import transform
 from random import randint
 from skimage.io import imsave
-from tnia.deeplearning.dl_helper import generate_patch_names, make_patch_directory, generate_next_patch_name
+from tnia.deeplearning.dl_helper import generate_patch_names, make_patch_directory, generate_next_name
 import json
 import os
+import matplotlib.pyplot as plt
 
 try:
     import albumentations as A
@@ -125,7 +126,7 @@ def random_shift_slices_in_stack(img, shift_range=2):
 
 def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, 
                    do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
-                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, sub_sample_xy=1, **kwargs):
+                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, sub_sample_xy=1, save_histogram=False, **kwargs):
     """
     This function performs a series of image augmentations on the input image and mask and saves the resulting patches to disk.
 
@@ -199,7 +200,6 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         if not os.path.exists(label_patch_path):
             os.mkdir(label_patch_path)
 
-
     for i in range(num_patches):
         if any(dim < patch_size for dim in mask[0].shape):
             continue
@@ -215,11 +215,20 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
 
 
         #image_name, patch_name = generate_patch_names(str(image_patch_path), str(label_patch_path), patch_base_name)
-        next_patch_name = generate_next_patch_name(str(image_patch_path), patch_base_name)
+        next_patch_name = generate_next_name(str(image_patch_path), patch_base_name)
         
         image_name = os.path.join(image_patch_path , next_patch_name+'.tif')
-        
         imsave(image_name, im_aug)
+
+        if save_histogram:        
+            fig, ax = plt.subplots()  # object-oriented API
+            ax.hist(im_aug.flatten(), bins=100)
+            ax.set_title('Histogram of image')
+            ax.set_xlabel('Pixel value')
+            ax.set_ylabel('Frequency')
+            hist_name = os.path.join(image_patch_path, next_patch_name+"_hist.png")
+            fig.savefig(hist_name)
+            plt.close(fig)  # Prevent notebook from showing the figure
         
         if isinstance(mask, list):
             for j in range(len(mask)):
@@ -306,7 +315,7 @@ def uber_augmenter_bb(im, bbs, classes, patch_path, patch_base_name, num_patches
         if is_anynan:
             continue
         
-        next_patch_name = generate_next_patch_name(str(image_patch_path), patch_base_name)
+        next_patch_name = generate_next_name(str(image_patch_path), patch_base_name)
         
         image_name = os.path.join(image_patch_path , next_patch_name+'.tif')
         
