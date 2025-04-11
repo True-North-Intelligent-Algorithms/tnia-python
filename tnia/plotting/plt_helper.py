@@ -72,7 +72,7 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormaps=None, 
         vmin (float, optional): min value for colormap. Defaults to None.
         vmax (float, optional): max value for colormap. Defaults to None.
         gamma (float, optional): gamma value for colormap. Defaults to None.
-        plottypes (list of strings, optional): list of plot types. Defaults to None.
+        plottypes (list of strings, optional): list of plot types. Defaults to None. Options are 'imshow' and 'hist'
         xlabels (list of strings, optional): list of xlabels. Defaults to None.
         ylabels (list of strings, optional): list of ylabels. Defaults to None.
 
