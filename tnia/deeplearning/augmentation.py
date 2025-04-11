@@ -218,7 +218,7 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         next_patch_name = generate_next_name(str(image_patch_path), patch_base_name)
         
         image_name = os.path.join(image_patch_path , next_patch_name+'.tif')
-        imsave(image_name, im_aug)
+        imsave(image_name, im_aug, check_contrast=False)
 
         if save_histogram:        
             fig, ax = plt.subplots()  # object-oriented API
@@ -233,10 +233,10 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         if isinstance(mask, list):
             for j in range(len(mask)):
                 label_name = os.path.join(label_patch_path[j], next_patch_name+'.tif')
-                imsave(label_name, label_aug[j])
+                imsave(label_name, label_aug[j], check_contrast=False)
         else:
             label_name = os.path.join(label_patch_path, next_patch_name+'.tif')
-            imsave(label_name, label_aug)
+            imsave(label_name, label_aug, check_contrast=False)
 
 
 def uber_augmenter_bb(im, bbs, classes, patch_path, patch_base_name, num_patches, do_vertical_flip=True, 
