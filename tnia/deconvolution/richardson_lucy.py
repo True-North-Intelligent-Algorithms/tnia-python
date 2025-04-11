@@ -13,8 +13,8 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
 
     Note: Note the option to mask bad pixels is not simply a matter of masking bad pixels.  Instead the HTOnes array is multiplied by the mask.
     This means bad pixels are handled the same way as edges.  Both edges and bad pixels are considered locations where data was not acquired. 
-    The strategy of masking pixels was developed by True North Intelligent Algorithms.  We believe this is likely not a novel
-    approach, but we have not found any references to it in the literature.  If you know of any references please let us know.
+    This is likely not a novel approach, but I have not found any references to it in the literature.  If you know of any references please let 
+    me know.
 
     Args:
         image [numpy float array]: the image to be deconvolved 
@@ -27,7 +27,7 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
         [numpy float array]: the deconvolved image
     """
 
-    # if thruth is not none we will be calculating the RMSE at each iteration
+    # if truth is not none we will be calculating the RMSE at each iteration
     if truth is not None:
         stats = {'rmse':[]}
     
@@ -64,7 +64,7 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     psf = psf.astype(np.float32)
     psf = cp.array(psf)
 
-    HTones = cp.array(HTones)
+    HTones = cp.array(HTones, cp.float32)
 
     if truth is not None:
         truth = cp.array(truth)
