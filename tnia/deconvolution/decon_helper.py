@@ -23,5 +23,8 @@ def create_saturation_mask(image):
     if dtype == np.uint8:
         mask[image==255] = 0
 
+    elif dtype == np.uint16:
+        mask[image==65535] = 0
+        
     return mask
 

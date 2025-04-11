@@ -1,3 +1,4 @@
+import dask
 import dask.array as da
 from tnia.deconvolution.richardson_lucy import richardson_lucy_cp
 import numpy as np
@@ -50,7 +51,7 @@ def rl_mem_footprint(img, psf, depth=(0, 0, 0)):
     total_size = np.prod(img_size + psf_size / 2 + depth_size)
 
     img_bytes = total_size * 4  # float32 needs 4 bytes
-    img_bytes = img_bytes * 12  # the RL deconv algo needs 9 copies but we use 11 for a factor of safety
+    img_bytes = img_bytes * 41  # the RL deconv algo needs 9 copies but we use 11 for a factor of safety
     return np.ceil(img_bytes)
 
 def chunk_factor(img, psf, depth, mem_to_use=-1):
@@ -100,7 +101,7 @@ def chunk_factor(img, psf, depth, mem_to_use=-1):
         cf = np.sqrt(4 ** k)
     return cf
 
-def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap=10, mem_to_use=-1, debug=False, platform=0, num_devices=1):
+def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, mask=None, overlap=10, mem_to_use=-1, debug=False, platform=0, num_devices=1):
     """ perform Richardson-Lucy using dask.  
     
     If there are multiple devices compute() will be called with num_workers=num_devices and the devices ids (assumed to be 0 to num_devices-1) will be put 
@@ -162,14 +163,22 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
         if debug:
             print('chunk size is',chunk_size)
 
-        dimg = da.from_array(img,chunks=(img.shape[0], y_chunk_size, x_chunk_size))
+        daskimg = da.from_array(img,chunks=(img.shape[0], y_chunk_size, x_chunk_size))
+        if mask is not None:
+            daskmask = da.from_array(mask,chunks=(img.shape[0], y_chunk_size, x_chunk_size))
+        else:
+            daskmask = None
     else:
         chunk_size = (y_chunk_size, x_chunk_size)
         
         if debug:
             print('chunk size is',chunk_size)
 
-        dimg = da.from_array(img,chunks=(y_chunk_size, x_chunk_size))
+        daskimg = da.from_array(img,chunks=(y_chunk_size, x_chunk_size))
+        if mask is not None:
+            daskmask = da.from_array(mask,chunks=(y_chunk_size, x_chunk_size))
+        else:
+            daskmask = None
 
     queue = Queue()
 
@@ -178,19 +187,26 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
 
     import traceback
 
-    def rl_dask_task(img, psf, numiterations, block_info=None, block_id=None, thread_id=None):
+    def rl_dask_task(img_chunk, mask_chunk, psf, numiterations, block_info=None, block_id=None, thread_id=None):
 
-        print('start dask task')
+        if debug:
+            print('start dask task')
+            print('img.shape', img_chunk.shape)
+            print('psf.shape', psf.shape)
+            print('mask_chunk.shape', mask_chunk.shape, mask_chunk.min(), mask_chunk.max())
+
+        if mask_chunk is not None:
+            assert mask_chunk.shape == img.shape, "mask shape does not match image shape"
         
         try:
             # check if any image dimension is 0 for arbitraryh length array
             print('check dimensions')
             
-            if np.any(np.array(img.shape) == 0):
+            if np.any(np.array(img_chunk.shape) == 0):
                 print('image dimension is 0')
-                return img 
+                return img_chunk 
             if block_id is None or block_id == []:
-                return img 
+                return img_chunk 
             
             print()
             device_num=queue.get()
@@ -202,8 +218,12 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
                 print('block info is', block_info)
             
             cp.cuda.Device(device_num).use()
-            result=richardson_lucy_cp(img, psf, numiterations, non_circulant)
+            result=richardson_lucy_cp(img_chunk, psf, numiterations, non_circulant, mask=mask_chunk)
             
+            if debug:
+                print('-------------------END DASK TASK----------------------------')
+                print()
+                    
             return result
         except Exception as e:
             traceback.print_exc()
@@ -225,13 +245,16 @@ def richardson_lucy_dask_cp(img, psf, numiterations, non_circulant=True, overlap
         depth = {0:0, 1:overlap, 2:overlap}
     else:
         depth = {0:overlap, 1:overlap}
-
-    out = dimg.map_overlap(rl_dask_task, depth=depth, dtype=np.float32, psf=psf, numiterations=numiterations)
+    
+    out = dask.array.map_overlap(rl_dask_task, daskimg, daskmask, depth=depth, dtype=np.float32, psf=psf, numiterations=numiterations)
+    
     out_img = out.compute(num_workers=num_devices)
     end_time = time.time()
     execution_time = end_time - start_time
+    
     if debug:
         print(f"Execution time of rl dask multi gpu: {execution_time} seconds")
+    
     return out_img 
 
 
