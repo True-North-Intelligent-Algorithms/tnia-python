@@ -348,6 +348,42 @@ def make_random_patch(img, truth, patch_size, axes, ind=None, sub_sample_xy=1):
 
     return img_crop, truth_crop, ind, truth_ind
 
+def check_training_data(data_path):
+    """
+    Check if the training data is valid.
+
+    Parameters:
+        data_path (str): Path to the directory containing input and ground truth data.    
+    """
+    
+    i=0
+    input_path = os.path.join(data_path, "input" + str(i))
+    truth_path = os.path.join(data_path, "ground truth" + str(i))
+
+    # check if the input and truth directories exist
+    if not os.path.exists(input_path):
+        print(f"Input directory {input_path} does not exist")
+        return False
+    
+    if not os.path.exists(truth_path):
+        print(f"Truth directory {truth_path} does not exist")
+        return False
+
+    input_files = [f for f in os.listdir(input_path) if f.endswith('.tif')]
+    truth_files = [f for f in os.listdir(truth_path) if f.endswith('.tif')]
+
+    # check if number of input and truth files match
+    if len(input_files) != len(truth_files):
+        print("Number of input files does not match number of truth files")
+        return False
+    
+    # make sure that there are input files
+    if len(input_files) == 0:
+        print("No input files found")
+        return False
+    
+    return True
+
 def collect_training_data(data_path, sub_sample=1, downsample=False,pmin=3, pmax=99.8, normalize_input=True, normalize_truth=False, training_multiple=1, patch_size=None, add_trivial_channel=True, relabel=False):
     """
     Collect training data for image processing models.
