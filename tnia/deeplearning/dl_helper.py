@@ -773,6 +773,23 @@ def normalize_(img, low, high, eps=1.e-20, clip=True):
 
     return scaled
 
+def compute_quantiles(img, quantile_low=0.01, quantile_high=0.998):
+    """
+    Computes the quantiles of an image.
+
+    Parameters:
+        img (numpy array): The input image to compute quantiles for.
+        quantile_low (float): The lower quantile to compute. Default is 0.01.
+        quantile_high (float): The upper quantile to compute. Default is 0.998.
+
+    Returns:
+        tuple: A tuple containing the lower and upper quantiles.
+    """
+    
+    qlow = np.quantile(img, quantile_low)
+    qhigh = np.quantile(img, quantile_high)
+
+    return qlow, qhigh
 
 def quantile_normalization(img, quantile_low=0.01, quantile_high=0.998, eps=1.e-20, clip=True, channels = False):
     """
@@ -803,3 +820,24 @@ def quantile_normalization(img, quantile_low=0.01, quantile_high=0.998, eps=1.e-
             qhigh = np.quantile(img[...,i], quantile_high)
             scaled[...,i] = normalize_(img[...,i], low=qlow, high=qhigh, eps=eps, clip=clip)
         return scaled
+        
+def explicit_normalization(img, low, high, eps=1.e-20, clip=True):
+    """
+    Explicitly normalizes the image to the range [low, high].
+
+    Parameters:
+        img (numpy array): The input image to be normalized.
+        low (float): The lower bound of the normalization range.
+        high (float): The upper bound of the normalization range.
+        eps (float): A small value added to avoid division by zero. Default is 1.e-20.
+        clip (bool): If True, clips the values to the range [0, 1]. Default is True.
+
+    Returns:
+        numpy array: The normalized image.
+    """
+    scaled = (img - low) / (high - low + eps)
+
+    if clip:
+        scaled = np.clip(scaled, 0, 1)
+
+    return scaled
