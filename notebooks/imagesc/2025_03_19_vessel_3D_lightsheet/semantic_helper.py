@@ -2,7 +2,7 @@ import torch
 from tqdm.auto import tqdm
 import numpy as np
 
-def train(train_loader, val_loader, net, loss_fn, optimizer, dtype, num_epochs, device, steps_per_update=-1):
+def train(train_loader, net, loss_fn, optimizer, dtype, num_epochs, device, steps_per_update=-1, sparse=False):
 
     # set train flags, initialize step
     net.train() 
@@ -28,6 +28,9 @@ def train(train_loader, val_loader, net, loss_fn, optimizer, dtype, num_epochs, 
                 optimizer.zero_grad()
 
                 label = label.type(dtype)
+
+                if sparse:
+                    label = label-1
                 label = label.to(device)
                 feature = feature.to(device)
                 
