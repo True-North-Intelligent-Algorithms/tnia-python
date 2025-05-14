@@ -15,7 +15,7 @@ import math
 try:
     import raster_geometry as rg
     from tnia.simulation.phantoms import add_small_to_large, add_small_to_large_2d
-except ImportError:
+except:
     print("raster_geometry not imported.  This is only needed for the ellipsoid rendering in apply_stardist")
 import random
 
