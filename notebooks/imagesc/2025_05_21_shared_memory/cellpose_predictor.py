@@ -29,7 +29,7 @@ if __name__ == "__main__":
     elif major_number == '4':
         model = models.CellposeModel(gpu=True)
 
-    result = model.eval(array, niter=2000)[0]
+    result = model.eval(array, diameter=60, niter=2000)[0]
     
     print("out_name", out_name)
     
