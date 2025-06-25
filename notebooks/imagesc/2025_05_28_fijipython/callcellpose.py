@@ -1,25 +1,48 @@
 #@ ImageJ ij
+#@ ImgPlus img
 
-from scyjava import to_python as j2p
-from scyjava import to_java as p2j
-
-from skimage.io import imread
+import cellpose
 from cellpose import models
-#print(cellpose.version)
+from skimage import color
+import numpy as np
 
-model = models.Cellpose(gpu=True, model_type='cyto2')
+# print cellpose version
+print(cellpose.version)
 
-data=ij.io().open("D:\\images\\tnia-python-images\\imagesc\\2024_03_27_SOTA_segmentation\\images\\cell_00003.bmp")
-datanp = imread("D:\\images\\tnia-python-images\\imagesc\\2024_03_27_SOTA_segmentation\\images\\cell_00003.bmp")
-print(type(data))
-print(type(datanp))
-ij.ui().show(data)
-#ij.ui().show(datanp)
-test=j2p(data)
-print(type(test))
+# check if GPU is available
+import torch
 
-result = model.eval(test, diameter=100, niter=2000)
+if torch.cuda.is_available():
+    print("GPU is available!")
+else:
+    print("GPU is not available.")
 
-back = p2j(result)
+model = models.CellposeModel(gpu=True, model_type='cyto3')
 
-ij.ui().show(back)
+print(type(img))
+img_py=ij.py.from_java(img)
+print(type(img_py), img_py.shape)
+
+result = model.eval(img_py)
+
+print(type(result[0]),result[0].shape)
+
+try:
+	overlay = color.label2rgb(result[0], img_py, bg_label=0., alpha=0.4)
+except Exception as e:
+	print("Caught an exception:", e)
+	print("try copy img_py before call to label2rgb")
+	copy = np.copy(img_py)
+	overlay = color.label2rgb(result[0], copy, bg_label=0., alpha=0.4)
+
+print(type(overlay), overlay.shape)
+
+result_java = ij.py.to_java(result[0])
+
+#back_overlay = ij.py.to_java(overlay)
+print(overlay.dtype, overlay.min(), overlay.max())
+overlay = (overlay*255).astype('uint8')
+overlay_java = ij.py.to_dataset(overlay, dim_order=['row', 'col', 'ch'])
+
+ij.ui().show(result_java)
+ij.ui().show(overlay_java)
