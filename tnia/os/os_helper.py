@@ -26,8 +26,15 @@ def convert_path_for_wsl(path):
             # Convert Windows path to WSL2 format
             #drive, rest = os.path.splitdrive(path)
             #drive_letter = drive.rstrip(":").lower()
-            drive_letter = path.split(':')[0].lower()
-            rest = path.split(':')[1]
-            converted_path = f"/mnt/{drive_letter}{rest.replace('\\', '/')}"
+            
+            #drive_letter = path.split(':')[0].lower()
+            #rest = path.split(':')[1]
+            #converted_path = f"/mnt/{drive_letter}{rest.replace("\\", /')}"
+            #return converted_path
+
+            drive_letter, rest = path.split(":", 1)
+            drive_letter = drive_letter.lower()
+            rest = rest.replace("\\", "/")  # Replace backslashes with forward slashes
+            converted_path = f"/mnt/{drive_letter}{rest}"
             return converted_path
     return path  # Return the original path if not Linux or not WSL2
