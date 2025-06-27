@@ -100,6 +100,19 @@ def rlgc(image, psf, total_iters, auto_stop=True, mask=None, print_details=False
 
     """
 
+    mempool = cp.get_default_memory_pool()
+
+
+    total_gpu_memory = mempool
+
+    bpg=(1024**3)
+
+    available_gpu_memory = cp.cuda.Device(0).mem_info[0]
+    total_gpu_memory = cp.cuda.Device(0).mem_info[1]
+    print("Total GPU memory = {}".format(total_gpu_memory/bpg))
+    print("Available GPU memory = {}".format(available_gpu_memory/bpg))
+    print("At beginning, used = {}".format(mempool.used_bytes()/bpg))
+
     rng_cp = cp.random.default_rng(seed)
     
     stats = {}
@@ -139,11 +152,15 @@ def rlgc(image, psf, total_iters, auto_stop=True, mask=None, print_details=False
     num_y = image.shape[1]
     num_x = image.shape[2]
     num_pixels = num_z * num_y * num_x
+    
+    print("after truth and mask used = {}".format(mempool.used_bytes()/bpg))
 
     HTones = cp.ones_like(image)
     if mask is not None:
          HTones = HTones * mask
          image = image * mask
+    
+    print("after HTones used = {}".format(mempool.used_bytes()/bpg))
 
     # BN if noncirc==True then pad the image, psf and HTOnes array
     if noncirc:
