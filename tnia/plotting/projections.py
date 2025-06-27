@@ -159,7 +159,7 @@ def show_xyz_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,10), colormap
 
     return fig
 
-def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmin=None, vmax=None, gamma=None):
+def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmin=None, vmax=None, gamma=None, extentxy=None, extentzy=None, extentxz=None):
     """ plots max xy, xz, and zy projections of a 3D image
 
     Args:
@@ -176,12 +176,12 @@ def show_xyz_max(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmin
         fig: matplotlib figure
     """
  
-    return show_xyz_projection(image_to_show, sxy, sz, figsize, np.max, colormap, vmin, vmax)
+    return show_xyz_projection(image_to_show, sxy, sz, figsize, np.max, colormap, vmin, vmax, gamma, extentxy=extentxy, extentzy=extentzy, extentxz=extentxz)
  
-def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmin=None, vmax=None, gamma=None):
-    show_xyz_projection(image_to_show, sxy, sz, figsize, np.sum, colormap, vmin, vmax, gamma)
+def show_xyz_sum(image_to_show, sxy=1, sz=1,figsize=(10,10), colormap=None, vmin=None, vmax=None, gamma=None, extentxy=None, extentzy=None, extentxz=None):
+    show_xyz_projection(image_to_show, sxy, sz, figsize, np.sum, colormap, vmin, vmax, gamma, extentxy=extentxy, extentzy=extentzy, extentxz=extentxz)
     
-def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np.max, colormap=None, vmin=None, vmax=None, gamma=None):
+def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np.max, colormap=None, vmin=None, vmax=None, gamma=None, extentxy=None, extentzy=None, extentxz=None):
     """ generates xy, xz, and zy max projections of a 3D image and plots them
 
     Args:
@@ -202,9 +202,9 @@ def show_xyz_projection(image_to_show, sxy=1, sz=1,figsize=(10,10), projector=np
     projection_x = np.flip(np.rot90(projector(image_to_show,2),1),0)
     projection_z = projector(image_to_show,0)
 
-    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap, vmin, vmax, gamma)
+    return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap, vmin, vmax, gamma, use_plt=True, extentxy=extentxy, extentzy=extentzy, extentxz=extentxz)
 
-def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmin=None, vmax=None, gamma=None, use_plt=True):
+def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmin=None, vmax=None, gamma=None, use_plt=True, extentxy=None, extentzy=None, extentxz=None):
     """ shows pre-computed xy, xz and zy of a 3D image in a plot
 
     Args:
@@ -255,20 +255,29 @@ def show_xyz(xy, xz, zy, sxy=1, sz=1,figsize=(10,10), colormap=None, vmin=None, 
         xz = np.clip((xz-vmin)/(vmax-vmin), 0, 1)
         zy = np.clip((zy-vmin)/(vmax-vmin), 0, 1)
 
+    if extentxy is None:
+    # if extentxy is not provided, calculate it based on sxy and dimensions
+        extentxy = [0, xdim*sxy, ydim*sxy, 0]
+    if extentzy is None:
+    # if extentzy is not provided, calculate it based on sxy and dimensions
+        extentzy = [0, zdim*sz, ydim*sxy, 0]
+    if extentxz is None:
+        extentxz = [0, xdim*sxy, zdim*sz, 0]
+
     if gamma is None:
-        ax0.imshow(xy, colormap, vmin=vmin, vmax=vmax, extent=[0,xdim*sxy,ydim*sxy,0])
+        ax0.imshow(xy, colormap, vmin=vmin, vmax=vmax, extent=extentxy)
         ax0.set_title('xy')
-        ax1.imshow(zy, colormap, vmin=vmin, vmax=vmax, extent=[0,zdim*sz,ydim*sxy,0])
+        ax1.imshow(zy, colormap, vmin=vmin, vmax=vmax, extent=extentzy, aspect='auto')
         ax1.set_title('zy')
-        ax2.imshow(xz, colormap, vmin=vmin, vmax=vmax, extent=[0,xdim*sxy,zdim*sz,0])
+        ax2.imshow(xz, colormap, vmin=vmin, vmax=vmax, extent=extentxz, aspect='auto')
         ax2.set_title('xz')
     else:
         norm=PowerNorm(gamma=gamma, vmin=vmin, vmax=vmax)
-        ax0.imshow(xy, colormap, norm=norm, extent=[0,xdim*sxy,ydim*sxy,0])
+        ax0.imshow(xy, colormap, norm=norm, extent=extentxy)
         ax0.set_title('xy')
-        ax1.imshow(zy, colormap, norm=norm, extent=[0,zdim*sz,ydim*sxy,0])
+        ax1.imshow(zy, colormap, norm=norm, extent=extentzy, aspect='auto')
         ax1.set_title('zy')
-        ax2.imshow(xz, colormap, norm=norm, extent=[0,xdim*sxy,zdim*sz,0])
+        ax2.imshow(xz, colormap, norm=norm, extent=extentxz, aspect='auto')
         ax2.set_title('xz')
 
     return fig
@@ -468,3 +477,47 @@ def show_xyz_projection_slabs(image_to_show, x_slices, y_slices, z_slices, sxy=1
     projection_z = projector(image_to_show[z_slices,:,:],0)
 
     return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap, vmin, vmax, gamma)
+
+def show_xyz_projection_peaks(img, x_peaks, y_peaks, xy_axis, zy_axis, xz_axis, color='red', marker='ro'):
+    """ shows peaks in pre-computed xy, xz and zy of a 3D image in a plot
+    Args:
+        x_peaks (list): list of x peaks
+        y_peaks (list): list of y peaks
+        xy_axis (matplotlib axis): axis for xy projection
+        zy_axis (matplotlib axis): axis for zy projection
+        xz_axis (matplotlib axis): axis for xz projection
+    """
+    margin = 5
+
+    for x, y in zip(x_peaks, y_peaks):
+        #print(f"Peak at x: {x}, y: {y}")
+        xy_axis.plot(x, y, marker,  markerfacecolor='none', markeredgecolor=color)
+        
+        x_dim = img.shape[2]
+        y_dim = img.shape[1]
+
+        # Define bounds, with clipping to stay inside array dimensions
+        x_min = max(0, int(x) - margin)
+        x_max = min(x_dim, int(x) + margin + 1)
+        y_min = max(0, int(y) - margin)
+        y_max = min(y_dim, int(y) + margin + 1)
+
+        # Extract the sub-volume around (x, y)
+        sub_volume = img[:, y_min:y_max, x_min:x_max]
+
+        # Get the flat index of the maximum value
+        flat_index = np.argmax(sub_volume)
+
+        # Convert flat index to (z, y, x) within the sub-volume
+        z_rel, y_rel, x_rel = np.unravel_index(flat_index, sub_volume.shape)
+
+        # Map back to original array coordinates
+        z_abs = z_rel #*0.5
+        y_abs = y_min + y_rel
+        x_abs = x_min + x_rel
+
+        half_width = 5
+
+        zy_axis.plot( [z_abs, z_abs], [max(y_abs - half_width,0), min(y_abs + half_width,img.shape[1])],color=color, linewidth=1)
+
+        xz_axis.plot([max(x_abs - half_width,0), min(x_abs + half_width, img.shape[2])], [z_abs, z_abs], color=color, linewidth=1)
