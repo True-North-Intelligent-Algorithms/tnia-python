@@ -387,9 +387,11 @@ def uber_augmenter_im(im, mask, patch_size, do_vertical_flip=True, do_horizontal
 
 
     if do_random_brightness_contrast:
+        # TODO: add brightness and contrast limits as options
         augmentations.append(A.RandomBrightnessContrast(p=0.8))
 
     if do_random_gamma:
+        # TODO: add gamma limits as options
         augmentations.append(A.RandomGamma(p=0.8))
 
     if do_color_jitter:
