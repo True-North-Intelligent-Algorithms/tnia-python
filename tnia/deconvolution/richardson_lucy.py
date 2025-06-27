@@ -27,6 +27,17 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
         [numpy float array]: the deconvolved image
     """
 
+    
+    mempool = cp.get_default_memory_pool()
+    total_gpu_memory = mempool
+    bpg=(1024**3)
+ 
+    available_gpu_memory = cp.cuda.Device(0).mem_info[0]
+    total_gpu_memory = cp.cuda.Device(0).mem_info[1]
+    print("Total GPU memory = {}".format(total_gpu_memory/bpg))
+    print("Available GPU memory = {}".format(available_gpu_memory/bpg))
+    print("At beginning, used = {}".format(mempool.used_bytes()/bpg))
+    
     # if truth is not none we will be calculating the RMSE at each iteration
     if truth is not None:
         stats = {'rmse':[]}
@@ -35,7 +46,8 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     if noncirc==False and (image.shape != psf.shape):
         print('padding psf')
         psf,_=pad(psf, image.shape, 'constant')
-    
+
+   
     HTones = np.ones_like(image)
 
     if (mask is not None):
@@ -60,11 +72,17 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
       
     image = image.astype(np.float32)
     image = cp.array(image)
+    
+    print("After image, used = {}".format(mempool.used_bytes()/bpg))
 
     psf = psf.astype(np.float32)
     psf = cp.array(psf)
+    
+    print("After psf, used = {}".format(mempool.used_bytes()/bpg))
 
     HTones = cp.array(HTones, cp.float32)
+    
+    print("After HTones, used = {}".format(mempool.used_bytes()/bpg))
 
     if truth is not None:
         truth = cp.array(truth)
@@ -79,6 +97,8 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
         estimate = image
 
     delta = 1e-6
+
+    print('new version!')
 
     if truth is not None:
         # if truth is not None we will be calculating the RMSE at each iteration
@@ -99,7 +119,7 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
 
         ratio = image / (reblurred + delta)
         correction=cp.real((cp.fft.ifftn(cp.fft.fftn(ratio) * otf_)))
-        correction[correction<0] = 0
+        correction[correction<0] = delta 
         estimate = estimate * correction/HTones 
 
         if truth is not None:
