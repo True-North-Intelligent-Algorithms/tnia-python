@@ -1,4 +1,3 @@
-from operator import is_
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import PowerNorm, to_rgb, CSS4_COLORS
@@ -93,17 +92,23 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormaps=None, 
     if ylabels is None:
         ylabels = [None]*len(ims)
 
-    for im,ax,title,colormap,plottype,xlabel,ylabel in zip(ims,np.ndarray.flatten(axes),titles,colormaps,plottypes,xlabels,ylabels):
+    if vmin is None:
+        vmin = [None]*len(ims)
+    
+    if vmax is None:
+        vmax = [None]*len(ims)
+
+    for im,ax,title,colormap,plottype,xlabel,ylabel,vmin_, vmax_ in zip(ims,np.ndarray.flatten(axes),titles,colormaps,plottypes,xlabels,ylabels,vmin,vmax):
         #print('types')
         #print(type(im), type(ax), type(title))
         #print()
 
         if plottype == 'imshow':    
             if gamma is not None:
-                norm = PowerNorm(gamma=gamma, vmin=vmin, vmax=vmax)
+                norm = PowerNorm(gamma=gamma, vmin=vmin_, vmax=vmax_)
                 ax.imshow(im.squeeze(), colormap,norm=norm)
             else:
-                ax.imshow(im.squeeze(), colormap,vmin=vmin, vmax=vmax)
+                ax.imshow(im.squeeze(), colormap,vmin=vmin_, vmax=vmax_)
 
             if xlabel is not None:
                 ax.set_xlabel(xlabel)
@@ -231,7 +236,7 @@ def mask_overlay(img, masks, colors=None):
         img = img.astype(np.float32)
 
     HSV = np.zeros((img.shape[0], img.shape[1], 3), np.float32)
-    HSV[:, :, 2] = np.clip((img / 255. if img.max() > 1 else img) * 1.5, 0, 1)
+    HSV[:, :, 2] = np.clip((img / 255. if img.max() > 1 else img) * 1.0, 0, 1)
     hues = np.linspace(0, 1, masks.max() + 1)[np.random.permutation(masks.max())]
     for n in range(int(masks.max())):
         ipix = (masks == n + 1).nonzero()
