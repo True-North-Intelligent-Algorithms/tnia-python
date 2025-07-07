@@ -13,15 +13,15 @@ def MSE(a, b, mask=None, backend=np):
     Returns:
         float: MSE value.
     """
-    
-    if mask is None:
-        diff = backend.subtract(a, b)
-        squared_diff = backend.square(diff)
-        return squared_diff.mean()
-    else:
-        diff = backend.subtract(a*mask, b*mask)
-        squared_diff = backend.square(diff)
-        return squared_diff.sum() / backend.sum(mask)
+    if mask is not None:
+        a = a[mask!=0]
+        b = b[mask!=0]
+
+    print(a.min(), a.max())
+
+    diff = backend.subtract(a, b)
+    squared_diff = backend.square(diff)
+    return squared_diff.mean()
 
 def RMSE(a, b, mask=None, backend=np):
     """
@@ -36,5 +36,7 @@ def RMSE(a, b, mask=None, backend=np):
     Returns:
         float: RMSE value.
     """
-    return backend.sqrt(MSE(a, b, mask=mask, backend=backend))
-
+    #print(squared_diff.shape, squared_diff.min(), squared_diff.max())
+    #print(a.mean(), b.mean(), a.min(), a.max(), b.min(), b.max())
+    
+    return backend.sqrt(MSE(a, b, mask, backend=backend))

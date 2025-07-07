@@ -11,14 +11,19 @@ from errors import RMSE
 def fftconv(x, H, shape):
 	return cp.fft.irfftn(cp.fft.rfftn(x) * H, s=shape)
 
-def kldiv(p, q, HTones):
+def kldiv(p, q, HTones=None):
+  # Only consider pixels where HTones is non-zero
+  if HTones is not None:
+    p = p[HTones > 0]  
+    q = q[HTones > 0]
+    
   p = p + 1E-4
   q = q + 1E-4
   p = p / cp.sum(p)
   q = q / cp.sum(q)
   kldiv = p * (cp.log(p) - cp.log(q))
   kldiv[cp.isnan(kldiv)] = 0
-  kldiv[HTones == 0] = 0  # Ignore pixels where HTones is zero
+  #kldiv[HTones == 0] = 0  # Ignore pixels where HTones is zero
   kldiv = cp.sum(kldiv)
   return kldiv
 
@@ -33,20 +38,8 @@ filter_update = ElementwiseKernel(
     'filter_update'
 )
 
-# Define a CUDA kernel for gradient consensus, i.e.
-# only update pixels in full estimate where split updates agree in 'sign'
-gradient_consensus = ElementwiseKernel(
-    'float32 recon, float32 ratio, float32 r1, float32 r2',
-    'float32 out',
-    '''
-    bool skip = (r1 - 1.0f)*(r2 - 1.0f) < 0;
-    out = skip ? recon : recon * ratio;
-    ''',
-    'gradient_consensus'
-)
 
-
-def rlgc_latest_nc(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, print_details=False, truth=None, noncirc=False, seed=259):
+def rlgc_latest_nc(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, print_details=False, truth=None, seed=259):
   
   rng = cp.random.default_rng(seed)  
     
@@ -59,6 +52,8 @@ def rlgc_latest_nc(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, p
 
   # Load PSF
   #psf_temp = files.upload_file('psf.tif')
+
+  mean_unpadded_image = np.mean(image)
   
   # Add new z-axis if we have 2D data
   if image.ndim == 2:
@@ -116,7 +111,8 @@ def rlgc_latest_nc(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, p
 
   # Calculate Richardson-Lucy iterations
   #recon = cp.mean(image) * cp.ones((num_z, num_y, num_x), dtype=cp.float32)
-  recon = cp.mean(image) * cp.ones_like(image)
+  recon = mean_unpadded_image * cp.ones_like(image)
+  total_disagreements = cp.zeros_like(image, dtype=cp.float32)
   previous_recon = recon
 
   num_iters = 0
@@ -134,7 +130,10 @@ def rlgc_latest_nc(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, p
     stats['iteration'].append(i)
     
     if truth is not None:
-        rmse = RMSE(recon*HTones, truth, HTones)
+        if i == 100:
+           stop =5
+        #print(recon.mean(), truth.mean())
+        rmse = RMSE(recon, truth, HTones)
         stats['rmse'].append(rmse.get())
     
     # Split recorded image into 50:50 images
@@ -147,6 +146,7 @@ def rlgc_latest_nc(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, p
     # Calculate KL divergences and stop iterations if both have increased
     # BN Since HTOnes is a map of regions where good pixels were acquired (bad pixels such as saturated pixels and out of bounds pixels are set to 0),
     # only use the pixels where HTOnes is not 0 to calculate the KL divergence 
+    
     kldim = kldiv(Hu*HTones, image*HTones, HTones)
     kld1 = kldiv(Hu*HTones, split1*HTones, HTones)
     kld2 = kldiv(Hu*HTones, split2*HTones, HTones)
@@ -158,10 +158,10 @@ def rlgc_latest_nc(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, p
     if ((kld1 > prev_kld1) & (kld2 > prev_kld2)):
            
         if stop_iteration == -1:
-            stop_iteration = i
-            best_recon = previous_recon
+          stop_iteration = i
+          best_recon = previous_recon
         
-        print("Optimum result obtained after %d iterations with a total time of %1.1f seconds." % (num_iters - 1, timeit.default_timer() - start_time))
+          print("Optimum result obtained after %d iterations with a total time of %1.1f seconds." % (num_iters - 1, timeit.default_timer() - start_time))
         
         #print("Optimum result obtained after %d iterations with a total time of %1.1f seconds." % (num_iters - 1, timeit.default_timer() - start_time))
         if auto_stop:
@@ -175,30 +175,33 @@ def rlgc_latest_nc(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, p
     prev_kld2 = kld2
 
     # Calculate updates for split images and full images (H^T (d / Hu))
-    HTratio1 = fftconv(cp.divide(split1, 0.5 * (Hu + 1E-12), dtype=cp.float32), otfT, image.shape) / HTones_otfT
+    HTratio1 = fftconv(cp.divide(split1, 0.5 * (Hu + 1E-12), dtype=cp.float32), otfT, image.shape) 
+    HTratio1[HTratio1<delta]=delta
+    HTratio1 = HTratio1/ HTones_otfT
     del split1
-    HTratio2 = fftconv(cp.divide(split2, 0.5 * (Hu + 1E-12), dtype=cp.float32), otfT, image.shape) / HTones_otfT
+    HTratio2 = fftconv(cp.divide(split2, 0.5 * (Hu + 1E-12), dtype=cp.float32), otfT, image.shape)
+    HTratio2[HTratio2<delta]=delta
+    HTratio2 = HTratio2 / HTones_otfT
     del split2
-    #HTratio = fftconv(image / (Hu + 1E-12), otfT, image.shape)
-    #HTratio1 = fftconv(cp.divide(image,(Hu + 1E-12), dtype=cp.float32), otfT, image.shape)
-    HTratio = (HTratio1 + HTratio2)/2.
+    HTratio = (HTratio1 + HTratio2)/2
     del Hu
 
     # Save previous estimate in case KLDs increase after this iteration
     previous_recon = recon    
     
     # Calculate gradient consensus and blur with the interaction kernel, i.e. H^T H
-    consensus_map = fftconv((HTratio1 - 1) * (HTratio2 - 1), otfotfT, recon.shape) * HTones 
+    consensus_map = fftconv((HTratio1 - 1) * (HTratio2 - 1), otfotfT, recon.shape) #* HTones 
 
     # Update our reconstruction only where the blurred consensus map says we should
     recon = filter_update(recon, HTratio, consensus_map)
-    #recon = gradient_consensus(recon, HTratio, HTratio1, HTratio2)
     
     # Calculate update statistics    
     min_HTratio = cp.min(HTratio)
     max_HTratio = cp.max(HTratio)
     max_relative_delta = cp.max((recon - previous_recon) / cp.max(recon))
-    del HTratio
+    
+    #del HTratio
+    HTratio = HTratio.get()
     
     calc_time = timeit.default_timer() - iter_start_time
     print("Iteration %03d completed in %1.3f s. KLDs = %1.4f (image), %1.4f (split 1), %1.4f (split 2). Update range: %1.2f to %1.2f. Largest relative delta = %1.5f." % (num_iters + 1, calc_time, kldim, kld1, kld2, min_HTratio, max_HTratio, max_relative_delta))
@@ -206,9 +209,14 @@ def rlgc_latest_nc(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, p
     num_iters = num_iters + 1
 
   recon = recon.get()
-  best_recon = best_recon.get()
-
+  recon_padded = recon
   recon = unpad(recon, original_size)
-  best_recon = unpad(best_recon, original_size)
+
+  if stop_iteration > 0:
+    best_recon = best_recon.get()
+    best_recon = unpad(best_recon, original_size)
+  else:
+    best_recon = recon
+
 
   return recon, best_recon, stats, stop_iteration

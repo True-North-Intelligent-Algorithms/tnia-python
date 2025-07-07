@@ -32,20 +32,8 @@ filter_update = ElementwiseKernel(
     'filter_update'
 )
 
-# Define a CUDA kernel for gradient consensus, i.e.
-# only update pixels in full estimate where split updates agree in 'sign'
-gradient_consensus = ElementwiseKernel(
-    'float32 recon, float32 ratio, float32 r1, float32 r2',
-    'float32 out',
-    '''
-    bool skip = (r1 - 1.0f)*(r2 - 1.0f) < 0;
-    out = skip ? recon : recon * ratio;
-    ''',
-    'gradient_consensus'
-)
 
-
-def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, print_details=False, truth=None, noncirc=False, seed=259):
+def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, truth=None, seed=42):
   
   rng = cp.random.default_rng(seed)  
     
@@ -65,7 +53,6 @@ def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, prin
 
   if psf_temp.ndim == 2:
     psf_temp = np.expand_dims(psf_temp, axis=0)
-
   
   if truth is not None:
     if truth.ndim == 2:
@@ -119,6 +106,7 @@ def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, prin
     stats['iteration'].append(i)
     
     if truth is not None:
+        print(recon.mean(), truth.mean())
         rmse = RMSE(recon, truth)#, backend=cp)
         stats['rmse'].append(rmse.get())
     
@@ -145,9 +133,8 @@ def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, prin
             stop_iteration = i
             best_recon = previous_recon
         
-        print("Optimum result obtained after %d iterations with a total time of %1.1f seconds." % (num_iters - 1, timeit.default_timer() - start_time))
+            print("Optimum result obtained after %d iterations with a total time of %1.1f seconds." % (num_iters - 1, timeit.default_timer() - start_time))
         
-        #print("Optimum result obtained after %d iterations with a total time of %1.1f seconds." % (num_iters - 1, timeit.default_timer() - start_time))
         if auto_stop:
             return best_recon.get(), best_recon.get(), stats, stop_iteration
     
@@ -161,9 +148,7 @@ def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, prin
     del split1
     HTratio2 = fftconv(cp.divide(split2, 0.5 * (Hu + 1E-12), dtype=cp.float32), otfT, image.shape)
     del split2
-    HTratio = fftconv(image / (Hu + 1E-12), otfT, image.shape)
-    HTratio1 = fftconv(cp.divide(image,(Hu + 1E-12), dtype=cp.float32), otfT, image.shape)
-    HTratio = (HTratio1 + HTratio2)/2.
+    HTratio = (HTratio1 + HTratio2)/2
     del Hu
 
     # Save previous estimate in case KLDs increase after this iteration
@@ -174,7 +159,6 @@ def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, prin
 
     # Update our reconstruction only where the blurred consensus map says we should
     recon = filter_update(recon, HTratio, consensus_map)
-    #recon = gradient_consensus(recon, HTratio, HTratio1, HTratio2)
     
     # Calculate update statistics    
     min_HTratio = cp.min(HTratio)
@@ -186,5 +170,11 @@ def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, mask=None, prin
     print("Iteration %03d completed in %1.3f s. KLDs = %1.4f (image), %1.4f (split 1), %1.4f (split 2). Update range: %1.2f to %1.2f. Largest relative delta = %1.5f." % (num_iters + 1, calc_time, kldim, kld1, kld2, min_HTratio, max_HTratio, max_relative_delta))
 
     num_iters = num_iters + 1
+    
+  recon = recon.get()
+  if stop_iteration > 0:
+     best_recon = best_recon.get()
+  else:
+     best_recon = recon
 
-  return recon.get(), best_recon.get(), stats, stop_iteration
+  return recon, best_recon, stats, stop_iteration
