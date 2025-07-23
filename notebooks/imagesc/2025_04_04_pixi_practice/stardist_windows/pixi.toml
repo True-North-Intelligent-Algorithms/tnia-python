@@ -1,0 +1,30 @@
+[workspace]
+authors = ["bnorthan <bnorthan@gmail.com>"]
+channels = ["conda-forge"]
+name = "stardist"
+platforms = ["win-64", "linux-64"]
+version = "0.1.0"
+
+[tasks]
+start = "python print_info.py"
+
+[dependencies]
+stardist = "*"
+napari = "*"
+
+[target.linux-64.dependencies]
+cudnn = "*"
+cudatoolkit = "*"
+tensorflow = ">=2.0"
+
+[target.win-64.dependencies]
+cudnn = "*"
+cudatoolkit = "*"
+tensorflow = ">=2.0"
+
+[feature.py311.dependencies]
+python = "3.11.*"
+
+[environments]
+py311 = ["py311"]
+
