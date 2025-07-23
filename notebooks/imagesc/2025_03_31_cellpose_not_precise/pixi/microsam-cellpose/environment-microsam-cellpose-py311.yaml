@@ -1,0 +1,9 @@
+name: py311
+channels:
+- conda-forge
+- nodefaults
+dependencies:
+- python 3.11.*
+- micro_sam *
+- cellpose *
+- pytorch-gpu *

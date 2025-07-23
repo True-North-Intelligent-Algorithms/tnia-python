@@ -1,0 +1,36 @@
+[workspace]
+authors = ["bnorthan <bnorthan@gmail.com>"]
+channels = ["conda-forge"]
+name = "microsam-cellpose"
+platforms = ["win-64", "linux-64", "osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+start = "python print_info.py"
+
+[system-requirements]
+cuda = "12.0"
+
+[dependencies]
+micro_sam = "*"
+cellpose = "*"
+
+[target.linux-64.dependencies]
+pytorch-gpu = "*"
+
+[target.win-64.dependencies]
+pytorch-gpu = "*"
+
+[target.osx-arm64.dependencies]
+pytorch = "*"  # CPU-only PyTorch for macOS
+
+[feature.py311.dependencies]
+python = "3.11.*"
+
+[feature.py312.dependencies]
+python = "3.12.*"
+
+[environments]
+py311 = ["py311"]
+py312 = ["py312"]
+
