@@ -98,8 +98,6 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
 
     delta = 1e-6
 
-    print('new version!')
-
     if truth is not None:
         # if truth is not None we will be calculating the RMSE at each iteration
         # we need to keep track of the invalid pixels so make a copy of HTones (which is the invalid pixel mask at this point)
