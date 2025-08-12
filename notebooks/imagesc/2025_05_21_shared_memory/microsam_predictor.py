@@ -3,13 +3,13 @@ from micro_sam.automatic_segmentation import get_predictor_and_segmenter, automa
 
 
 def microsam_predict(image):
+    # TODO tile_shape and halo should be params...
     tile_shape = None #(384, 384)
     halo = (64, 64)
     model_type = "vit_b_lm"
-    model_type = "vit_l_histopathology"
+    #model_type = "vit_l_histopathology"
 
     print(f"Using model type: {model_type}")
-
 
     device = "cuda" if torch.cuda.is_available() else "cpu" # the device/GPU used for training
     # Step 1: Get the 'predictor' and 'segmenter' to perform automatic instance segmentation.
