@@ -1,8 +1,8 @@
 import numpy as np
 from numpy.fft import fftn, ifftn, fftshift, ifftshift
-from tnia.deconvolution.pad import pad, unpad
+from tnia.deconvolution.pad import pad, unpad, get_next_smooth
 
-def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None):
+def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None, use_mkl=False):
     """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses numpy
 
     Note: NumPy FFT functions always cast 32 bit arrays to float64, so passing in 32 bit arrays to save memory will not work. 
@@ -14,11 +14,24 @@ def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None):
         noncirc (bool, optional): If true use non-circulant edge handling. Defaults to False.
         mask (numpy float array, optional): If not None, use this mask to mask image pixels that should not be considered in the deconvolution. Defaults to None.
             'bad' pixels will be zeroed during the deconvolution and then replaced with the original value after the deconvolution.
-
+        use_mkl (bool, optional): If true, explicitly try to use MKL for FFTs. Defaults to False.
     Returns:
         [numpy float array]: the deconvolved image
     """
-    
+
+    if use_mkl:
+        try:
+            import mkl_fft
+            fftn = mkl_fft.fftn
+            ifftn = mkl_fft.ifftn
+            print("using MKL")
+            import mkl
+            print("num threads: ", mkl.get_max_threads())
+            print()
+        except ImportError:
+            print("MKL FFT not available, using NumPy FFT instead.")
+            use_mkl = False
+        
     # if noncirc==False and (image.shape != psf.shape) then pad the psf
     if noncirc==False and (image.shape != psf.shape):
         print('padding psf')
@@ -35,13 +48,15 @@ def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None):
     if noncirc:
         # compute the extended size of the image and psf
         extended_size = [image.shape[i]+2*int(psf.shape[i]/2) for i in range(len(image.shape))]
+    else:
+        extended_size = image.shape
 
-        # pad the image, psf and HTOnes array to the extended size computed above
-        original_size = image.shape
-        image,_=pad(image, extended_size, 'constant')
-        HTones,_=pad(HTones, extended_size, 'constant')
-        psf,_=pad(psf, extended_size, 'constant')
-    
+    extended_size = get_next_smooth(extended_size)
+    # pad the image, psf and HTOnes array to the extended size computed above
+    original_size = image.shape
+    image,_=pad(image, extended_size, 'constant')
+    HTones,_=pad(HTones, extended_size, 'constant')
+    psf,_=pad(psf, extended_size, 'constant')
 
     otf = fftn(ifftshift(psf))
     otf_ = np.conjugate(otf)
@@ -51,22 +66,45 @@ def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None):
     else:
         estimate = image
 
-    HTones = np.real(np.fft.ifftn(np.fft.fftn(HTones) * otf_))
+    HTones = np.real(ifftn(fftn(HTones) * otf_))
     HTones[HTones<1e-6] = 1
 
-    print()
+    '''
+    import time
+    for i in range(num_iters):
+        if i % 10 == 0:
+            print(i, end=" ")
+
+        start = time.perf_counter()
+        reblurred = np.real(ifftn(fftn(estimate) * otf))
+        print(f"FFT time: {time.perf_counter() - start:.4f}s")
+
+        start = time.perf_counter()
+        ratio = image / (reblurred + 1e-6)
+        print(f"Ratio time: {time.perf_counter() - start:.4f}s")
+
+        start = time.perf_counter()
+        correction = np.real(ifftn(fftn(ratio) * otf_))
+        print(f"Correction time: {time.perf_counter() - start:.4f}s")
+
+        start = time.perf_counter()
+        estimate = estimate * correction / HTones
+        print(f"Update time: {time.perf_counter() - start:.4f}s")
+    '''    
+
     for i in range(num_iters):
         if i % 10 == 0:
             print(i, end =" ")
         
         reblurred = np.real(ifftn(fftn(estimate) * otf))
 
-        ratio = image / (reblurred + 1e-12)
-        correction=np.real((np.fft.ifftn(np.fft.fftn(ratio) * otf_)))
+        ratio = image / (reblurred + 1e-6)
+        correction=np.real((ifftn(fftn(ratio) * otf_)))
         estimate = estimate * correction/HTones 
-    print()        
     
-    if noncirc:
+    print()        
+
+    if estimate.shape != original_size:
         estimate = unpad(estimate, original_size)
 
     if (mask is not None):
