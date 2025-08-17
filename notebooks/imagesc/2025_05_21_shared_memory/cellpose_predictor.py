@@ -2,6 +2,7 @@
 import sys
 import numpy as np
 from multiprocessing import shared_memory
+from multiprocessing.managers import SharedMemoryManager
 import cellpose
 from cellpose import models
 
@@ -12,10 +13,9 @@ if __name__ == "__main__":
     out_name = sys.argv[5]
     
     dtype = np.dtype(sys.argv[6])
-
+    
     shm = shared_memory.SharedMemory(name=name)
     array = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
-
     print('shape in', shape)
 
     total = np.sum(array)
@@ -39,6 +39,7 @@ if __name__ == "__main__":
     dtype_out = np.uint16
     nbytes = np.prod(shape_out)* np.dtype(dtype_out).itemsize
     print("nbytes", nbytes)
+    
     shm_out = shared_memory.SharedMemory(size=int(nbytes), name=out_name)
     # Create a numpy array backed by shared memory
     shared_array_out = np.ndarray(shape_out, dtype=dtype, buffer=shm_out.buf)
@@ -47,3 +48,6 @@ if __name__ == "__main__":
     shared_array_out[:] = result[:]
 
     shm.close()  # Do NOT unlink — only creator does that
+    shm_out.close()
+
+    
