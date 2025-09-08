@@ -24,17 +24,18 @@ def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None, use_mkl=
             import mkl_fft
             fftn = mkl_fft.fftn
             ifftn = mkl_fft.ifftn
-            print("using MKL")
-            import mkl
-            print("num threads: ", mkl.get_max_threads())
-            print()
+            #print("using MKL FFT")
         except ImportError:
             print("MKL FFT not available, using NumPy FFT instead.")
             use_mkl = False
+
+    # if MKL FFT is not available or use_mkl is False, use NumPy FFT functions
+    if use_mkl == False:
+        fftn = np.fft.fftn
+        ifftn = np.fft.ifftn
         
     # if noncirc==False and (image.shape != psf.shape) then pad the psf
     if noncirc==False and (image.shape != psf.shape):
-        print('padding psf')
         psf,_=pad(psf, image.shape, 'constant')
     
     HTones = np.ones_like(image)
@@ -49,9 +50,9 @@ def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None, use_mkl=
         # compute the extended size of the image and psf
         extended_size = [image.shape[i]+2*int(psf.shape[i]/2) for i in range(len(image.shape))]
     else:
-        extended_size = image.shape
+        # TODO: consider option to use get_next_smooth for non-circulant case as well
+        extended_size = image.shape #get_next_smooth(extended_size)
 
-    extended_size = get_next_smooth(extended_size)
     # pad the image, psf and HTOnes array to the extended size computed above
     original_size = image.shape
     image,_=pad(image, extended_size, 'constant')
@@ -65,32 +66,11 @@ def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None, use_mkl=
         estimate = np.ones_like(image)*np.mean(image)
     else:
         estimate = image
+    
+    delta = 1e-6
 
     HTones = np.real(ifftn(fftn(HTones) * otf_))
-    HTones[HTones<1e-6] = 1
-
-    '''
-    import time
-    for i in range(num_iters):
-        if i % 10 == 0:
-            print(i, end=" ")
-
-        start = time.perf_counter()
-        reblurred = np.real(ifftn(fftn(estimate) * otf))
-        print(f"FFT time: {time.perf_counter() - start:.4f}s")
-
-        start = time.perf_counter()
-        ratio = image / (reblurred + 1e-6)
-        print(f"Ratio time: {time.perf_counter() - start:.4f}s")
-
-        start = time.perf_counter()
-        correction = np.real(ifftn(fftn(ratio) * otf_))
-        print(f"Correction time: {time.perf_counter() - start:.4f}s")
-
-        start = time.perf_counter()
-        estimate = estimate * correction / HTones
-        print(f"Update time: {time.perf_counter() - start:.4f}s")
-    '''    
+    HTones[HTones<delta] = 1
 
     for i in range(num_iters):
         if i % 10 == 0:
@@ -98,8 +78,9 @@ def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None, use_mkl=
         
         reblurred = np.real(ifftn(fftn(estimate) * otf))
 
-        ratio = image / (reblurred + 1e-6)
+        ratio = image / (reblurred + delta)
         correction=np.real((ifftn(fftn(ratio) * otf_)))
+        correction[correction<0] = delta 
         estimate = estimate * correction/HTones 
     
     print()        
