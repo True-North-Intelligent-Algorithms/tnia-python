@@ -2,7 +2,7 @@ import numpy as np
 from numpy.fft import fftn, ifftn, fftshift, ifftshift
 from tnia.deconvolution.pad import pad, unpad, get_next_smooth
 
-def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None, use_mkl=False):
+def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None, use_mkl=False, print_diagnostics=False):
     """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses numpy
 
     Note: NumPy FFT functions always cast 32 bit arrays to float64, so passing in 32 bit arrays to save memory will not work. 
@@ -24,7 +24,8 @@ def richardson_lucy_np(image, psf, num_iters, noncirc=False, mask=None, use_mkl=
             import mkl_fft
             fftn = mkl_fft.fftn
             ifftn = mkl_fft.ifftn
-            #print("using MKL FFT")
+            if print_diagnostics:
+                print("Using MKL FFT for Richardson-Lucy deconvolution.")
         except ImportError:
             print("MKL FFT not available, using NumPy FFT instead.")
             use_mkl = False

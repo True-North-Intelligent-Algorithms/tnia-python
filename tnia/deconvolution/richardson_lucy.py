@@ -3,7 +3,7 @@ import cupy as cp
 from tnia.deconvolution.pad import pad, unpad, get_next_smooth
 from tnia.metrics.errors import RMSE
 
-def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=None):
+def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=None, print_diagnostics=False ):
     """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses cupy
     
     Note: Cupy FFT behavior is different than numpy.  Cupy FFT always returns real arrays of type float32 and complex of type complex64.
@@ -32,27 +32,27 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     total_gpu_memory = mempool
     bpg=(1024**3)
  
-    available_gpu_memory = cp.cuda.Device(0).mem_info[0]
-    total_gpu_memory = cp.cuda.Device(0).mem_info[1]
-    print("Total GPU memory = {}".format(total_gpu_memory/bpg))
-    print("Available GPU memory = {}".format(available_gpu_memory/bpg))
-    print("At beginning, used = {}".format(mempool.used_bytes()/bpg))
-    
+    if print_diagnostics:
+        available_gpu_memory = cp.cuda.Device(0).mem_info[0]
+        total_gpu_memory = cp.cuda.Device(0).mem_info[1]
+        print("Total GPU memory = {}".format(total_gpu_memory/bpg))
+        print("Available GPU memory = {}".format(available_gpu_memory/bpg))
+        print("At beginning, used = {}".format(mempool.used_bytes()/bpg))
+        
     # if truth is not none we will be calculating the RMSE at each iteration
     if truth is not None:
         stats = {'rmse':[]}
     
     # if noncirc==False and (image.shape != psf.shape) then pad the psf
     if noncirc==False and (image.shape != psf.shape):
-        print('padding psf')
+        if print_diagnostics:
+            print('padding psf')
         psf,_=pad(psf, image.shape, 'constant')
-
    
     HTones = np.ones_like(image)
 
     if (mask is not None):
         HTones = HTones * mask
-        mask_values = image*(1-mask)
         image=image*mask
     
     # if noncirc==True then pad the image, psf and HTOnes array to the extended size
@@ -72,17 +72,20 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
       
     image = image.astype(np.float32)
     image = cp.array(image)
-    
-    print("After image, used = {}".format(mempool.used_bytes()/bpg))
+
+    if print_diagnostics:    
+        print("After image, used = {}".format(mempool.used_bytes()/bpg))
 
     psf = psf.astype(np.float32)
     psf = cp.array(psf)
-    
-    print("After psf, used = {}".format(mempool.used_bytes()/bpg))
+
+    if print_diagnostics:    
+        print("After psf, used = {}".format(mempool.used_bytes()/bpg))
 
     HTones = cp.array(HTones, cp.float32)
-    
-    print("After HTones, used = {}".format(mempool.used_bytes()/bpg))
+
+    if print_diagnostics:    
+        print("After HTones, used = {}".format(mempool.used_bytes()/bpg))
 
     if truth is not None:
         truth = cp.array(truth)
@@ -91,7 +94,8 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     otf_ = cp.conjugate(otf)
 
     if noncirc or mask is not None:
-        print('using flat sheet')
+        if print_diagnostics:
+            print('using flat sheet')
         estimate = cp.ones_like(image)*cp.mean(image)
     else:
         estimate = image
@@ -110,7 +114,6 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     print()
     for i in range(num_iters):
         if i % 10 == 0:
-            #print('chckup estimate',i,estimate.min(), estimate.max(), estimate.mean())
             print(i, end =" ")
         
         reblurred = cp.real(cp.fft.ifftn(cp.fft.fftn(estimate) * otf))
@@ -133,7 +136,7 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     if (mask is not None):
         mask = cp.asnumpy(mask)
         estimate = estimate*mask
-        estimate[ (1-mask) == 1] = estimate.max() #estimate*mask + mask_values
+        estimate[ (1-mask) == 1] = estimate.max() 
     
     if truth is not None:
         stats['rmse'] = [s.get() for s in stats['rmse']]
