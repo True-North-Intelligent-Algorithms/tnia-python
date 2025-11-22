@@ -1,0 +1,46 @@
+
+## Just to remember where some useful image for testing are
+
+image_path = r"C:\Users\bnort\work\ImageJ2022\tnia\notebooks-and-napari-widgets-for-dl\data\ladybugs_series\16746885_25273748.jpg"  # Replace with your image path
+image_path = r"D:\images\tnia-python-images\imagesc\2024_12_14_micrographs\micrographs\micrograph586.tif"
+image_path = r"D:\images\tnia-python-images\imagesc\2024_02_29_citrus_lesion\20240108_123559.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2024_04_15_blood_panel\cropped.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2024_10_09_spindle_shaped_cells\X33-1_D2_1_2024y01m31d_16h30m.tif"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\TestHidden_234.tif"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\bloodsmear1.tif"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_22_Blood_Cells\archive\valid\images\BloodImage_00123_jpg.rf.a954085f8be2eea44cf2e98d96f1fc1c.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_22_Blood_Cells\archive\valid\images\BloodImage_00404_jpg.rf.d9bd79bb34f49130776fc6d4a32ad3bc.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_22_Blood_Cells\archive\valid\images\BloodImage_00108_jpg.rf.4de623bcfacb8dc1dc7bddecb06c9209.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2024_03_27_SOTA_segmentation\images\cell_00068.bmp"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_11_more_bubbles\bubbles.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2024_09_25_Intanseg_bees\bee1-s.tif"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_03_19_membrane_marker\image.png"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_02_14_tissue\noisyPSR-1-crop.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2023_12_26_batter_bubbles\MDG_PH7_20°c_A.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2024_09_18_spores\IMG_6554_roi.tif"
+image_path = r"D:\images\tnia-python-images\imagesc\2023_12_12_segmenting_etching_pits\down_sampled.tif"
+image_path = r"D:\images\tnia-python-images\imagesc\2024_01_05_particle_size_microcapsules\Blank 9 befor curing000000.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\TestHidden_348.bmp"
+label_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\annotations\class_0\TestHidden_348.tif"
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\TestHidden_005.bmp"
+label_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\annotations\class_0\TestHidden_005.tif"
+
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\TestHidden_365.tif"
+label_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\annotations\class_0\TestHidden_365.tif"
+
+#image_path = r"D:\images\tnia-python-images\imagesc\2025_04_30_scale\image (3).jpg"
+#label_path = None
+
+image_path = r"D:\images\tnia-python-images\imagesc\2024_03_27_SOTA_segmentation\images\cell_00180.png"
+label_path = r"D:\images\tnia-python-images\imagesc\2024_03_27_SOTA_segmentation\labels\cell_00180_label.tiff"
+
+image_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\TestHidden_180.png"
+label_path = r"D:\images\tnia-python-images\imagesc\2025_05_10_SOTA_Test_Set\annotations\class_0\TestHidden_180.tif"
+
+image_path = r"D:\images\tnia-python-images\imagesc\2024_04_15_blood_panel\cropped2.jpg"
+label_path =None
+
+image_path = r"D:\images\tnia-python-images\imagesc\2024_03_08_flower_like\HP_1week_screenshot.jpg"
+image_path = r"D:\images\tnia-python-images\imagesc\2024_03_27_SOTA_segmentation\images\cell_00285.tif"
+label_path = r"D:\images\tnia-python-images\imagesc\2024_03_27_SOTA_segmentation\labels\cell_00285_label.tiff"
+
