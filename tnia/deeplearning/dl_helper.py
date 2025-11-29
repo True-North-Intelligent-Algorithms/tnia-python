@@ -522,7 +522,7 @@ def divide_training_data(X, Y, val_size=3, shuffle_data=True, to_numpy=True):
 
     return X_train, Y_train, X_val, Y_val
 
-def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, pmin=1, pmax=99.8, render_mode="default"):
+def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, pmin=1, pmax=99.8, render_mode="default", n_tiles=None):
     """ applies stardist to an image with an option to downsample
 
     Args:
@@ -554,7 +554,7 @@ def apply_stardist(img, model, prob_thresh=0.5, nms_thresh=0.3, down_sample=1, p
     img = normalize(img, pmin, pmax)
     
     # apply the model
-    labels, details = model.predict_instances(img, prob_thresh=prob_thresh, nms_thresh=nms_thresh)
+    labels, details = model.predict_instances(img, prob_thresh=prob_thresh, nms_thresh=nms_thresh, n_tiles = n_tiles)
 
     if render_mode=="ellipsoid":
         labels = octo_to_ellipsoid_labels(details['points'], details['dist'], shape=img.shape)
