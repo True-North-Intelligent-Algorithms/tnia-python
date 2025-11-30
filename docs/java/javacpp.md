@@ -1,4 +1,6 @@
-
+---
+layout: basic
+---
 
 ## JavaCPP Hints
 

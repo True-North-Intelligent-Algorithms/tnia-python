@@ -34,6 +34,7 @@
             {% include section-end %} 
 
           {% include section title="Documentation" link="/" %}
+              <li><a href="{{ site.baseurl }}/docs/web/add_page">Add a help page to this menu</a></li>
               <li><a href="{{ site.baseurl }}/docs/documentation/mkdocs">Mcdocs</a></li>
             {% include section-end %} 
 
@@ -67,7 +68,6 @@
 
             {% include section title="Web" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/web/convert_notebook">Convert Notebook to markdown</a></li>
-                <li><a href="{{ site.baseurl }}/docs/web/add_page">Add a help page to this menu</a></li>
             {% include section-end %} 
             
             {% include section title="Python" link="/" %}
@@ -77,6 +77,7 @@
             
             {% include section title="Java" link="/" %}
                 <li><a href="{{ site.baseurl }}/docs/java/javacpp">JavaCPP hints</a></li>
+                <li><a href="{{ site.baseurl }}/docs/java/maven">Maven hints</a></li>
             {% include section-end %} 
             
             {% include section title="Notebooks" link="/" %}
