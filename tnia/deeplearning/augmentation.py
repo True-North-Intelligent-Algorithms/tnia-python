@@ -126,7 +126,7 @@ def random_shift_slices_in_stack(img, shift_range=2):
 
 def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patches, do_vertical_flip=True, 
                    do_horizontal_flip=True, do_random_rotate90=True, do_random_sized_crop=True, do_random_brightness_contrast=True, 
-                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, sub_sample_xy=1, save_histogram=False, **kwargs):
+                   do_random_gamma=False, do_color_jitter=False, do_elastic_transform=False, sub_sample_xy=1, save_histogram=False, split='train', **kwargs):
     """
     This function performs a series of image augmentations on the input image and mask and saves the resulting patches to disk.
 
@@ -144,16 +144,25 @@ def uber_augmenter(im, mask, patch_path, patch_base_name, patch_size, num_patche
         do_random_gamma (bool, optional): Whether to perform random gamma adjustments. Defaults to False.
         do_color_jitter (bool, optional): Whether to perform color jitter. Defaults to False.
         do_elastic_transform (bool, optional): Whether to perform elastic transformations. Defaults to False.
-
+        split (str, optional): Dataset split type ('train', 'val', 'test'). Defaults to 'train'.
+            the split is used to name the subdirectories for input and ground truth patches. This allows easy separation of different dataset splits.
     """
+
+    if split=='train':
+        input_str = 'input'
+        ground_truth_str = 'ground truth'
+    else:
+        input_str = 'input' + '_'+split
+        ground_truth_str = 'ground truth' + '_'+split
+
     
-    image_patch_path =  os.path.join(patch_path, 'input0')
+    image_patch_path =  os.path.join(patch_path, input_str+'0')
     
     if isinstance(mask, list):
-        label_patch_path =  [os.path.join(patch_path, 'ground truth'+str(i)) for i in range(len(mask))]
+        label_patch_path =  [os.path.join(patch_path, ground_truth_str+str(i)) for i in range(len(mask))]
         num_truths = len(mask)
     else:
-        label_patch_path =  os.path.join(patch_path, 'ground truth0')
+        label_patch_path =  os.path.join(patch_path, ground_truth_str+'0')
         num_truths = 1
     make_patch_directory(1, num_truths, patch_path)
     
