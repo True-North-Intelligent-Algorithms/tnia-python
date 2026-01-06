@@ -1,8 +1,12 @@
+from email import utils
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import PowerNorm, to_rgb, CSS4_COLORS
 import colorsys
 from skimage import color
+# Outline overlay helper and generation
+from skimage.segmentation import find_boundaries
+from scipy import ndimage as ndi
 
 from matplotlib import rcParams
 # Set the global interpolation to 'none'
@@ -247,6 +251,28 @@ def mask_overlay(img, masks, colors=None):
         HSV[ipix[0], ipix[1], 1] = 1.0
     RGB = (hsv_to_rgb(HSV) * 255).astype(np.uint8)
     return RGB
+
+def ensure_three_channels(img):
+    import numpy as np
+    if img.ndim == 2:
+        img = np.expand_dims(img, axis=2)
+        img = np.repeat(img, 3, axis=2)
+    return img
+
+def mask_outline_overlay(img, mask, color=(0, 255, 255), thickness=2):
+    """Return an RGB image with a visible outline around mask instances.
+    - color: (R,G,B) for outline; default is bright cyan for high contrast on white/pink backgrounds.
+    - thickness: number of dilation iterations to thicken the outline.
+    """
+    img_rgb = ensure_three_channels(img)
+    # Compute boundaries of instance mask
+    boundaries = find_boundaries(mask, mode='inner')
+    if thickness and thickness > 1:
+        boundaries = ndi.binary_dilation(boundaries, iterations=thickness-1)
+    # Apply outline color
+    overlay = img_rgb.copy()
+    overlay[boundaries] = color
+    return overlay
 
 def create_rgb(ims, color_names=None, color_dictionary_=None, channel_pos=-1, vmin=None, vmax=None, gamma=1):
     """create an RGB color image by mixing multiple images, a list of wavelengths and a color dictionary
