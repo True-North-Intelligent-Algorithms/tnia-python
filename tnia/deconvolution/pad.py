@@ -93,6 +93,23 @@ def pad(img, paddedsize, mode):
     return np.pad(img, padding,mode), padding
 
 
+def pad_to_largest(img, psf, mode):
+    """Pad both img and psf so each dimension matches the larger of the two.
+
+    Args:
+        img (numpy.ndarray): the image
+        psf (numpy.ndarray): the point spread function
+        mode (str): one of the np.pad modes
+
+    Returns:
+        tuple: (padded_img, padded_psf)
+    """
+    largest = tuple(max(i, p) for i, p in zip(img.shape, psf.shape))
+    img, _ = pad(img, largest, mode)
+    psf, _ = pad(psf, largest, mode)
+    return img, psf
+
+
 def unpad(padded, imgsize):
     """Crop padded back to imgsize.
 
