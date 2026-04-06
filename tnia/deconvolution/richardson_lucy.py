@@ -1,6 +1,6 @@
 import numpy as np
 import cupy as cp
-from tnia.deconvolution.pad import pad, unpad, get_next_smooth
+from tnia.deconvolution.pad import pad, pad_to_largest, unpad, get_next_smooth
 from tnia.metrics.errors import RMSE
 
 def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=None, print_diagnostics=False ):
@@ -43,11 +43,14 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     if truth is not None:
         stats = {'rmse':[]}
     
-    # if noncirc==False and (image.shape != psf.shape) then pad the psf
+    # if noncirc==False and (image.shape != psf.shape) then pad both to largest dims
+    padded_to_largest = False
     if noncirc==False and (image.shape != psf.shape):
         if print_diagnostics:
-            print('padding psf')
-        psf,_=pad(psf, image.shape, 'constant')
+            print('padding to largest')
+        original_image_size = image.shape
+        image, psf = pad_to_largest(image, psf, 'constant')
+        padded_to_largest = True
    
     HTones = np.ones_like(image)
 
@@ -132,6 +135,9 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
 
     if noncirc:
         estimate = unpad(estimate, original_size)
+
+    if padded_to_largest:
+        estimate = unpad(estimate, original_image_size)
 
     if (mask is not None):
         mask = cp.asnumpy(mask)
