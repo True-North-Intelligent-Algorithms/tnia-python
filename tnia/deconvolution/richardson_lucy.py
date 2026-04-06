@@ -3,7 +3,7 @@ import cupy as cp
 from tnia.deconvolution.pad import pad, pad_to_largest, unpad, get_next_smooth
 from tnia.metrics.errors import RMSE
 
-def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=None, print_diagnostics=False ):
+def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=None, print_diagnostics=False, do_unpad=True):
     """ Deconvolves an image using the Richardson-Lucy algorithm with non-circulant option and option to mask bad pixels, uses cupy
     
     Note: Cupy FFT behavior is different than numpy.  Cupy FFT always returns real arrays of type float32 and complex of type complex64.
@@ -101,7 +101,8 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
             print('using flat sheet')
         estimate = cp.ones_like(image)*cp.mean(image)
     else:
-        estimate = image
+        estimate = cp.ones_like(image)*cp.mean(image)
+        #estimate = image
 
     delta = 1e-6
 
@@ -133,6 +134,9 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     
     estimate = cp.asnumpy(estimate)
 
+    if not do_unpad:
+        return estimate, image
+    
     if noncirc:
         estimate = unpad(estimate, original_size)
 
