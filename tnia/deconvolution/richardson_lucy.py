@@ -27,7 +27,13 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
         [numpy float array]: the deconvolved image
     """
 
-    
+    print(f'Input size: {image.shape}, PSF size: {psf.shape}')
+    if len(image.shape) >= 3 and image.shape[0] == 1 and len(psf.shape) >= 3 and psf.shape[0] > 1:
+        print('Input is 2D (single Z plane), PSF is 3D')
+        print('EXPERIMENTAL: 3D DECON OF 2D SLICE WILL BE DONE')
+    elif len(image.shape) == 2 and len(psf.shape) == 2:
+        print('Input is 2D, PSF is 2D')
+
     mempool = cp.get_default_memory_pool()
     total_gpu_memory = mempool
     bpg=(1024**3)
@@ -61,7 +67,7 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     # if noncirc==True then pad the image, psf and HTOnes array to the extended size
     if noncirc:
         # compute the extended size of the image and psf
-        extended_size = [image.shape[i]+2*int(psf.shape[i]) for i in range(len(image.shape))]
+        extended_size = [image.shape[i]+2*int(psf.shape[i]//2) for i in range(len(image.shape))]
         extended_size = get_next_smooth(extended_size)
 
         # pad the image, psf and HTOnes array to the extended size computed above
@@ -104,7 +110,7 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
         estimate = cp.ones_like(image)*cp.mean(image)
         #estimate = image
 
-    delta = 1e-8
+    delta = 1e-6
 
     if truth is not None:
         # if truth is not None we will be calculating the RMSE at each iteration
@@ -113,12 +119,12 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
         mask_extended = HTones.copy()
 
     HTones = cp.real(cp.fft.ifftn(cp.fft.fftn(HTones) * otf_))
-    #HTones[HTones<delta] = 1
+    HTones[HTones<delta] = 1
 
     print()
     for i in range(num_iters):
         if i % 10 == 0:
-            print(i, end =" ")
+            print(i, end=" ", flush=True)
         
         reblurred = cp.real(cp.fft.ifftn(cp.fft.fftn(estimate) * otf))
         ratio = image / (reblurred + delta)
@@ -126,13 +132,21 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
         correction=cp.real((cp.fft.ifftn(cp.fft.fftn(ratio) * otf_)))
         correction = correction/HTones
         correction[HTones<delta] = 1
-        #correction[correction<0] = delta 
+        correction[correction<0] = delta 
         estimate = estimate * correction
+
+        if cp.isnan(estimate).any():
+            print(f'\nNaN detected at iteration {i}')
+            print(f'  estimate min={cp.nanmin(estimate)}, max={cp.nanmax(estimate)}, nan count={cp.isnan(estimate).sum()}')
+            print(f'  correction min={cp.nanmin(correction)}, max={cp.nanmax(correction)}, nan count={cp.isnan(correction).sum()}')
+            print(f'  ratio min={cp.nanmin(ratio)}, max={cp.nanmax(ratio)}, nan count={cp.isnan(ratio).sum()}')
+            print(f'  reblurred min={cp.nanmin(reblurred)}, max={cp.nanmax(reblurred)}, nan count={cp.isnan(reblurred).sum()}')
+            break
 
         if truth is not None:
             rmse = RMSE(truth, estimate, mask_extended, cp)
             stats['rmse'].append(rmse)
-    print()        
+    print(flush=True)        
     
     estimate = cp.asnumpy(estimate)
 
@@ -235,4 +249,3 @@ def richardson_lucy_cp_rfft(image, psf, num_iters, noncirc=False, mask=None):
         estimate = estimate*mask + mask_values
     
     return estimate
-  
