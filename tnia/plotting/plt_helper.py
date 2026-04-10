@@ -16,9 +16,11 @@ color_dictionary = {
     "Cy5": [1, 0, 0],        # Red
     "DAPI": [0, 0, 1],       # Blue
     "FITC": [0, 1, 0],       # Green
+    "GFP": [0, 1, 0],        # Green
     "Texa": [1, 0.5, 0],     # Orange
     "AF594":[1,0.2,0],       # Red
     "Cy2": [0, 1, 0],
+    "Cy3": [1, 0.5, 0],      # Orange
 }
 
 def random_label_cmap(n=2**16, h = (0,1), l = (.4,1), s =(.2,.8)):
