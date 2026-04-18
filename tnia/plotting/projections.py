@@ -56,10 +56,10 @@ def show_xy_zy_slice(image_to_show, x, y, z, sxy=1, sz=1,figsize=(10,3), colorma
     fig =  show_xy_zy(slice_xy, slice_zy, sxy, sz,figsize, colormap, vmin, vmax, gamma)
 
     if show_cross_hairs:
-        fig.axes[0].axvline(x*sxy+0.5, color='r')
-        fig.axes[0].axhline(y*sxy+0.5, color='r')
+        fig.axes[0].axvline(x*sxy+0.5*sxy, color='r')
+        fig.axes[0].axhline(y*sxy+0.5*sxy, color='r')
         fig.axes[1].axvline(z*sz+0.5*sz, color='r')
-        fig.axes[1].axhline(y*sxy+0.5, color='r')    
+        fig.axes[1].axhline(y*sxy+0.5*sxy, color='r')    
 
     return fig
 
