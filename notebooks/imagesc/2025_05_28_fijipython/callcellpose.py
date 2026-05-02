@@ -1,48 +1,28 @@
 #@ ImageJ ij
-#@ ImgPlus img
+#@ ImagePlus imp
 
 import cellpose
 from cellpose import models
-from skimage import color
-import numpy as np
-
-# print cellpose version
 print(cellpose.version)
 
-# check if GPU is available
-import torch
+model = cellpose.models.CellposeModel(gpu=True, model_type='cyto3')
 
-if torch.cuda.is_available():
-    print("GPU is available!")
-else:
-    print("GPU is not available.")
+print('processing img',imp.getTitle(), 'with cellpose', cellpose.version)
 
-model = models.CellposeModel(gpu=True, model_type='cyto3')
-
-print(type(img))
-img_py=ij.py.from_java(img)
-print(type(img_py), img_py.shape)
-
+img_py=ij.py.from_java(imp)
 result = model.eval(img_py)
 
-print(type(result[0]),result[0].shape)
+result_imp = ij.py.to_imageplus(result[0])
+result_imp.setTitle("result")
 
-try:
-	overlay = color.label2rgb(result[0], img_py, bg_label=0., alpha=0.4)
-except Exception as e:
-	print("Caught an exception:", e)
-	print("try copy img_py before call to label2rgb")
-	copy = np.copy(img_py)
-	overlay = color.label2rgb(result[0], copy, bg_label=0., alpha=0.4)
+ij.ui().show(result_imp)
 
-print(type(overlay), overlay.shape)
+ij.IJ.setThreshold(result_imp, 1, 100000)
+ij.py.run_plugin("Convert to Mask", imp=result_imp);
 
-result_java = ij.py.to_java(result[0])
+ij.py.run_plugin("Create Selection", imp=result_imp);
+ij.py.run_plugin("Add to Manager"); 
 
-#back_overlay = ij.py.to_java(overlay)
-print(overlay.dtype, overlay.min(), overlay.max())
-overlay = (overlay*255).astype('uint8')
-overlay_java = ij.py.to_dataset(overlay, dim_order=['row', 'col', 'ch'])
+ij.IJ.selectWindow(imp.getTitle()); 
+ij.py.run_plugin("Show Overlay", imp=imp);
 
-ij.ui().show(result_java)
-ij.ui().show(overlay_java)
