@@ -17,8 +17,6 @@ def MSE(a, b, mask=None, backend=np):
         a = a[mask!=0]
         b = b[mask!=0]
 
-    print(a.min(), a.max())
-
     diff = backend.subtract(a, b)
     squared_diff = backend.square(diff)
     return squared_diff.mean()

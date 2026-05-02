@@ -33,7 +33,7 @@ filter_update = ElementwiseKernel(
 )
 
 
-def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, truth=None, seed=42):
+def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, truth=None, seed=42, print_details=False):
   
   rng = cp.random.default_rng(seed)  
     
@@ -100,13 +100,13 @@ def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, truth=None, see
   stop_iteration = -1
 
   #while True:
+  print()
   for i in range(total_iters):
     iter_start_time = timeit.default_timer()
 
     stats['iteration'].append(i)
     
     if truth is not None:
-        print(recon.mean(), truth.mean())
         rmse = RMSE(recon, truth)#, backend=cp)
         stats['rmse'].append(rmse.get())
     
@@ -167,8 +167,15 @@ def rlgc_latest(image, psf_temp, total_iters=-1, auto_stop=True, truth=None, see
     del HTratio
     
     calc_time = timeit.default_timer() - iter_start_time
-    print("Iteration %03d completed in %1.3f s. KLDs = %1.4f (image), %1.4f (split 1), %1.4f (split 2). Update range: %1.2f to %1.2f. Largest relative delta = %1.5f." % (num_iters + 1, calc_time, kldim, kld1, kld2, min_HTratio, max_HTratio, max_relative_delta))
 
+    if print_details:
+      print("Iteration %03d completed in %1.3f s. KLDs = %1.4f (image), %1.4f (split 1), %1.4f (split 2). Update range: %1.2f to %1.2f. Largest relative delta = %1.5f." % (num_iters + 1, calc_time, kldim, kld1, kld2, min_HTratio, max_HTratio, max_relative_delta))
+    else:
+      if i % 10 == 0:
+          print(i, end =" ")
+      if i % 500 == 0:
+          print()
+  
     num_iters = num_iters + 1
     
   recon = recon.get()
