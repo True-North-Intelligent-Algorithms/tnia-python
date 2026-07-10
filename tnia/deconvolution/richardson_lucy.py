@@ -108,7 +108,6 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
         estimate = cp.ones_like(image)*cp.mean(image)
     else:
         estimate = cp.ones_like(image)*cp.mean(image)
-        #estimate = image
 
     delta = 1e-6
 
@@ -121,32 +120,30 @@ def richardson_lucy_cp(image, psf, num_iters, noncirc=False, mask=None, truth=No
     HTones = cp.real(cp.fft.ifftn(cp.fft.fftn(HTones) * otf_))
     HTones[HTones<delta] = 1
 
+    update_interval = max(num_iters//10,1)
     print()
     for i in range(num_iters):
-        if i % 10 == 0:
-            print(i, end=" ", flush=True)
-        
-        reblurred = cp.real(cp.fft.ifftn(cp.fft.fftn(estimate) * otf))
-        ratio = image / (reblurred + delta)
-        
-        correction=cp.real((cp.fft.ifftn(cp.fft.fftn(ratio) * otf_)))
-        correction = correction/HTones
-        correction[HTones<delta] = 1
-        correction[correction<0] = delta 
-        estimate = estimate * correction
+        if i % int(update_interval) == 0:
+            print(i, end =" ")
 
-        if cp.isnan(estimate).any():
-            print(f'\nNaN detected at iteration {i}')
-            print(f'  estimate min={cp.nanmin(estimate)}, max={cp.nanmax(estimate)}, nan count={cp.isnan(estimate).sum()}')
-            print(f'  correction min={cp.nanmin(correction)}, max={cp.nanmax(correction)}, nan count={cp.isnan(correction).sum()}')
-            print(f'  ratio min={cp.nanmin(ratio)}, max={cp.nanmax(ratio)}, nan count={cp.isnan(ratio).sum()}')
-            print(f'  reblurred min={cp.nanmin(reblurred)}, max={cp.nanmax(reblurred)}, nan count={cp.isnan(reblurred).sum()}')
-            break
+        reblurred = cp.real(cp.fft.ifftn(cp.fft.fftn(estimate) * otf))
+        reblurred[reblurred<delta] = delta 
+        ratio = image / (reblurred)
+        correction=cp.real((cp.fft.ifftn(cp.fft.fftn(ratio) * otf_)))
+        
+        #correction[correction<0] = 0 
+        correction = correction/HTones 
+        estimate = estimate * correction
+        estimate[estimate<0] = delta
 
         if truth is not None:
             rmse = RMSE(truth, estimate, mask_extended, cp)
             stats['rmse'].append(rmse)
-    print(flush=True)        
+
+        if truth is not None:
+            rmse = RMSE(truth, estimate, mask_extended, cp)
+            stats['rmse'].append(rmse)
+    print()        
     
     estimate = cp.asnumpy(estimate)
 
