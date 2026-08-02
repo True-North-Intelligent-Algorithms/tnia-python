@@ -1,6 +1,5 @@
 from skimage.segmentation import relabel_sequential
 import numpy as np
-from skimage.util._map_array import ArrayMap
 from skimage import measure
 from scipy import spatial
 from skimage.segmentation import relabel_sequential
