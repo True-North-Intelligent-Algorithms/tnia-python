@@ -1,7 +1,3 @@
----
-layout: basic
----
-
 # 0007 — Finish the packaging modernization
 
 **Status:** planned, not started. Written 2026-08-02. **Deliberately after

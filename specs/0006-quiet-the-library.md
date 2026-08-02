@@ -1,7 +1,3 @@
----
-layout: basic
----
-
 # 0006 — Stop printing
 
 **Status:** planned, not started. Written 2026-08-01.

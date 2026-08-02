@@ -1,7 +1,3 @@
----
-layout: basic
----
-
 # 0003 — Delete what nothing uses
 
 **Status:** planned, not started. Written 2026-08-01.

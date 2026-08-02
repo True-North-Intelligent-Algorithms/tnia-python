@@ -6,7 +6,7 @@ other projects (see *Downstream* below), not just used from its own notebooks.
 
 ## State as of 2026-08-02
 
-This file and `docs/specs/` were written in a session that started in
+This file and `specs/` were written in a session that started in
 ../skop-napari, where the tnia-python dependency came up. They are committed
 deliberately: this is a sole-authored repository, so the rules and motivations
 here should travel to other machines and to any contributor.
@@ -21,27 +21,27 @@ Read the relevant spec before touching the area it covers. Suggested order is
 the numbering, except that **0003 should precede 0006** (deleting
 `experimental/` removes 30 of the print statements).
 
-- **[0001 — improve installation](docs/specs/0001-improve-installation.md)** —
+- **[0001 — improve installation](specs/0001-improve-installation.md)** —
   **implemented 2026-08-02**, except the `_require` import helper and the
   README's dependency section. The base install is now `numpy` alone; every
   other dependency lives in an extra. Read the spec before touching packaging,
   and note the rule below about empty `__init__.py` files — it is what makes
   the extras work.
-- **[0002 — clone weight](docs/specs/0002-clone-weight.md)** — 675 MB of
+- **[0002 — clone weight](specs/0002-clone-weight.md)** — 675 MB of
   tracked notebooks against a 0.3 MB library. `nbstripout`, `--depth 1`, and a
   deferred decision about splitting `notebooks/` out.
-- **[0003 — remove dead code](docs/specs/0003-remove-dead-code.md)** — six
+- **[0003 — remove dead code](specs/0003-remove-dead-code.md)** — six
   unimported near-duplicate deconvolution modules, a ChatGPT-written test,
   `notebooks_/`, `experiments/`, test-named modules inside the package.
-- **[0004 — CI and changelog](docs/specs/0004-ci-and-changelog.md)** — there is
+- **[0004 — CI and changelog](specs/0004-ci-and-changelog.md)** — there is
   no `.github/`. Two jobs: one runs the tests, one proves the minimal install
   is minimal. Plus a `CHANGELOG.md` starting at the 0001 release.
-- **[0005 — documentation](docs/specs/0005-documentation.md)** — a subpackage →
+- **[0005 — documentation](specs/0005-documentation.md)** — a subpackage →
   extra map, a module docstring for `tnia.plotting.projections` (15 overlapping
   `show_*` names), and a rewrite of the stale `docs/install.md`.
-- **[0006 — quiet the library](docs/specs/0006-quiet-the-library.md)** — 153
+- **[0006 — quiet the library](specs/0006-quiet-the-library.md)** — 153
   `print()` calls in `tnia/`. Delete, or convert to callbacks and warnings.
-- **[0007 — build system](docs/specs/0007-build-system.md)** — the packaging
+- **[0007 — build system](specs/0007-build-system.md)** — the packaging
   leftovers 0001 deliberately excludes: `requires-python`, classifiers and
   project URLs, `tnia.__version__`, the `MANIFEST.in`/`exclude_package_data`
   overlap, releasing from CI. Explicitly *after* 0001; blocks nothing.
@@ -58,11 +58,13 @@ of the four should ship, then add empty `__init__.py` files for those.
 - `tnia/<subpackage>/` — the library. **Every `__init__.py` is empty**, and
   should stay that way: subpackages must not import each other at module
   scope, or scoped installs stop working.
-- `setup.cfg` holds the packaging metadata (`[metadata]`, `[options]`); there
-  is no pyproject.toml yet. `setup.py` only calls `setup()`.
+- `pyproject.toml` holds all the packaging metadata. `setup.cfg` and `setup.py`
+  were removed by 0001 — do not reintroduce them.
 - `docs/` is a published Jekyll site — pages carry `layout: basic` front
   matter, and `docs/install.md` is the install page users actually read.
-  `docs/specs/` is new, and holds plans rather than site content.
+- `specs/` holds internal planning documents, **not** site content. They carry
+  no front matter and `_config.yml` excludes the directory from the build, so
+  they render on GitHub and are not published to the web.
 - `notebooks/` is large, organised by date and topic, and usually has
   uncommitted edits in it. Do not sweep it up into unrelated commits.
 

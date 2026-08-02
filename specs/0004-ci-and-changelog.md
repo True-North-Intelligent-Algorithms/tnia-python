@@ -1,7 +1,3 @@
----
-layout: basic
----
-
 # 0004 — CI and a changelog, so 0001 stays true
 
 **Status:** planned, not started. Written 2026-08-01.
@@ -99,7 +95,7 @@ Kept from 0.2.0 onward. Earlier releases: see `git log`.
 ### Changed
 - **Breaking:** the default install is now `numpy` only. Everything else moved
   to extras — `pip install tnia-python[all]` restores the 0.1.27 dependency
-  set. See docs/specs/0001-improve-installation.md.
+  set. See specs/0001-improve-installation.md.
 
 ### Added
 - Extras: `plotting`, `io`, `simulation`, `deeplearning`, `all`.

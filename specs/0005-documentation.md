@@ -1,7 +1,3 @@
----
-layout: basic
----
-
 # 0005 — Documentation for people who need one function
 
 **Status:** planned, not started. Written 2026-08-01.

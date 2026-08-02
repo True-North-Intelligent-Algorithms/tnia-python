@@ -1,3 +1,7 @@
 #theme: jekyll-theme-minimal
 #logo: /images/logo.jpeg
 markdown: kramdown
+
+# specs/ holds internal planning documents, not pages of the site.
+exclude:
+  - specs

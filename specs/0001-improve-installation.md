@@ -1,7 +1,3 @@
----
-layout: basic
----
-
 # 0001 — Install only the parts you want
 
 **Status:** implemented 2026-08-02, apart from two items. Written 2026-08-01.

@@ -1,7 +1,3 @@
----
-layout: basic
----
-
 # 0002 — Make the repo clonable
 
 **Status:** planned, not started. Written 2026-08-01.

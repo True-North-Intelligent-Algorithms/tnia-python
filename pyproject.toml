@@ -11,7 +11,7 @@ license = { text = "MIT" }
 authors = [{ name = "Brian Northan", email = "bnorthan@gmail.com" }]
 
 # Deliberately minimal.  Everything else is an extra -- see
-# docs/specs/0001-improve-installation.md.  Subpackages do not import each
+# specs/0001-improve-installation.md.  Subpackages do not import each
 # other at module scope, so importing tnia.plotting.projections does not
 # require the deep learning stack.
 dependencies = ["numpy"]
