@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tnia-python"
+version = "0.2.0"
+description = "A collection of utilities"
+readme = { file = "README_pypi.md", content-type = "text/markdown" }
+license = { text = "MIT" }
+authors = [{ name = "Brian Northan", email = "bnorthan@gmail.com" }]
+
+# Deliberately minimal.  Everything else is an extra -- see
+# docs/specs/0001-improve-installation.md.  Subpackages do not import each
+# other at module scope, so importing tnia.plotting.projections does not
+# require the deep learning stack.
+dependencies = ["numpy"]
+
+[project.optional-dependencies]
+plotting = ["matplotlib", "scipy", "scikit-image"]
+io = ["tifffile", "scikit-image"]
+simulation = ["raster-geometry", "scikit-image"]
+deeplearning = ["albumentations", "raster-geometry", "matplotlib", "scikit-image"]
+machinelearning = ["scikit-image"]
+wavelets = ["PyWavelets"]
+all = ["tnia-python[plotting,io,simulation,deeplearning,machinelearning,wavelets]"]
+
+[project.urls]
+Homepage = "https://github.com/True-North-Intelligent-Algorithms/tnia-python"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["tnia*"]
