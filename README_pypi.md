@@ -18,32 +18,42 @@ There are useful helper function to
 
 In the coming months and years I plan to keep iterating on the library and making it more usable.  Please reach out to me if you have any questions. 
 
-## Dependencies  
+## Installation
 
-We tend not to install many of the dependencies via setup.py.  The dependencies are complex and not all are needed to run many examples.  Thus we leave it up to the user to install dependencies manually, allowing them to potentially install a minimum set of dependencies for the specific code they are interested in running.
-
-Most of the deconvolution related functionality uses clij2-fft.  Some functionality uses clesperanto.  The current recommended steps to create a conda/mamba environment for tnia-python are as follows
+The library covers a lot of ground and most people need one corner of it, so the base install is deliberately small and you add only the parts you want.
 
 ```
-mamba create --name decon-dl-env python=3.9 devbio-napari pyqt -c conda-forge -c pytorch
-mamba install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
-pip install cupy-cuda11x
 pip install tnia-python
-pip install clij2-fft
-pip install psfmodels
-pip install "tensorflow<2.11"
-pip install stardist
-pip install raster-geometry
 ```
 
-Mac-users please also install this:
+That gives you the library and `numpy`, and nothing else.  Pick the extras for the code you actually plan to run:
 
 ```
-conda install -c conda-forge ocl_icd_wrapper_apple
+pip install "tnia-python[plotting]"
 ```
 
-Linux users please also install this:
+(Quotes matter on zsh and macOS, which otherwise treat the brackets as a glob.)
+
+| extra | installs | for |
+| --- | --- | --- |
+| `plotting` | matplotlib, scipy, scikit-image | `tnia.plotting` — xy/zy/xz slices and projections.  Also what `tnia.deconvolution` and `tnia.segmentation` draw with |
+| `io` | tifffile, scikit-image | `tnia.io` — tiff and raw readers |
+| `simulation` | raster-geometry, scikit-image | `tnia.simulation` — phantoms and test images |
+| `deeplearning` | albumentations, raster-geometry, matplotlib, scikit-image | `tnia.deeplearning` — patch extraction, augmentation, SAM and stardist helpers |
+| `machinelearning` | scikit-image | `tnia.machinelearning` — random forest feature extraction |
+| `wavelets` | PyWavelets | `tnia.wavelets` |
+
+Combine them with commas, or take everything at once:
 
 ```
-conda install -c conda-forge ocl-icd-system
+pip install "tnia-python[plotting,io]"
+pip install "tnia-python[all]"
 ```
+
+`[all]` is the right choice if you are following along with the notebooks and would rather not work out which example needs what.
+
+**If you are upgrading from 0.1.x, `[all]` is the one you want.**  Before 0.2.0 every install behaved like `[all]`, so upgrading in place can leave imports failing until you add the extras you need.
+
+Some heavier optional pieces are still installed by hand, because they are platform specific and not on every user's path — `clij2-fft` and `psfmodels` for deconvolution and PSF generation, `stardist` and `cellpose` for segmentation.
+
+Full instructions, including editable installs and installing from git, are in [docs/install.md](https://github.com/True-North-Intelligent-Algorithms/tnia-python/blob/main/docs/install.md).

@@ -1,5 +1,6 @@
 recursive-include tnia *
 recursive-exclude _includes *
+global-exclude __pycache__ *.py[cod] *.so .DS_Store
 recursive-exclude _layouts *
 recursive-exclude _site *
 recursive-exclude assets *

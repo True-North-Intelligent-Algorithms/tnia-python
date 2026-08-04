@@ -276,6 +276,55 @@ def mask_outline_overlay(img, mask, color=(0, 255, 255), thickness=2):
     overlay[boundaries] = color
     return overlay
 
+def draw_boxes(ax, boxes, order='yxyx', color=(0.4, 1.0, 0.0), linewidth=2, labels=None, fontsize=8):
+    """Draw bounding boxes onto an existing matplotlib axes.
+
+    The counterpart to mask_outline_overlay: that one returns an RGB image,
+    this one draws on the axes, so the two compose -- imshow the outline
+    overlay, then draw the boxes on top.
+
+    Args:
+        ax: the axes to draw on, already showing the image the boxes refer to.
+        boxes: (N, 4) array of box corners.  A detector that found nothing
+            gives an empty (0, 4) array, which draws nothing.
+        order (str): 'yxyx' for [min_y, min_x, max_y, max_x], which is what
+            skimage's regionprops reports and what numpy indexing implies, or
+            'xyxy' for the [x1, y1, x2, y2] every YOLO-family detector emits.
+        color: edge color, matplotlib style.  Default is the bright green the
+            outline overlays use -- boxes are thin, and a muted color
+            disappears against a photograph.
+        linewidth (int): edge width in points.
+        labels: optional per-box text, drawn above the top-left corner.  A
+            list of length N, or None.
+        fontsize (int): size of that text.
+
+    Returns:
+        the list of Rectangle patches added, so a caller can restyle them.
+    """
+    boxes = np.asarray(boxes, dtype=float)
+    if boxes.size == 0:
+        return []
+    if boxes.ndim != 2 or boxes.shape[1] != 4:
+        raise ValueError(f"boxes must have shape (N, 4), got {boxes.shape}")
+    if order not in ('yxyx', 'xyxy'):
+        raise ValueError(f"order must be 'yxyx' or 'xyxy', got {order!r}")
+
+    # Work in yxyx internally.  The swap is its own inverse.
+    if order == 'xyxy':
+        boxes = boxes[:, [1, 0, 3, 2]]
+
+    patches = []
+    for i, (min_y, min_x, max_y, max_x) in enumerate(boxes):
+        rect = plt.Rectangle(
+            (min_x, min_y), max_x - min_x, max_y - min_y,
+            fill=False, edgecolor=color, linewidth=linewidth)
+        ax.add_patch(rect)
+        patches.append(rect)
+        if labels is not None:
+            ax.text(min_x, min_y - 2, str(labels[i]), color=color,
+                    fontsize=fontsize, va='bottom')
+    return patches
+
 def create_rgb(ims, color_names=None, color_dictionary_=None, channel_pos=-1, vmin=None, vmax=None, gamma=1):
     """create an RGB color image by mixing multiple images, a list of wavelengths and a color dictionary
 
