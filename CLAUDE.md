@@ -45,6 +45,11 @@ the numbering, except that **0003 should precede 0006** (deleting
   leftovers 0001 deliberately excludes: `requires-python`, classifiers and
   project URLs, `tnia.__version__`, the `MANIFEST.in`/`exclude_package_data`
   overlap, releasing from CI. Explicitly *after* 0001; blocks nothing.
+- **[0008 — the tests do not run](specs/0008-tests-do-not-run.md)** — every
+  test module fails at collection on NumPy 2, because `tests/helper.py` imports
+  `raster_geometry`, which still uses `np.float_`. Nothing in `tnia/` does. The
+  suite is not red, it is absent, and has been since NumPy 2.0. Read before
+  trusting a green-looking test run.
 
 **Prerequisite for 0001, not yet written into it:** four subpackages have no
 `__init__.py` — `machinelearning`, `wavelets`, `gui/threads`,
