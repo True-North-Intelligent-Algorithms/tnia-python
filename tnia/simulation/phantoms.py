@@ -253,15 +253,16 @@ def random_circles(im, num, min_r, max_r, min_intensity, max_intensity, seed_val
         seed(seed_val)
 
     for i in range(num):
-        r=uniform(min_r, max_r)
-        cx=round(uniform(r,im.shape[1]-r))
-        cy=round(uniform(r,im.shape[0]-r))
+        r=uniform(min_r, max_r)  # a float: a circle of 3.2 differs from 3.4
+        half=math.ceil(r)  # the box that holds it, in whole pixels
+        cx=round(uniform(half,im.shape[1]-half))
+        cy=round(uniform(half,im.shape[0]-half))
         intensity=round(uniform(min_intensity, max_intensity))
         #print(r,cx,cy,intensity)
         
-        temp1=rg.circle([r*2,r*2],r)
+        temp1=rg.circle([half*2,half*2],r)
         temp2=np.zeros_like(im)
-        temp2[cy-r:cy+r,cx-r:cx+r]=temp1
+        temp2[cy-half:cy+half,cx-half:cx+half]=temp1
         im[temp2>0]=im[temp2>0]+intensity
 
 def grid_of_circles(im, radius, space,border,intensity):
