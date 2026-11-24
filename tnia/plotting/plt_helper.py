@@ -104,7 +104,7 @@ def imshow_multi2d(ims, titles, rows, cols, width=10, height=4, colormaps=None, 
     if vmax is None:
         vmax = [None]*len(ims)
 
-    for im,ax,title,colormap,plottype,xlabel,ylabel,vmin_, vmax_ in zip(ims,np.ndarray.flatten(axes),titles,colormaps,plottypes,xlabels,ylabels,vmin,vmax):
+    for im,ax,title,colormap,plottype,xlabel,ylabel,vmin_, vmax_ in zip(ims,np.ravel(np.atleast_1d(axes)),titles,colormaps,plottypes,xlabels,ylabels,vmin,vmax):
         #print('types')
         #print(type(im), type(ax), type(title))
         #print()
@@ -482,3 +482,118 @@ def create_linear_napari_color_map(name, color_values):
         'name': name,
         'interpolation': 'linear'
     }
+
+
+def plot_line_panels(panels, x=None, xlabel=None, ylabel=None, vlines=None, hlines=None, suptitle=None,
+                     figsize=None, legend=True, marker=None, ncols=None, linestyle='-', log_x=False, markersize=None,
+                     colors=None):
+    """A row of line plots: one panel per entry, several labelled lines in each, on a shared x.
+
+    Args:
+        panels (dict): ``{panel title: {line label: y values, or (x values, y values)}}``.
+        x (array, optional): the x values of every line (default: the index).
+        xlabel, ylabel (str, optional): axis labels, the same on every panel; ``ylabel`` can also be a list, one
+            per panel.
+        vlines, hlines (list, optional): positions of dotted reference lines, drawn on every panel.
+        suptitle (str, optional): figure title.
+        figsize (tuple, optional): default 6.5 x 4 per panel.
+        legend (bool): show each panel's legend.
+        marker (str, optional): a marker on every point (for example 'o').
+        ncols (int, optional): panels per row (default: all in one row).
+        linestyle (str): line style; '' (with a marker) gives a scatter plot.
+        log_x (bool): log x axis.
+        markersize (float, optional): marker size.
+        colors (dict, optional): ``{line label: colour}``, the same in every panel.
+
+    Returns:
+        fig, axes (1D array, one per panel)
+    """
+    ncols = ncols or len(panels)
+    nrows = -(-len(panels) // ncols)
+    fig, axes = plt.subplots(nrows, ncols, figsize=figsize or (6.5 * ncols, 4 * nrows), squeeze=False)
+    axes = axes.ravel()
+    ylabels = ylabel if isinstance(ylabel, (list, tuple)) else [ylabel] * len(panels)
+    for ax, (title, lines), yl in zip(axes, panels.items(), ylabels):
+        for label, y in lines.items():
+            lx, ly = y if isinstance(y, tuple) else ((np.arange(len(y)) if x is None else x), y)
+            ax.plot(lx, ly, label=label, marker=marker, linestyle=linestyle, markersize=markersize,
+                    color=(colors or {}).get(label))
+        if log_x:
+            ax.set_xscale('log')
+        for v in vlines or []:
+            ax.axvline(v, color='k', lw=0.5, ls=':')
+        for h in hlines or []:
+            ax.axhline(h, color='k', lw=0.5, ls=':')
+        ax.set_title(title)
+        if xlabel is not None:
+            ax.set_xlabel(xlabel)
+        if yl is not None:
+            ax.set_ylabel(yl)
+        if legend:
+            ax.legend()
+    for ax in axes[len(panels):]:
+        ax.axis('off')
+    if suptitle is not None:
+        fig.suptitle(suptitle)
+    fig.tight_layout()
+    return fig, axes
+
+
+def plot_histogram_panels(panels, bins=100, log_x=False, log_y=True, density=True, xlabel=None, ylabel=None,
+                          show_max=False, ncols=None, sharey=False, suptitle=None, figsize=None, hlines=None):
+    """Panels of overlaid step histograms: one panel per entry, the samples in it on shared bins.
+
+    Bins span the full range of each panel's samples by default. Not clipped to a percentile on purpose:
+    matplotlib drops values past the last edge, which would hide exactly the tails that matter.
+
+    Args:
+        panels (dict): ``{panel title: {label: values}}``.
+        bins (int, array, or list of those): number of bins or the edges, for all panels or one per panel.
+        log_x (bool or list): log-spaced bins and a log x axis (all panels, or one per panel; positive values only).
+        log_y (bool or list): log y axis (all panels, or one per panel).
+        density (bool): normalise each histogram.
+        xlabel, ylabel (str or list, optional): axis labels, for all panels or one per panel.
+        show_max (bool): add each sample's maximum to the panel title.
+        ncols (int, optional): panels per row (default: all in one row).
+        sharey (bool): share the y axis.
+        suptitle (str, optional), figsize (tuple, optional): figure title and size.
+        hlines (list, optional): y positions of dotted reference lines, drawn on every panel.
+
+    Returns:
+        fig, axes (1D array, one per panel)
+    """
+    n = len(panels)
+    per = lambda v: list(v) if isinstance(v, (list, tuple)) else [v] * n
+    ncols = ncols or n
+    nrows = -(-n // ncols)
+    fig, axes = plt.subplots(nrows, ncols, figsize=figsize or (5.5 * ncols, 4 * nrows), squeeze=False, sharey=sharey)
+    axes = axes.ravel()
+    for ax, (title, samples), b, lx, ly, xl, yl in zip(axes, panels.items(), per(bins), per(log_x), per(log_y),
+                                                      per(xlabel), per(ylabel)):
+        values = {k: np.asarray(v, dtype=float).ravel() for k, v in samples.items()}
+        if np.isscalar(b):
+            lo = min(v.min() for v in values.values())
+            hi = max(v.max() for v in values.values())
+            b = np.geomspace(lo, hi, int(b)) if lx and lo > 0 else np.linspace(lo, hi, int(b))
+        for label, v in values.items():
+            ax.hist(v, bins=b, histtype='step', density=density, label=label)
+        if lx:
+            ax.set_xscale('log')
+        if ly:
+            ax.set_yscale('log')
+        for h in hlines or []:
+            ax.axhline(h, color='k', ls=':', lw=1)
+        if show_max:
+            title += '  |  max: ' + '  '.join(f'{k} {v.max():,.0f}' for k, v in values.items())
+        ax.set_title(title)
+        if xl is not None:
+            ax.set_xlabel(xl)
+        if yl is not None:
+            ax.set_ylabel(yl)
+        ax.legend()
+    for ax in axes[n:]:
+        ax.axis('off')
+    if suptitle is not None:
+        fig.suptitle(suptitle)
+    fig.tight_layout()
+    return fig, axes

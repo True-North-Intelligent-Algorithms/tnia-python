@@ -355,3 +355,77 @@ def gibson_lanni_3D_old(NA, ni, ns, voxel_size_xy, voxel_size_z, xy_size, z_size
 
     return psf, zv
 
+
+
+# ---- isolated beads from a bead stack (for calibration / PSF measurement) -------------------------------------
+
+def ring_contrast(im, inner=3, outer=15):
+    """Peak-to-background ratio of a 2D image centred on one bead: the centre pixel over the mean of the ring
+    ``inner < r <= outer`` pixels around it. High means a bright bead with little around it."""
+    cy, cx = np.array(im.shape) // 2
+    yy, xx = np.ogrid[:im.shape[0], :im.shape[1]]
+    r = np.hypot(yy - cy, xx - cx)
+    return im[cy, cx] / im[(r > inner) & (r <= outer)].mean()
+
+
+def extract_isolated_beads(stack, peaks, half_size, min_contrast=10., core_half_z=200, z_center=None,
+                           min_distance=3, peak_fraction=0.5):
+    """Crops around candidate beads in a 3D stack and marks the isolated, bright ones.
+
+    Each candidate is cropped ``[c - h, c + h)`` per axis about ``(z_center, y, x)``; candidates whose crop does
+    not fit in the stack are skipped. A bead is kept if the ``ring_contrast`` of the crop's max projection is above
+    ``min_contrast`` and the max projection of the central ``+-core_half_z`` slices has exactly one peak (local
+    maxima ``min_distance`` apart, above ``peak_fraction`` of its maximum).
+
+    Args:
+        stack (numpy array): the bead stack, ``[z, y, x]``.
+        peaks (array (N, 2)): candidate ``(y, x)`` positions, for example from ``peak_local_max`` on a projection.
+        half_size ((hz, hy, hx)): half the crop size per axis.
+        min_contrast (float), core_half_z (int), min_distance (int), peak_fraction (float): the criteria above.
+        z_center (int, optional): the crop's centre slice; default the middle of the stack.
+
+    Returns:
+        table (pandas DataFrame, one row per crop: peak (1-based index into ``peaks``), y, x, contrast, peaks,
+        keep), crops (list of 3D arrays, in the same order).
+    """
+    import pandas as pd
+    from tnia.nd.ndutil import crop_around
+    zc = len(stack) // 2 if z_center is None else z_center
+    rows, crops = [], []
+    for i, (y, x) in enumerate(peaks):
+        crop = crop_around(stack, (zc, y, x), half_size)
+        if crop is None:
+            continue
+        core = crop[len(crop) // 2 - core_half_z:len(crop) // 2 + core_half_z].max(axis=0)
+        n_peaks = len(peak_local_max(core, min_distance=min_distance, threshold_abs=core.max() * peak_fraction,
+                                     exclude_border=False))
+        c = ring_contrast(crop.max(axis=0))
+        rows.append(dict(peak=i + 1, y=y, x=x, contrast=round(float(c), 2), peaks=n_peaks,
+                         keep=bool(c > min_contrast and n_peaks == 1)))
+        crops.append(crop)
+    return pd.DataFrame(rows), crops
+
+
+def center_bead(crop, half_size, smooth=3.):
+    """Re-crops a bead about its own maximum (after a Gaussian smoothing of ``smooth`` pixels), ``[m - h, m + h)``
+    per axis. Returns (the crop, or None if it does not fit inside ``crop``; the maximum's index)."""
+    from scipy.ndimage import gaussian_filter
+    from tnia.nd.ndutil import crop_around
+    peak = tuple(int(v) for v in np.unravel_index(np.argmax(gaussian_filter(crop, sigma=smooth)), crop.shape))
+    return crop_around(crop, peak, half_size), peak
+
+
+def fwhm_through_focus(psf, pixel_size=1.):
+    """Lateral FWHM of a PSF in every z plane, through its brightest pixel: (fwhm_x, fwhm_y), each one value per
+    plane, in units of ``pixel_size``. For an astigmatic PSF the two cross near focus and diverge either side.
+
+    Args:
+        psf (numpy array): the PSF, ``[z, y, x]`` (tnia's order; transpose first if yours is ``(x, y, z)``).
+        pixel_size (float): lateral pixel size.
+    """
+    from tnia.metrics.profiles import fwhm
+    fx, fy = np.zeros(len(psf)), np.zeros(len(psf))
+    for i, plane in enumerate(psf):
+        iy, ix = np.unravel_index(plane.argmax(), plane.shape)
+        fx[i], fy[i] = fwhm(plane[iy, :], pixel_size), fwhm(plane[:, ix], pixel_size)
+    return fx, fy

@@ -231,3 +231,23 @@ def unpad_to_original(images, original_images):
 
     return unpadded_images
 
+
+
+def crop_around(im, center, half_size):
+    """
+    Crops ``[c - h, c + h)`` along every axis around a point, or returns None if that box does not fit inside the
+    image (so a crop is always full size).
+
+    Args:
+        im (numpy.ndarray): the image.
+        center (sequence of int): the point, one index per axis.
+        half_size (sequence of int): half the crop size per axis.
+
+    Returns:
+        numpy.ndarray or None: the crop, ``2 * half_size`` along each axis, or None.
+    """
+    lo = [int(c) - int(h) for c, h in zip(center, half_size)]
+    hi = [int(c) + int(h) for c, h in zip(center, half_size)]
+    if any(l < 0 for l in lo) or any(h > n for h, n in zip(hi, im.shape)):
+        return None
+    return im[tuple(slice(l, h) for l, h in zip(lo, hi))]

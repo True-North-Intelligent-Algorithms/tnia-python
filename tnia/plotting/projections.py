@@ -478,7 +478,7 @@ def show_xyz_projection_slabs(image_to_show, x_slices, y_slices, z_slices, sxy=1
 
     return show_xyz(projection_z, projection_y, projection_x, sxy, sz, figsize, colormap, vmin, vmax, gamma)
 
-def show_xyz_projection_peaks(img, x_peaks, y_peaks, xy_axis, zy_axis, xz_axis, color='red', marker='ro'):
+def show_xyz_projection_peaks(img, x_peaks, y_peaks, xy_axis, zy_axis, xz_axis, color='red', marker='ro', label=None):
     """ shows peaks in pre-computed xy, xz and zy of a 3D image in a plot
     Args:
         x_peaks (list): list of x peaks
@@ -486,12 +486,13 @@ def show_xyz_projection_peaks(img, x_peaks, y_peaks, xy_axis, zy_axis, xz_axis, 
         xy_axis (matplotlib axis): axis for xy projection
         zy_axis (matplotlib axis): axis for zy projection
         xz_axis (matplotlib axis): axis for xz projection
+        label (str, optional): legend label for these peaks (on the xy axis; call ``xy_axis.legend()``)
     """
     margin = 5
 
-    for x, y in zip(x_peaks, y_peaks):
+    for i, (x, y) in enumerate(zip(x_peaks, y_peaks)):
         #print(f"Peak at x: {x}, y: {y}")
-        xy_axis.plot(x, y, marker,  markerfacecolor='none', markeredgecolor=color)
+        xy_axis.plot(x, y, marker,  markerfacecolor='none', markeredgecolor=color, label=label if i == 0 else None)
         
         x_dim = img.shape[2]
         y_dim = img.shape[1]
@@ -521,3 +522,153 @@ def show_xyz_projection_peaks(img, x_peaks, y_peaks, xy_axis, zy_axis, xz_axis, 
         zy_axis.plot( [z_abs, z_abs], [max(y_abs - half_width,0), min(y_abs + half_width,img.shape[1])],color=color, linewidth=1)
 
         xz_axis.plot([max(x_abs - half_width,0), min(x_abs + half_width, img.shape[2])], [z_abs, z_abs], color=color, linewidth=1)
+
+
+def show_projection_grid(volumes, rows, voxel=1.0, bounds=None, projector=np.sum, transform=None,
+                         cmap='magma', gamma=None, share='row', clip_percentile=None, origin='lower',
+                         aspect='equal', height_ratios=None, figsize=None, col_width=6.0,
+                         xy_scale=1.0, z_scale=None, z_stretch=1.0, ylabels=None, xlabels=None, hlines=None,
+                         vlines=None, line_color='cyan', vline_color=None, hide=(), transpose=False, ticks=True,
+                         title_format='{name}: {row}', titles=None, title_fontsize=10, tick_fontsize=7,
+                         suptitle=None, suptitle_fontsize=12, tight_rect=None, h_pad=None):
+    """Projections of several 3D volumes side by side: one column per volume, one row per view.
+
+    Made for comparing volumes of the same region (for example two localization programs rendered with
+    ``tnia.plotting.points.points_to_volume``): every row shows the same view of every volume, on one
+    colour scale, with axes in real-world units.
+
+    Args:
+        volumes (dict): ``{name: volume}``, each indexed ``[z, y, x]``, all the same shape.
+        rows (list): one entry per row, ``(view, slabs, title)``; ``view`` is ``'xy'``, ``'xz'`` or ``'yz'``
+            (the first letter is the horizontal axis), or ``'zx'`` / ``'zy'`` for depth running across;
+            ``slabs`` (optional) maps ``'x'`` / ``'y'`` / ``'z'`` to a slice of voxel indices: only those
+            voxels count (the rest are zeroed; the view still shows the whole volume). Use
+            ``points.range_to_slice`` to make the slices. ``title`` (optional) defaults to the view.
+        voxel (float or (xy, z)): voxel size, in the units of ``bounds``.
+        bounds (sequence of 3 (lo, hi), optional): the volume's ``(x, y, z)`` origin, as returned by
+            ``points_to_volume``; the extent is ``lo + n * voxel``. Default: from 0.
+        projector (callable): ``np.sum`` (counts) or ``np.max``.
+        transform (callable, optional): applied to each projection before display, for example ``np.log1p``.
+        cmap (str), gamma (float, optional): colour map, and a power-law display norm if given.
+        share (str): ``'row'`` one colour scale per row (vmin 0), ``'all'`` one for the whole grid,
+            ``'none'`` each panel its own (matplotlib's default range unless ``clip_percentile`` is set).
+        clip_percentile (float, optional): vmax at this percentile of the non-zero pixels instead of the max.
+        origin (str): ``'lower'`` puts y and z upward; ``'upper'`` is image convention.
+        aspect (str or list): ``'equal'`` (real proportions) or ``'auto'``, for all rows or one per row.
+        height_ratios (list, optional): row heights; default from each row's real height / width.
+        figsize (tuple, optional): default from ``col_width`` and the row heights.
+        xy_scale, z_scale (float): factor from volume units to axis units (for example 1e-3 for nm -> um);
+            ``z_scale`` defaults to ``xy_scale``.
+        z_stretch (float): extra display-only stretch of z.
+        ylabels (list, optional): a y-axis label per row (``None`` to leave one out).
+        xlabels (list, optional): an x-axis label per row (view), likewise; with ``transpose`` only on the bottom
+            panel of each column.
+        hlines, vlines (dict, optional): ``{row index: [values]}``, dotted lines at those positions, in
+            volume units (scaled like the axis they sit on).
+        line_color, vline_color (str): colour of the hlines, and of the vlines (default: the same).
+        hide (iterable): ``(name, row index)`` panels to leave empty.
+        transpose (bool): one row per volume, one column per view instead.
+        ticks (bool): show axis ticks.
+        title_format (str): panel title, from ``{name}`` and ``{row}``.
+        titles (dict, optional): ``{(name, row index): title}`` for panels that need their own title.
+        suptitle (str, optional), suptitle_fontsize (float): figure title.
+        tight_rect, h_pad: passed to ``fig.tight_layout``.
+
+    Returns:
+        fig, axes (2D array in the displayed layout), images (``images[row][col] = (projection, extent)`` in
+        the ``rows`` x ``volumes`` order, before ``transform``), for adding overlays.
+    """
+    names = list(volumes)
+    shape = volumes[names[0]].shape
+    sxy, sz = (voxel, voxel) if np.isscalar(voxel) else voxel
+    zsc = xy_scale if z_scale is None else z_scale
+    lo = [0., 0., 0.] if bounds is None else [b[0] for b in bounds]
+    span = {'x': (lo[0], lo[0] + shape[2] * sxy, xy_scale), 'y': (lo[1], lo[1] + shape[1] * sxy, xy_scale),
+            'z': (lo[2], lo[2] + shape[0] * sz, zsc * z_stretch)}
+    # view -> (horizontal axis, vertical axis, axis projected over); 'zx' / 'zy' are 'xz' / 'yz' turned on their side
+    axes_of = {'xy': ('x', 'y', 0), 'xz': ('x', 'z', 1), 'yz': ('y', 'z', 2), 'zx': ('z', 'x', 1), 'zy': ('z', 'y', 2)}
+    rows = [(r[0], (r[1] if len(r) > 1 and r[1] else {}), (r[2] if len(r) > 2 else r[0])) for r in rows]
+    aspects = [aspect] * len(rows) if isinstance(aspect, str) else list(aspect)
+
+    images, displays = [], []
+    for view, slabs, _ in rows:
+        h_ax, v_ax, proj_axis = axes_of[view]
+        ext = [span[h_ax][0] * span[h_ax][2], span[h_ax][1] * span[h_ax][2],
+               span[v_ax][0] * span[v_ax][2], span[v_ax][1] * span[v_ax][2]]
+        row_imgs, row_disp = [], []
+        for name in names:
+            vol = volumes[name]
+            if slabs:
+                keep = np.zeros(vol.shape, bool)
+                keep[slabs.get('z', slice(None)), slabs.get('y', slice(None)), slabs.get('x', slice(None))] = True
+                vol = np.where(keep, vol, 0)
+            img = projector(vol, axis=proj_axis)               # xy -> [y, x], xz -> [z, x], yz -> [z, y]
+            if view in ('zx', 'zy'):
+                img = img.T                                    # zx -> [x, z], zy -> [y, z]
+            row_imgs.append((img, ext))
+            row_disp.append(transform(img) if transform is not None else img)
+        images.append(row_imgs)
+        displays.append(row_disp)
+
+    def top(d):
+        nz = d[d > 0]
+        if nz.size == 0:
+            return 1.
+        return float(np.percentile(nz, clip_percentile)) if clip_percentile is not None else float(d.max())
+
+    if share == 'all':
+        vmax_all = max(top(d) for row in displays for d in row)
+    ratio = [(e[3] - e[2]) / (e[1] - e[0]) for e in (images[r][0][1] for r in range(len(rows)))]
+    if transpose:
+        n_r, n_c = len(names), len(rows)
+        hr = [1.] * n_r if height_ratios is None else height_ratios
+        fs = figsize or (col_width * n_c, col_width * max(ratio) * n_r + 0.8 * n_r)
+    else:
+        n_r, n_c = len(rows), len(names)
+        hr = ratio if height_ratios is None else height_ratios
+        fs = figsize or (col_width * n_c, col_width * sum(hr) / max(hr[0], 1e-9) * hr[0] + 0.8 * n_r)
+    fig, axes = plt.subplots(n_r, n_c, figsize=fs, squeeze=False, gridspec_kw={'height_ratios': hr})
+    hide = set(hide)
+    for r, (view, slabs, row_title) in enumerate(rows):
+        if share == 'row':
+            vmax_row = max(top(d) for d in displays[r])
+        for c, name in enumerate(names):
+            ax = axes[c, r] if transpose else axes[r, c]
+            if (name, r) in hide:
+                ax.axis('off')
+                continue
+            disp, (img, ext) = displays[r][c], images[r][c]
+            if share == 'row':
+                vmin, vmax = 0., vmax_row
+            elif share == 'all':
+                vmin, vmax = 0., vmax_all
+            else:
+                vmin, vmax = (0., top(disp)) if clip_percentile is not None else (None, None)
+            norm = PowerNorm(gamma=gamma, vmin=vmin, vmax=vmax) if gamma is not None else None
+            if origin == 'upper':                              # row 0 is drawn at the top: keep the axis labels right
+                ext = [ext[0], ext[1], ext[3], ext[2]]
+            ax.imshow(disp, origin=origin, cmap=cmap, extent=ext, aspect=aspects[r],
+                      **({'norm': norm} if norm is not None else {'vmin': vmin, 'vmax': vmax}))
+            title = (titles or {}).get((name, r), title_format.format(name=name, row=row_title))
+            ax.set_title(title, fontsize=title_fontsize)
+            ax.tick_params(labelsize=tick_fontsize)
+            if not ticks:
+                ax.set_xticks([]); ax.set_yticks([])
+            if ylabels is not None and ylabels[r] is not None:
+                ax.set_ylabel(ylabels[r], fontsize=tick_fontsize + 1)
+            if xlabels is not None and xlabels[r] is not None and (not transpose or c == len(names) - 1):
+                ax.set_xlabel(xlabels[r], fontsize=tick_fontsize + 1)
+            h_ax, v_ax, _ = axes_of[view]
+            for v in (hlines or {}).get(r, []):
+                ax.axhline(v * span[v_ax][2], color=line_color, lw=0.6, ls=':')
+            for v in (vlines or {}).get(r, []):
+                ax.axvline(v * span[h_ax][2], color=vline_color or line_color, lw=0.6, ls=':')
+    if suptitle is not None:
+        fig.suptitle(suptitle, fontsize=suptitle_fontsize)
+    layout = {}
+    if tight_rect is not None or suptitle is not None:
+        layout['rect'] = tight_rect or (0, 0, 1, 0.97)
+    if h_pad is not None:
+        layout['h_pad'] = h_pad
+    fig.tight_layout(**layout)
+    return fig, axes, images
