@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build and publish tnia-python to PyPI.
 #
-#   scripts/release.sh            # next patch after PyPI's latest: 0.2.2 -> 0.2.3
+#   scripts/release.sh            # pyproject.toml's version; if PyPI has it, +1 (0.2.3 -> 0.2.4)
 #   scripts/release.sh 0.3.0      # or name the version
 #
 # Needs only uv; no special environment (uv build makes its own).
@@ -24,18 +24,23 @@ if git diff -U0 -- pyproject.toml | grep '^[-+][^-+]' | grep -qv '^[-+]version =
     exit 1
 fi
 
+on_pypi() { curl -sfo /dev/null "https://pypi.org/pypi/tnia-python/$1/json"; }
 latest=$(curl -sf https://pypi.org/pypi/tnia-python/json |
     python3 -c 'import json, sys; print(json.load(sys.stdin)["info"]["version"])')
+current=$(sed -n 's/^version = "\(.*\)"/\1/p' pyproject.toml)
 
 if [ -z "$version" ]; then
-    if [[ ! $latest =~ ^([0-9]+\.[0-9]+\.)([0-9]+)$ ]]; then
-        echo "Can't bump $latest. Pass the version." >&2
-        exit 1
+    version=$current
+    if on_pypi "$version"; then
+        if [[ ! $version =~ ^([0-9]+\.[0-9]+\.)([0-9]+)$ ]]; then
+            echo "Can't bump $version. Pass the version." >&2
+            exit 1
+        fi
+        version="${BASH_REMATCH[1]}$((BASH_REMATCH[2] + 1))"
     fi
-    version="${BASH_REMATCH[1]}$((BASH_REMATCH[2] + 1))"
 fi
 
-if curl -sfo /dev/null "https://pypi.org/pypi/tnia-python/$version/json"; then
+if on_pypi "$version"; then
     echo "$version is already on PyPI. Pass a newer version." >&2
     exit 1
 fi
